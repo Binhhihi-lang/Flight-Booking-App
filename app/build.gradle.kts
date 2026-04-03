@@ -35,9 +35,27 @@ android {
     }
 }
 
+
+
 dependencies {
+//     1. Material Components (Dùng cho TextInputLayout, Button đẹp...)
+    implementation ("com.google.android.material:material:1.11.0")
+
+    // 2. Glide
+    implementation("com.github.bumptech.glide:glide:4.14.2@aar") { isTransitive = true }
+
+    // 3. Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-database")
+
+    // 4 Splash
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     implementation(libs.appcompat)
     implementation(libs.material)
+    implementation(libs.activity)
+    implementation(libs.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
