@@ -31,5 +31,10 @@
     <color name="text_hint_light">#9E9E9E</color>
     <color name="blue_primary">#0064FF</color>
     <color name="blue_light_bg">#E5F0FF</color>
+    <color name="blue_dark">#111184</color>
     <color name="stroke_light_grey">#EEEEEE</color>
+
+    <color name="nav_select">#CAE6FA</color>
+
+
 </resources>
