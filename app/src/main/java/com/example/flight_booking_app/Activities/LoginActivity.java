@@ -3,7 +3,10 @@ package com.example.flight_booking_app.Activities;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,10 +18,16 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.flight_booking_app.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.ktx.Firebase;
 
 public class LoginActivity extends AppCompatActivity {
 
     TextView tvGoToSignUp ;
+    EditText etEmail, etPassword;
+    Button btnLogin;
+
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,5 +58,42 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Ánh xạ UI
+        etEmail = findViewById(R.id.et_email);
+        etPassword = findViewById(R.id.et_password);
+        btnLogin = findViewById(R.id.btn_login);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        // Kiểm tra xem người dùng đã đăng nhập trước đó chưa
+//        if (mAuth.getCurrentUser() != null) {
+//            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+//            finish();
+//        }
+
+        btnLogin.setOnClickListener(v-> loginUser());
+
+
+    }
+    private void loginUser(){
+        String email = etEmail.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+        if(email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Gọi Firebase Auth để kiểm tra
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if(task.isSuccessful()){
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_LONG).show();
+                        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                        finish();
+                    }
+                    else {
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thất bại: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }
