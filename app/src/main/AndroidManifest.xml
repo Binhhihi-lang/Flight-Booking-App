@@ -15,9 +15,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FlightBookingApp">
+
         <activity
-            android:name=".Activities.HomeActivity"
+            android:name=".Activities.MainActivity"
             android:exported="false" />
+        <activity
+            android:name=".Activities.VerifyOtpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.ResetPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.ForgotPasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".Activities.UserEditProfileActivity"
+            android:exported="false" />
+
         <activity
             android:name=".Activities.SignupActivity"
             android:exported="false" />
@@ -26,7 +41,7 @@
             android:exported="true"
             android:label="Login" />
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".Activities.SplashActivity"
             android:exported="true">
 
             <!-- Mở lên đầu tiên -->
