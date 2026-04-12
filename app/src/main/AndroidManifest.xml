@@ -20,12 +20,6 @@
             android:name=".Activities.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.VerifyOtpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activities.ResetPasswordActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activities.ForgotPasswordActivity"
             android:exported="false" />
 

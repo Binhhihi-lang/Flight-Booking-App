@@ -1,6 +1,7 @@
 <resources>
     <!-- Login -->
     <string name="app_name">Flight-Booking-App</string>
+    <string name="client_id">471903679923-fhdod172h93pcsteqo70h2gsf8doc7lo.apps.googleusercontent.com</string>
 
     <string name="login_title">Login</string>
     <string name="login_subtitle">Welcome back to the app</string>
