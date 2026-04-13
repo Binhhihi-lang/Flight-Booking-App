@@ -53,6 +53,9 @@ dependencies {
     // 4 Splash
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    // google
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

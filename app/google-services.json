@@ -1,18 +1,32 @@
 {
   "project_info": {
     "project_number": "471903679923",
+    "firebase_url": "https://flight-booking-app-2d4dc-default-rtdb.firebaseio.com",
     "project_id": "flight-booking-app-2d4dc",
     "storage_bucket": "flight-booking-app-2d4dc.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:471903679923:android:66e47344402697869447c6",
+        "mobilesdk_app_id": "1:471903679923:android:cfd47cce31bddd199447c6",
         "android_client_info": {
-          "package_name": "com.example.flight_booking_app"
+          "package_name": "com.example.admin_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "471903679923-asac8l8pg4e0c08g6oumvpk72h3e3aps.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.admin_app",
+            "certificate_hash": "3e5fc4f0f12f9dd910d7949daa498351da9ab7a5"
+          }
+        },
+        {
+          "client_id": "471903679923-fhdod172h93pcsteqo70h2gsf8doc7lo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA6slXTT4Zv-r8k8NfkkwTT8zHafkjJdMM"
@@ -20,7 +34,41 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "471903679923-fhdod172h93pcsteqo70h2gsf8doc7lo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:471903679923:android:66e47344402697869447c6",
+        "android_client_info": {
+          "package_name": "com.example.flight_booking_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "471903679923-fhdod172h93pcsteqo70h2gsf8doc7lo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6slXTT4Zv-r8k8NfkkwTT8zHafkjJdMM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "471903679923-fhdod172h93pcsteqo70h2gsf8doc7lo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
