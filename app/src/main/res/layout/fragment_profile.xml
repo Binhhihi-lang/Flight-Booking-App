@@ -36,7 +36,8 @@
                 android:layout_marginEnd="16dp"
                 android:background="@color/white"
                 android:padding="2dp"
-                android:src="@drawable/avatar"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_nav_profile"
                 app:shapeAppearanceOverlay="@style/CircleImage"
                 app:strokeColor="#BDBDBD"
                 app:strokeWidth="1dp" />
@@ -69,9 +70,10 @@
                 android:layout_height="100dp"
                 android:layout_marginTop="40dp"
                 android:padding="4dp"
-                android:src="@drawable/avatar"
+                android:src="@drawable/ic_nav_profile"
                 app:strokeColor="@color/white"
                 app:strokeWidth="2dp"
+                android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/CircleImage"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -83,8 +85,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Người dùng"
-                android:textColor="@color/textTitle"
-                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -123,7 +125,7 @@
                             android:layout_centerVertical="true"/>
 
                         <ImageView
-                            android:id="@+id/btnEditProfile"
+                            android:id="@+id/imgEditProfile"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_profile_edit"
@@ -138,7 +140,7 @@
                         android:text="Họ và tên"
                         android:textSize="13sp"
                         android:layout_marginBottom="6dp"
-                        android:textColor="#757575" />
+                        android:textColor="@color/text_label" />
 
                     <TextView
                         android:id="@+id/tvNameDisplay"
@@ -147,8 +149,8 @@
                         android:gravity="center_vertical"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:text="Nguyễn Xuân Ly"
-                        android:textColor="@color/text_title"
+                        android:hint="Nguyễn Văn A"
+                        android:textColor="#212121"
                         android:textSize="15sp"
                         android:drawableStart="@drawable/ic_profile_card"
                         android:drawablePadding="12dp"
@@ -160,7 +162,7 @@
                         android:text="Email"
                         android:layout_marginTop="14dp"
                         android:layout_marginBottom="6dp"
-                        android:textColor="#757575" />
+                        android:textColor="@color/text_label" />
 
                     <TextView
                         android:id="@+id/tvEmailDisplay"
@@ -169,7 +171,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:text="nguyenxuanly@gmail.com"
+                        android:hint="nguyenxuanly@gmail.com"
                         android:textColor="#212121"
                         android:textSize="15sp"
                         android:drawableStart="@drawable/ic_profile_email"
@@ -182,7 +184,7 @@
                         android:text="Số điện thoại"
                         android:layout_marginTop="14dp"
                         android:layout_marginBottom="6dp"
-                        android:textColor="#757575" />
+                        android:textColor="@color/text_label" />
 
                     <TextView
                         android:id="@+id/tvPhoneDisplay"
@@ -191,7 +193,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:text="+84 987 654 321"
+                        android:hint="0987 654 321"
                         android:textColor="#212121"
                         android:textSize="15sp"
                         android:drawableStart="@drawable/ic_profile_phone"

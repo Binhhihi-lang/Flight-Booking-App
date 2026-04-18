@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,7 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
 
-    private ImageButton btnBack;
+    private ImageView imgBack;
     private TextView tvCreateAccount;
 
     private EditText etEmail;
@@ -33,8 +33,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         // Khởi tạo Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> {
+        imgBack = findViewById(R.id.btnBack);
+        imgBack.setOnClickListener(v -> {
             finish();
         });
 

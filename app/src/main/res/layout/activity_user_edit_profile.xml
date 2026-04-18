@@ -18,7 +18,8 @@
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_back"
             android:layout_marginTop="@dimen/spacing_large"
-            app:navigationIconTint="#0175F3"
+            android:paddingStart="4dp"
+
             app:title="Chỉnh sửa thông tin"
             app:titleCentered="true"
             app:titleTextColor="#212121">
@@ -28,7 +29,8 @@
                 android:layout_height="45dp"
                 android:layout_gravity="end"
                 android:layout_marginEnd="16dp"
-                android:src="@drawable/avatar"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_nav_profile"
                 android:background="@color/white"
                 android:padding="2dp"
                 app:shapeAppearanceOverlay="@style/CircleImage"
@@ -64,13 +66,30 @@
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:padding="4dp"
-                    android:src="@drawable/avatar"
+                    android:src="@drawable/ic_nav_profile"
                     app:strokeColor="@color/white"
                     app:strokeWidth="2dp"
+                    android:scaleType="centerCrop"
                     app:shapeAppearanceOverlay="@style/CircleImage"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
+
+                <!--  android:scaleType="center" cho icon vào trung tâm -->
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imgChangeAvatar"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_camera"
+                    android:padding="2dp"
+                    android:scaleType="center"
+                    android:background="@color/primary_blue"
+                    app:shapeAppearanceOverlay="@style/CircleImage"
+                    app:layout_constraintBottom_toBottomOf="@id/imgEditAvatar"
+                    app:layout_constraintEnd_toEndOf="@id/imgEditAvatar"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginEnd="4dp"
+                    />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -100,20 +119,27 @@
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
                         android:layout_marginBottom="6dp" />
-                    <EditText
-                        android:id="@+id/edtFullName"
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:background="@color/bg_input_field"
-                        android:drawableStart="@drawable/ic_profile_card"
-                        android:drawablePadding="12dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:hint="Nguyen Xuan Ly"
-                        android:textColor="#212121"
-                        android:textSize="15sp"
-                        android:inputType="textPersonName"
-                        app:drawableTint="#0175F3" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:hintEnabled="false"
+                        app:startIconDrawable="@drawable/ic_profile_card"
+                        app:startIconTint="#0175F3"
+                        app:boxBackgroundColor="@color/bg_input_field"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtFullName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Nguyen Van A"
+                            android:paddingStart="50dp"
+                            android:inputType="textPersonName"
+                            android:textColor="#212121"
+                            android:textSize="15sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -121,23 +147,30 @@
                         android:text="Email"
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
-                        android:layout_marginTop="16dp"
                         android:layout_marginBottom="6dp" />
-                    <EditText
-                        android:id="@+id/edtEmail"
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:background="@color/bg_input_field"
-                        android:drawableStart="@drawable/ic_profile_email"
-                        app:drawableTint="#0175F3"
-                        android:drawablePadding="12dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:enabled="false"
-                        android:text="nguyenxuanly@gmail.com"
-                        android:textColor="#9E9E9E"
-                        android:textSize="15sp"
-                        />
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:endIconMode="custom"
+                        app:hintEnabled="false"
+                        app:startIconDrawable="@drawable/ic_profile_email"
+                        app:startIconTint="#0175F3"
+                        app:endIconDrawable="@drawable/ic_lock"
+                        app:endIconTint="@color/primary_blue"
+                        app:boxBackgroundColor="@color/bg_input_field"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:enabled="false"
+                            android:text="nguyenxuanly@gmail.com"
+                            android:textColor="#9E9E9E"
+                            android:textSize="15sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -145,22 +178,29 @@
                         android:text="Phone Number"
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
-                        android:layout_marginTop="16dp"
                         android:layout_marginBottom="6dp" />
-                    <EditText
-                        android:id="@+id/edtPhone"
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:background="@color/bg_input_field"
-                        android:drawableStart="@drawable/ic_profile_phone"
-                        android:drawablePadding="12dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:hint="+84 987 654 321"
-                        android:textSize="15sp"
-                        android:inputType="phone"
-                        android:maxLength="10"
-                        app:drawableTint="#0175F3" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:hintEnabled="false"
+                        app:startIconDrawable="@drawable/ic_profile_phone"
+                        app:startIconTint="#0175F3"
+                        app:boxBackgroundColor="@color/bg_input_field"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtPhone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="+84 987 654 321"
+                            android:paddingStart="50dp"
+                            android:inputType="phone"
+                            android:maxLength="10"
+                            android:textColor="#212121"
+                            android:textSize="15sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -168,24 +208,33 @@
                         android:text="Gender"
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
-                        android:layout_marginTop="16dp"
                         android:layout_marginBottom="6dp" />
-                    <EditText
-                        android:id="@+id/edtGender"
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:background="@color/bg_input_field"
-                        android:drawableStart="@drawable/ic_profile_gender"
-                        android:drawableEnd="@drawable/ic_expand_more"
-                        android:drawablePadding="12dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:focusable="false"
-                        android:clickable="true"
-                        android:text="Male"
-                        android:textColor="#212121"
-                        android:textSize="15sp"
-                        app:drawableTint="#0175F3" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:hintEnabled="false"
+                        app:endIconMode="custom"
+                        app:startIconDrawable="@drawable/ic_profile_gender"
+                        app:startIconTint="#0175F3"
+                        app:endIconDrawable="@drawable/ic_expand_more"
+                        app:endIconTint="@color/primary_blue"
+                        app:boxBackgroundColor="@color/bg_input_field"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtGender"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Male"
+                            android:paddingStart="50dp"
+                            android:focusable="false"
+                            android:clickable="true"
+                            android:cursorVisible="false"
+                            android:textColor="#212121"
+                            android:textSize="15sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -193,23 +242,31 @@
                         android:text="Date of Birth"
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
-                        android:layout_marginTop="16dp"
                         android:layout_marginBottom="6dp" />
-                    <EditText
-                        android:id="@+id/edtDob"
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:background="@color/bg_input_field"
-                        android:drawableStart="@drawable/ic_calendar"
-                        android:drawablePadding="12dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:focusable="false"
-                        android:clickable="true"
-                        android:text="01/01/2000"
-                        android:textColor="#212121"
-                        android:textSize="15sp"
-                        app:drawableTint="#0175F3" />
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:hintEnabled="false"
+                        app:startIconDrawable="@drawable/ic_calendar"
+                        app:endIconDrawable="@drawable/ic_expand_more"
+                        app:startIconTint="#0175F3"
+                        app:boxBackgroundColor="@color/bg_input_field"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtDob"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="01/01/2000"
+                            android:paddingStart="50dp"
+                            android:focusable="false"
+                            android:clickable="true"
+                            android:cursorVisible="false"
+                            android:textColor="#212121"
+                            android:textSize="15sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -217,23 +274,29 @@
                         android:text="ID Card (CCCD)"
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
-                        android:layout_marginTop="16dp"
                         android:layout_marginBottom="6dp" />
-                    <EditText
-                        android:id="@+id/edtCccd"
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
-                        android:background="@color/bg_input_field"
-                        android:drawableStart="@drawable/ic_profile_card"
-                        android:drawablePadding="12dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:hint="012345678912"
-                        android:textColor="#212121"
-                        android:textSize="15sp"
-                        android:inputType="number"
-                        android:maxLength="12"
-                        app:drawableTint="#0175F3" />
+                        android:layout_height="wrap_content"
+                        app:hintEnabled="false"
+                        app:boxBackgroundColor="@color/bg_input_field"
+                        app:startIconDrawable="@drawable/ic_profile_card"
+                        app:startIconTint="#0175F3"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edtCccd"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="012345678912"
+                            android:paddingStart="50dp"
+                            android:inputType="number"
+                            android:maxLength="12"
+                            android:textColor="#212121"
+                            android:textSize="15sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -251,17 +314,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <TextView
-                android:id="@+id/tvLastUpdated"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Last updated: 2 days ago"
-                android:textColor="#9E9E9E"
-                android:textSize="@dimen/text_size_body"
-                app:layout_constraintTop_toBottomOf="@id/btnSaveChanges"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+
 
 
 

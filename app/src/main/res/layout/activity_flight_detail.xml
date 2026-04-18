@@ -11,7 +11,7 @@
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@color/white"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

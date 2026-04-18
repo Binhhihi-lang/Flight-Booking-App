@@ -1,4 +1,4 @@
-package com.example.flight_booking_app;
+package com.example.flight_booking_app.Fragment;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -10,13 +10,15 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.Activities.LoginActivity;
 import com.example.flight_booking_app.Activities.UserEditProfileActivity;
+import com.example.flight_booking_app.Models.User;
 import com.example.flight_booking_app.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -27,11 +29,19 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class ProfileFragment extends Fragment {
 
-    ImageView btnUpdate;
+    TextView tvFullName, tvEmail, tvPhone;
+    ImageView imgAvatar, imgSmallAvatar, imgUpdateView;
+
     MaterialToolbar toolbar ;
     MaterialButton btnLogout;
 
@@ -45,10 +55,19 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        // sang trang update
-        btnUpdate = view.findViewById(R.id.btnEditProfile);
 
-        btnUpdate.setOnClickListener(v->{
+        imgUpdateView = view.findViewById(R.id.imgEditProfile);
+        toolbar = view.findViewById(R.id.toolbarInfoProfile);
+        btnLogout = view.findViewById(R.id.btnLogout);
+        tvFullName = view.findViewById(R.id.tvNameDisplay);
+        tvEmail = view.findViewById(R.id.tvEmailDisplay);
+        tvPhone = view.findViewById(R.id.tvPhoneDisplay);
+        imgAvatar = view.findViewById(R.id.imgAvatar);
+        imgSmallAvatar = view.findViewById(R.id.imgSmallAvatar);
+
+
+        // sang trang chỉnh sửa thông tin
+        imgUpdateView.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), UserEditProfileActivity.class);
             startActivity(intent);
 
@@ -56,9 +75,7 @@ public class ProfileFragment extends Fragment {
 
 
         // trở về trang chủ
-        toolbar = view.findViewById(R.id.toolbarInfoProfile);
-
-        toolbar.setNavigationOnClickListener(view1 ->{
+        toolbar.setNavigationOnClickListener(view1 -> {
             BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottom_navigation);
             bottomNav.setSelectedItemId(R.id.nav_home);
         });
@@ -72,8 +89,10 @@ public class ProfileFragment extends Fragment {
         gClient = GoogleSignIn.getClient(requireContext(), gOptions);
 
         // Đăng xuất
-        btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> showLogoutDialog());
+
+        // Hiển thị thông tin người dùng
+        loadUserData();
 
         return view;
 
@@ -116,6 +135,52 @@ public class ProfileFragment extends Fragment {
                     // Fragment gọi finish thông qua Activity
                     requireActivity().finish();
                 }
+            }
+        });
+    }
+
+    private void loadUserData() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) return;
+
+        String uid = currentUser.getUid();
+        // tham chiếu User trong cddl
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+        if (userRef == null) return;
+        //  addValueEventListener cập nhật ngay
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User userProfile = snapshot.getValue(User.class);
+                    if (userProfile != null) {
+                        // Đổ dữ liệu lên TextView
+                        tvFullName.setText(userProfile.getFullName());
+                        tvEmail.setText(userProfile.getEmail());
+                        tvPhone.setText(userProfile.getPhoneNumber());
+                        // Kiểm tra và load ảnh bằng Glide
+                        String avatarUrl = userProfile.getAvatar();
+                        if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                            Glide.with(requireContext())
+                                    .load(avatarUrl)
+                                    .placeholder(R.drawable.ic_nav_profile)
+                                    .error(R.drawable.ic_nav_profile)
+                                    .into(imgAvatar);
+
+                            // ảnh small
+                            Glide.with(requireContext())
+                                    .load(avatarUrl)
+                                    .placeholder(R.drawable.ic_nav_profile) // Ảnh hiện trong lúc chờ tải
+                                    .error(R.drawable.ic_nav_profile)
+                                    .into(imgSmallAvatar);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), "Lỗi: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

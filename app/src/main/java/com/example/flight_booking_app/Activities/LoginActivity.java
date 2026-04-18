@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
         mDatabase.child("Users").child(uid).get().addOnCompleteListener(dbTask -> {
             if (dbTask.isSuccessful()) {
                 User user = dbTask.getResult().getValue(User.class);
-                if (user != null && user.role == 0) {
+                if (user != null && user.getRole() == 0) {
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
                 } else {

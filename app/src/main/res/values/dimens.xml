@@ -12,7 +12,7 @@
     <dimen name="text_size_main">24sp</dimen>
     <dimen name="text_size_subtitle">18sp</dimen>
     <dimen name="text_size_body">14sp</dimen>
-    <dimen name="text_size_button">16sp</dimen>
+    <dimen name="text_size_button">20sp</dimen>
 
     <dimen name="button_corner_radius">16dp</dimen>
     <dimen name="input_corner_radius">12dp</dimen>

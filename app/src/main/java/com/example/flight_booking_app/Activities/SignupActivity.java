@@ -173,6 +173,5 @@ public class SignupActivity extends AppCompatActivity {
                         Toast.makeText(SignupActivity.this, "Đăng ký thất bại: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
-
     }
 }
