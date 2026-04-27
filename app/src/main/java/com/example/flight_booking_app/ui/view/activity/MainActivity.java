@@ -1,4 +1,4 @@
-package com.example.flight_booking_app.Activities;
+package com.example.flight_booking_app.ui.view.activity;
 
 import android.os.Bundle;
 
@@ -7,11 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 
-import com.example.flight_booking_app.Fragment.BookingFragment;
-import com.example.flight_booking_app.Fragment.HomeFragment;
-import com.example.flight_booking_app.Fragment.InboxFragment;
-import com.example.flight_booking_app.Fragment.OfferFragment;
-import com.example.flight_booking_app.Fragment.ProfileFragment;
+import com.example.flight_booking_app.ui.view.fragment.BookingFragment;
+import com.example.flight_booking_app.ui.view.fragment.HomeFragment;
+import com.example.flight_booking_app.ui.view.fragment.InboxFragment;
+import com.example.flight_booking_app.ui.view.fragment.OfferFragment;
+import com.example.flight_booking_app.ui.view.fragment.ProfileFragment;
 import com.example.flight_booking_app.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

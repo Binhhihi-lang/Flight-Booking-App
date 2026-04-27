@@ -1,4 +1,4 @@
-package com.example.flight_booking_app.Fragment;
+package com.example.flight_booking_app.ui.view.fragment;
 
 import android.os.Bundle;
 

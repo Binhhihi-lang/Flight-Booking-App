@@ -14,8 +14,24 @@
         <!-- Customize your theme here. -->
     </style>
 
+
     <style name="CircleImage" parent="">
         <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Bo góc dưới -->
+    <style name="RoundedBottomCorners" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomLeft">40dp</item>
+        <item name="cornerSizeBottomRight">40dp</item>
+    </style>
+
+    <!-- Lịch -->
+    <style name="CustomCalendar" parent="CustomCalendar">
+        <item name="colorAccent">#0175F3</item>
+        <item name="android:focusedMonthDateColor">#0175F3</item>
     </style>
 
 </resources>

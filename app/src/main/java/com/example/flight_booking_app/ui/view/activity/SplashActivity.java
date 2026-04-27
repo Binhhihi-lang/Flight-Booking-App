@@ -1,4 +1,4 @@
-package com.example.flight_booking_app.Activities;
+package com.example.flight_booking_app.ui.view.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

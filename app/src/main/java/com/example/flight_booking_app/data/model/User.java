@@ -1,4 +1,4 @@
-package com.example.flight_booking_app.Models;
+package com.example.flight_booking_app.data.model;
 
 public class User {
     private String fullName;
@@ -26,10 +26,9 @@ public class User {
 
     }
 
-    public User(String fullName, String email, String phoneNumber, int role) {
+    public User(String fullName, String email, int role) {
         this.fullName = fullName;
         this.email = email;
-        this.phoneNumber = phoneNumber;
         this.role = role;
     }
 
