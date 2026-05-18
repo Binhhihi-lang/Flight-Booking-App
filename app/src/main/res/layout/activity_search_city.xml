@@ -52,6 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="12dp"
+                app:hintEnabled="false"
                 app:boxBackgroundColor="#F0F2F5"
                 app:boxCornerRadiusBottomEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
@@ -59,7 +60,7 @@
                 app:boxCornerRadiusTopStart="8dp"
                 app:boxStrokeWidth="0dp"
                 app:startIconDrawable="@drawable/ic_search"
-                app:startIconTint="#9E9E9E"
+                app:startIconTint="@color/primary_blue"
                 app:layout_constraintTop_toBottomOf="@+id/toolbarCity"
                 >
 
@@ -98,13 +99,10 @@
                 android:id="@+id/rv_cities"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_city" />
 
 
         </LinearLayout>
-
 
     </androidx.core.widget.NestedScrollView>
 

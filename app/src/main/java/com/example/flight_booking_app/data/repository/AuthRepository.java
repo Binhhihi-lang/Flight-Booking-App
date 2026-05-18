@@ -1,6 +1,13 @@
 package com.example.flight_booking_app.data.repository;
 
+import android.widget.Toast;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+import com.example.flight_booking_app.data.model.AuthResult;
 import com.example.flight_booking_app.data.model.User;
+import com.example.flight_booking_app.ui.view.activity.ForgotPasswordActivity;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,10 +35,14 @@ public class AuthRepository {
 
     private final FirebaseAuth mAuth;
     private final DatabaseReference mDatabase;
+    private final MutableLiveData<AuthResult> resetState = new MutableLiveData<>();
 
     public AuthRepository() {
         mAuth    = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+    }
+    public LiveData<AuthResult> getResetState() {
+        return resetState;
     }
 
     public void login(String email, String password, RoleCallback callback) {
@@ -57,15 +68,16 @@ public class AuthRepository {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         String uid = mAuth.getCurrentUser().getUid();
-                        User newUser = new User(fullName, email, 0);
+                        User newUser = new User(uid, fullName, email, 0);
                         saveUserToDatabase(uid, newUser, callback);
                     } else {
-                        String msg = "Đăng ký thất bại";
+                        String msg = task.getException() != null
+                                ? task.getException().getMessage()
+                                : "Đăng ký thất bại";
                         callback.onError(msg);
                     }
                 });
     }
-
 
     public void signInWithGoogle(AuthCredential credential,
                                  String displayName, String email,
@@ -91,7 +103,7 @@ public class AuthRepository {
                                     checkUserRole(callback);
                                 } else {
                                     // Chưa có tạo mới
-                                    User newUser = new User(displayName, email, 0);
+                                    User newUser = new User(uid, displayName, email, 0);
                                     saveUserToDatabase(uid, newUser, new AuthCallback() {
                                         @Override public void onSuccess() { callback.onRoleVerified(); }
                                         @Override public void onError(String msg) { callback.onError(msg); }
@@ -136,4 +148,20 @@ public class AuthRepository {
                     }
                 });
     }
+
+    public void sendPasswordReset(String email, AuthCallback callback) {
+        // Gọi Firebase gửi email reset
+        mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                callback.onSuccess();
+            } else {
+                String msg = task.getException() != null
+                        ? task.getException().getMessage()
+                        : "Đặt lại mật khẩu thất bại";
+                callback.onError(msg);
+            }
+        });
+
+    }
+
 }

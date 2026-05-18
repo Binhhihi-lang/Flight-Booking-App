@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FlightBookingApp">
         <activity
-            android:name=".ui.view.activity.CalendarActivity"
+            android:name=".ui.view.activity.FlightDetailBottomSheet"
             android:exported="false" />
         <activity
             android:name=".ui.view.activity.SearchCityActivity"

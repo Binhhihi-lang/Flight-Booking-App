@@ -29,6 +29,7 @@
         android:textSize="@dimen/text_size_main"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -139,14 +140,16 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:id="@+id/tv_from_city"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Hà Nội "
                                 android:textColor="@color/text_main_dark"
                                 android:textSize="18sp"
-                                android:textStyle="bold" />
+                                 />
 
                             <TextView
+                                android:id="@+id/tv_from_code"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
@@ -156,6 +159,7 @@
                         </LinearLayout>
 
                         <TextView
+                            android:id="@+id/tv_from_airport"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
@@ -174,8 +178,8 @@
                 android:background="@color/bg_card_white"
                 android:paddingHorizontal="4dp"
                 android:text="Khởi hành từ"
-                android:textColor="@color/text_sub_grey"
-                android:textSize="12sp"
+                android:textColor="@color/text_title"
+                android:textSize="15sp"
 
                 app:layout_constraintBottom_toTopOf="@+id/card_from"
                 app:layout_constraintStart_toStartOf="@+id/card_from"
@@ -219,14 +223,16 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:id="@+id/tv_to_city"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="TP.Hồ Chí Minh"
                                 android:textColor="@color/text_main_dark"
                                 android:textSize="18sp"
-                                android:textStyle="bold" />
+                               />
 
                             <TextView
+                                android:id="@+id/tv_to_code"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
@@ -236,6 +242,7 @@
                         </LinearLayout>
 
                         <TextView
+                            android:id="@+id/tv_to_airport"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
@@ -254,8 +261,8 @@
                 android:background="@color/bg_card_white"
                 android:paddingHorizontal="4dp"
                 android:text="Đến"
-                android:textColor="@color/text_sub_grey"
-                android:textSize="12sp"
+                android:textColor="@color/text_title"
+                android:textSize="15sp"
 
                 app:layout_constraintBottom_toTopOf="@+id/card_to"
                 app:layout_constraintStart_toStartOf="@+id/card_to"
@@ -323,13 +330,14 @@
                                 app:tint="@color/text_main_dark" />
 
                             <TextView
+                                android:id="@+id/tv_departure_date"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
                                 android:text="15/07/2022"
                                 android:textColor="@color/text_main_dark"
                                 android:textSize="15sp"
-                                android:textStyle="bold" />
+                                 />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -340,8 +348,8 @@
                         android:background="@color/bg_card_white"
                         android:paddingHorizontal="4dp"
                         android:text="Ngày đi"
-                        android:textColor="@color/text_sub_grey"
-                        android:textSize="12sp"
+                        android:textColor="@color/text_title"
+                        android:textSize="15sp"
                         app:layout_constraintBottom_toTopOf="@id/card_departure"
                         app:layout_constraintStart_toStartOf="@id/card_departure"
                         app:layout_constraintTop_toTopOf="@id/card_departure" />
@@ -382,13 +390,14 @@
                                 app:tint="@color/text_main_dark" />
 
                             <TextView
+                                android:id="@+id/tv_return_date"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
-                                android:text="15/07/2022"
+
                                 android:textColor="@color/text_main_dark"
                                 android:textSize="15sp"
-                                android:textStyle="bold" />
+                                 />
                         </LinearLayout>
 
                     </com.google.android.material.card.MaterialCardView>
@@ -400,8 +409,8 @@
                         android:background="@color/bg_card_white"
                         android:paddingHorizontal="4dp"
                         android:text="Ngày về"
-                        android:textColor="@color/text_sub_grey"
-                        android:textSize="12sp"
+                        android:textColor="@color/text_title"
+                        android:textSize="15sp"
                         app:layout_constraintBottom_toTopOf="@id/card_return"
                         app:layout_constraintStart_toStartOf="@id/card_return"
                         app:layout_constraintTop_toTopOf="@id/card_return" />
@@ -451,7 +460,7 @@
                                 android:text="1 Người lớn"
                                 android:textColor="#212121"
                                 android:textSize="16sp"
-                                android:textStyle="bold"
+
                                 android:gravity="start" />
 
                             <View
@@ -466,7 +475,6 @@
                                 android:text="0 Trẻ em"
                                 android:textColor="#212121"
                                 android:textSize="16sp"
-                                android:textStyle="bold"
                                 android:gravity="center" />
                             <View
                                 android:layout_width="2dp"
@@ -481,7 +489,6 @@
                                 android:text="0 Em bé"
                                 android:textColor="#212121"
                                 android:textSize="16sp"
-                                android:textStyle="bold"
                                 android:gravity="center" />
 
                         </LinearLayout>
@@ -494,8 +501,8 @@
                         android:layout_marginStart="16dp"
                         android:background="#FFFFFF"
                         android:paddingHorizontal="4dp"
-                        android:text="Traveller"
-                        android:textColor="#757575"
+                        android:text="Hành khách"
+                        android:textColor="@color/text_title"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toTopOf="@id/card_traveller"
                         app:layout_constraintStart_toStartOf="@id/card_traveller"
@@ -531,8 +538,7 @@
                             android:paddingHorizontal="16dp"
                             android:text="Phổ thông"
                             android:textColor="@color/text_main_dark"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textSize="16sp" />
                     </com.google.android.material.card.MaterialCardView>
 
                     <TextView
@@ -542,8 +548,8 @@
                         android:background="@color/bg_card_white"
                         android:paddingHorizontal="4dp"
                         android:text="Hạng ghế"
-                        android:textColor="@color/text_sub_grey"
-                        android:textSize="12sp"
+                        android:textColor="@color/text_title"
+                        android:textSize="15sp"
                         app:layout_constraintBottom_toTopOf="@id/card_class"
                         app:layout_constraintStart_toStartOf="@id/card_class"
                         app:layout_constraintTop_toTopOf="@id/card_class" />
@@ -559,7 +565,7 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/btn_search_selector"
-                android:text="Search"
+                android:text="TÌM CHUYẾN BAY"
                 android:textAllCaps="false"
                 android:textSize="18sp"
                 app:backgroundTint="@null"
@@ -573,5 +579,18 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/card_flight_form"
+
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="10dp"
+        android:nestedScrollingEnabled="false"
+        tools:itemCount="2"
+        tools:listitem="@layout/item_new"
+        >
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

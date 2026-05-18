@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    bg_tab_container.xml
+    Nền cho row chứa 2 tab Lượt đi / Lượt về
+    Đặt tại: res/drawable/bg_tab_container.xml
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Màu nền xanh đậm hơn một chút so với toolbar -->
+    <solid android:color="#0165D8" />
+
+    <corners android:radius="8dp" />
+
+</shape>

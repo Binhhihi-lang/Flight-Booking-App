@@ -13,8 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:clickable="true"
-        android:focusable="true"
         android:gravity="center_vertical"
         android:paddingHorizontal="20dp"
         android:paddingVertical="16dp"
@@ -49,7 +47,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_country_name"
+                android:id="@+id/tv_airport_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"

@@ -29,6 +29,11 @@ public class AuthResult {
         return new AuthResult(Status.ERROR, message);
     }
 
-    public Status getStatus() { return status; }
-    public String getMessage() { return message; }
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

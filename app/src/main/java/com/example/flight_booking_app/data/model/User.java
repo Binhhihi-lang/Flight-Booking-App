@@ -1,6 +1,9 @@
 package com.example.flight_booking_app.data.model;
 
+import java.util.List;
+
 public class User {
+    private String uId ;
     private String fullName;
     private String email;
     private String phoneNumber;
@@ -9,12 +12,16 @@ public class User {
     private String citizenCard;
     private String gender;
     private String avatar;
+    private int f_points; // Số điểm tích lũy
+    private List<String> myVouchers; // Danh sách mã đã đổi
+
 
 
     public User() {
     }
 
-    public User(String fullName, String email, String phoneNumber, int role, String dob, String citizenCard, String gender, String avatar ) {
+    public User(String uId, String fullName, String email, String phoneNumber, int role, String dob, String citizenCard, String gender, String avatar, int f_points, List<String> myVouchers) {
+        this.uId = uId;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -23,13 +30,23 @@ public class User {
         this.citizenCard = citizenCard;
         this.gender = gender;
         this.avatar = avatar;
-
+        this.f_points = f_points;
+        this.myVouchers = myVouchers;
     }
 
-    public User(String fullName, String email, int role) {
+    public User(String id, String fullName, String email, int role) {
+        this.uId = id;
         this.fullName = fullName;
         this.email = email;
         this.role = role;
+    }
+
+    public String getuId() {
+        return uId;
+    }
+
+    public void setuId(String uId) {
+        this.uId = uId;
     }
 
     public int getRole() {
@@ -94,5 +111,21 @@ public class User {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public int getF_points() {
+        return f_points;
+    }
+
+    public void setF_points(int f_points) {
+        this.f_points = f_points;
+    }
+
+    public List<String> getMyVouchers() {
+        return myVouchers;
+    }
+
+    public void setMyVouchers(List<String> myVouchers) {
+        this.myVouchers = myVouchers;
     }
 }

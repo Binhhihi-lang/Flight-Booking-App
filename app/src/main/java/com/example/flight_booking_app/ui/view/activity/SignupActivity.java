@@ -100,7 +100,7 @@ public class SignupActivity extends AppCompatActivity {
                 case SUCCESS:
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(this, LoginActivity.class));
+                    startActivity(new Intent(this, MainActivity.class));
                     finish();
                     break;
 
@@ -115,7 +115,13 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        btnSignUp.setOnClickListener(v -> handleSignUp());
+        btnSignUp.setOnClickListener(v -> {
+            String fullName = etFullName.getText().toString().trim();
+            String email    = etEmail.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
+
+            authViewModel.signUp(fullName, email, password);
+        });
 
         btnGoogleSignUp.setOnClickListener(v ->
                 googleLauncher.launch(gClient.getSignInIntent()));
@@ -126,32 +132,4 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    private void handleSignUp() {
-        String fullName = etFullName.getText().toString().trim();
-        String email    = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-
-        if (fullName.isEmpty()) {
-            etFullName.setError("Họ tên phải được nhập");
-            etFullName.requestFocus();
-            return;
-        }
-        if (email.isEmpty()) {
-            etEmail.setError("Email phải được nhập");
-            etEmail.requestFocus();
-            return;
-        }
-        if (password.isEmpty()) {
-            etPassword.setError("Mật khẩu phải được nhập");
-            etPassword.requestFocus();
-            return;
-        }
-        if (password.length() < 6) {
-            etPassword.setError("Mật khẩu phải từ 6 ký tự trở lên");
-            etPassword.requestFocus();
-            return;
-        }
-
-        authViewModel.signUp(fullName, email, password);
-    }
 }

@@ -47,7 +47,7 @@
         android:layout_height="match_parent"
         android:background="@color/white"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp">
+        android:paddingHorizontal="10dp">
 
         <CalendarView
             android:id="@+id/calendarView"

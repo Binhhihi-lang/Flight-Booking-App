@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.R;
+import com.example.flight_booking_app.data.model.AuthResult;
 import com.example.flight_booking_app.ui.view.activity.LoginActivity;
 import com.example.flight_booking_app.ui.view.activity.UserEditProfileActivity;
 import com.example.flight_booking_app.ui.viewmodel.UserViewModel;
@@ -117,7 +118,7 @@ public class ProfileFragment extends Fragment {
 
         // Observe lỗi cập nhật người dùng
         userViewModel.getUpdateState().observe(getViewLifecycleOwner(), result -> {
-            if (result.getStatus() == com.example.flight_booking_app.data.model.AuthResult.Status.ERROR) {
+            if (result.getStatus() == AuthResult.Status.ERROR) {
                 Toast.makeText(getActivity(), "Lỗi: " + result.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -141,6 +142,7 @@ public class ProfileFragment extends Fragment {
         imgUpdateView.setOnClickListener(v ->
                 startActivity(new Intent(getActivity(), UserEditProfileActivity.class)));
 
+        // back
         toolbar.setNavigationOnClickListener(v -> {
             BottomNavigationView bottomNav = requireActivity().findViewById(R.id.bottom_navigation);
             bottomNav.setSelectedItemId(R.id.nav_home);

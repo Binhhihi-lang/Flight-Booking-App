@@ -26,7 +26,7 @@
             android:id="@+id/rb_economy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Phổ thông (Economy)"
+            android:text="Phổ thông"
             android:textSize="16sp"
             android:paddingVertical="12dp"
             android:checked="true"/>
@@ -35,7 +35,7 @@
             android:id="@+id/rb_premium_economy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Phổ thông đặc biệt (Premium Economy)"
+            android:text="Phổ thông đặc biệt"
             android:textSize="16sp"
             android:paddingVertical="12dp"/>
 
@@ -43,7 +43,7 @@
             android:id="@+id/rb_business"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Thương gia (Business)"
+            android:text="Thương gia"
             android:textSize="16sp"
             android:paddingVertical="12dp"/>
 
@@ -51,7 +51,7 @@
             android:id="@+id/rb_first_class"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hạng nhất (First Class)"
+            android:text="Hạng nhất"
             android:textSize="16sp"
             android:paddingVertical="12dp"/>
     </RadioGroup>

@@ -1,5 +1,8 @@
 package com.example.flight_booking_app.ui.viewmodel;
 
+import android.util.Patterns;
+import android.widget.Toast;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -17,60 +20,146 @@ public class AuthViewModel extends ViewModel {
 
     // View observe cái này để biết trạng thái xác thực
     private final MutableLiveData<AuthResult> authState = new MutableLiveData<>();
+    private final MutableLiveData<AuthResult> resetState = new MutableLiveData<>();
 
     public AuthViewModel() {
         this.repository = new AuthRepository();
     }
 
+    // View chỉ có quyền observe() (quan sát) để cập nhật giao diện.
     public LiveData<AuthResult> getAuthState() {
         return this.authState;
     }
 
+    public LiveData<AuthResult> getResetState() {
+        return resetState;
+    }
+
     // Actions được gọi từ View
     public void login(String email, String password) {
+        // validate
+        if (email.isEmpty()) {
+            authState.setValue(AuthResult.error("Email phải được nhập"));
+            return;
+        }
+        // Kiểm tra xem định dạng email có hợp lệ không
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            resetState.setValue(AuthResult.error("Email không hợp lệ!"));
+            return;
+        }
+
+        if (password.isEmpty()) {
+            authState.setValue(AuthResult.error("Mật khẩu phải được nhập"));
+            return;
+        }
+        if (password.length() < 6) {
+            authState.setValue(AuthResult.error("Mật khẩu phải từ 6 ký tự trở lên"));
+            return;
+        }
         authState.setValue(AuthResult.loading());
 
         repository.login(email, password, new AuthRepository.RoleCallback() {
-            @Override public void onRoleVerified() {
+            @Override
+            public void onRoleVerified() {
                 authState.setValue(AuthResult.success());
             }
-            @Override public void onAccessDenied() {
+
+            @Override
+            public void onAccessDenied() {
                 authState.setValue(AuthResult.error("Bạn không có quyền truy cập!"));
             }
-            @Override public void onError(String errorMessage) {
+
+            @Override
+            public void onError(String errorMessage) {
                 authState.setValue(AuthResult.error(errorMessage));
             }
         });
     }
 
     public void signUp(String fullName, String email, String password) {
+        if (fullName.isEmpty()) {
+            authState.setValue(AuthResult.error("Họ tên phải được nhập"));
+            return;
+        }
+        if (email.isEmpty()) {
+            authState.setValue(AuthResult.error("Email phải được nhập"));
+            return;
+        }
+        // Kiểm tra xem định dạng email có hợp lệ không
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            resetState.setValue(AuthResult.error("Email không hợp lệ!"));
+            return;
+        }
+        if (password.isEmpty()) {
+            authState.setValue(AuthResult.error("Mật khẩu phải được nhập"));
+            return;
+        }
+        if (password.length() < 6) {
+            authState.setValue(AuthResult.error("Mật khẩu phải từ 6 ký tự trở lên"));
+            return;
+        }
         authState.setValue(AuthResult.loading());
 
         repository.signUp(fullName, email, password, new AuthRepository.AuthCallback() {
-            @Override public void onSuccess() {
+            @Override
+            public void onSuccess() {
                 authState.setValue(AuthResult.success());
             }
-            @Override public void onError(String errorMessage) {
+
+            @Override
+            public void onError(String errorMessage) {
                 authState.setValue(AuthResult.error(errorMessage));
             }
         });
     }
 
-
+    // đăng nhập google
     public void signInWithGoogle(AuthCredential credential, String displayName, String email) {
         authState.setValue(AuthResult.loading());
 
         repository.signInWithGoogle(credential, displayName, email,
                 new AuthRepository.RoleCallback() {
-                    @Override public void onRoleVerified() {
+                    @Override
+                    public void onRoleVerified() {
                         authState.setValue(AuthResult.success());
                     }
-                    @Override public void onAccessDenied() {
+
+                    @Override
+                    public void onAccessDenied() {
                         authState.setValue(AuthResult.error("Bạn không có quyền truy cập!"));
                     }
-                    @Override public void onError(String errorMessage) {
+
+                    @Override
+                    public void onError(String errorMessage) {
                         authState.setValue(AuthResult.error(errorMessage));
                     }
                 });
+    }
+
+    // gửi resetPassword
+    public void resetPassword(String email) {
+        // Kiểm tra xem người dùng đã nhập email chưa
+        if (email.isEmpty()) {
+            resetState.setValue(AuthResult.error("Vui lòng nhập địa chỉ email!"));
+            return;
+        }
+
+        // Kiểm tra xem định dạng email có hợp lệ không
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            resetState.setValue(AuthResult.error("Email không hợp lệ!"));
+            return;
+        }
+        authState.setValue(AuthResult.loading());
+        repository.sendPasswordReset(email, new AuthRepository.AuthCallback() {
+            @Override
+            public void onSuccess() {
+                authState.setValue(AuthResult.success());
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                authState.setValue(AuthResult.error(errorMessage));
+            }
+        });
     }
 }

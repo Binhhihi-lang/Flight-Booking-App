@@ -28,10 +28,39 @@
         <item name="cornerSizeBottomRight">40dp</item>
     </style>
 
+    <!-- Bo góc -->
+    <style name="RoundedCorners" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">2dp</item>
+        <item name="cornerSizeTopRight">2dp</item>
+        <item name="cornerSizeBottomLeft">2dp</item>
+        <item name="cornerSizeBottomRight">2dp</item>
+    </style>
+
+    <!-- Bo góc trải -->
+    <style name="RoundedLeftCorners" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">5dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomLeft">5dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
     <!-- Lịch -->
     <style name="CustomCalendar" parent="CustomCalendar">
         <item name="colorAccent">#0175F3</item>
         <item name="android:focusedMonthDateColor">#0175F3</item>
+    </style>
+
+    <!-- Theme cho lịch toàn màn hình -->
+    <style name="MyCalendarFullscreenTheme" parent="ThemeOverlay.MaterialComponents.MaterialCalendar.Fullscreen">
+        <!-- Màu xanh cho Toolbar và các ngày được chọn (vòng tròn/ô chọn) -->
+        <item name="colorPrimary">#0175F3</item>
+        <!-- Màu chữ hiển thị trên nền xanh (thường là trắng) -->
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <!-- Màu dải xanh nhạt ở giữa ngày đi và ngày về -->
+        <item name="colorSecondaryContainer">#E3F2FD</item>
+        <item name="colorOnSecondaryContainer">#0175F3</item>
     </style>
 
 </resources>

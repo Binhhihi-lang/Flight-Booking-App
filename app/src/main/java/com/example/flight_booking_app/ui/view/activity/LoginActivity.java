@@ -126,7 +126,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        btnLogin.setOnClickListener(v -> handleLogin());
+
+        btnLogin.setOnClickListener(v -> {
+            String email    = etEmail.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
+
+            authViewModel.login(email, password);
+        });
 
         btnGoogleLogin.setOnClickListener(v ->
                 googleLauncher.launch(gClient.getSignInIntent()));
@@ -138,24 +144,4 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ForgotPasswordActivity.class)));
     }
 
-
-    private void handleLogin() {
-        String email    = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-
-
-        if (email.isEmpty()) {
-            etEmail.setError("Email phải được nhập");
-            etEmail.requestFocus();
-            return;
-        }
-        if (password.isEmpty()) {
-            etPassword.setError("Mật khẩu phải được nhập");
-            etPassword.requestFocus();
-            return;
-        }
-
-        //  xử lý cho ViewModel
-        authViewModel.login(email, password);
-    }
 }

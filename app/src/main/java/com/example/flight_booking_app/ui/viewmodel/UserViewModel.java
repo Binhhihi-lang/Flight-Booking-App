@@ -75,6 +75,7 @@ public class UserViewModel extends ViewModel {
 
     // lấy data user
     public void loadUserOnce() {
+        if (currentUser.getValue() != null) return;
         repository.getCurrentUser(new UserRepository.GetUserCallback() {
             @Override
             public void onSuccess(User user) {
@@ -86,4 +87,5 @@ public class UserViewModel extends ViewModel {
             }
         });
     }
+
 }

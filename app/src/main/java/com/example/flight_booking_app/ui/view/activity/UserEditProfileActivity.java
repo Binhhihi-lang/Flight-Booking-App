@@ -81,7 +81,10 @@ public class UserEditProfileActivity extends AppCompatActivity {
         setupClickListeners();
 
         // Lấy data user lần đầu để điền vào form
-        userViewModel.loadUserOnce();
+        // Chỉ load dữ liệu khi không có trạng thái lưu (lần đầu vào màn hình)
+        if (savedInstanceState == null) {
+            userViewModel.loadUserOnce();
+        }
     }
 
 

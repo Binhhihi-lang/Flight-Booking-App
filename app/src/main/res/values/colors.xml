@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="primary_blue">#0175F3</color>
+    <color name="primary_red">#F44039</color>
     <color name="bg_light_gray">#F5F5F5</color>
     <color name="bg_input_field">#E6E8F2</color>
     <color name="textTitle">#191919</color>
