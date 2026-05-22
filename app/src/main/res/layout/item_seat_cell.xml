@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    item_seat_cell.xml
+    ══════════════════════════════════════════════════════════════
+    Layout cho 1 ô trong sơ đồ ghế (RecyclerView GridLayout).
+
+    GridLayoutManager span = 7:
+      Col 0=A  Col 1=B  Col 2=C  Col 3=RowNumber  Col 4=D  Col 5=E  Col 6=F
+
+    Adapter phân biệt 2 ViewType:
+      TYPE_SEAT       → ô ghế bình thường (TextView với background màu)
+      TYPE_ROW_NUMBER → ô số hàng (1, 2, 3...) - background trong suốt
+
+    Background ghế sẽ được set dynamically bởi Adapter theo SeatStatus:
+      PREMIUM     → bg_seat_premium     (#27AE60 xanh lá đậm)
+      FRONT_ROW   → bg_seat_front       (#1A6FD4 xanh dương đậm)
+      STANDARD    → bg_seat_standard    (#42A5F5 xanh dương nhạt)
+      EXIT_ROW    → bg_seat_exit_row    (#43A047 xanh lá exit)
+      SELECTING   → bg_seat_selecting   (#FF9800 cam)
+      BOOKED      → bg_seat_booked      (#BDBDBD xám)
+      SELECTED    → bg_seat_selected    (#FF6B35 cam đậm)
+
+    ID trong item:
+      tv_seat_label   → Hiển thị chữ A/B/C/D/E/F hoặc số hàng
+      root LinearLayout (tag = SeatItem object) → để click listener
+
+    Kích thước mỗi ô: 40×40dp với margin 3dp để có khoảng cách giữa ghế.
+    ══════════════════════════════════════════════════════════════
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="3dp">
+
+    <TextView
+        android:id="@+id/tv_seat_label"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:background="@drawable/bg_seat_standard"
+        tools:text="A"
+        tools:background="@drawable/bg_seat_standard" />
+
+</FrameLayout>

@@ -1,8 +1,6 @@
 package com.example.flight_booking_app.data.model;
 
-import java.io.Serializable;
-
-public class FareRule implements Serializable {
+public class FareRule {
     private String fareRuleId;
     private String airlineId;      // Thuộc về hãng nào (VJ, VNA...)
     private String fareClassName;  // Tên hạng: Eco, Deluxe, SkyBoss, Business...

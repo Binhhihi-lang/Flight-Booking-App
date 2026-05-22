@@ -70,7 +70,7 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
         private final TextView tvFlightNumber, tvFlightAirline, tvDuration;
         private final TextView tvDepartureDate, tvDepartureTime, tvArrivalTime;
         private final TextView tvDepartureLocation, tvArrivalLocation;
-        private final TextView tvSeatClass, tvPrice;
+        private final TextView tvFareClass, tvPrice;
 
         FlightViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -83,13 +83,13 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
             tvArrivalTime = itemView.findViewById(R.id.tv_arrival_time);
             tvDepartureLocation = itemView.findViewById(R.id.tv_departure_location);
             tvArrivalLocation = itemView.findViewById(R.id.tv_arrival_location);
-            tvSeatClass = itemView.findViewById(R.id.tv_seat_class);
+            tvFareClass = itemView.findViewById(R.id.tv_fare_class);
             tvPrice = itemView.findViewById(R.id.tv_price);
         }
 
         void bind(Flight flight, OnFlightClickListener listener) {
-            tvFlightNumber.setText(flight.getAirlineName());
-            tvFlightAirline.setText(flight.getFlightId());
+            tvFlightNumber.setText(flight.getFlightNumber());
+            tvFlightAirline.setText(flight.getAirlineName());
             tvDuration.setText(flight.getDuration());
             tvDepartureDate.setText(flight.getDepartureDate());
             tvDepartureTime.setText(flight.getDepartureTime());
@@ -98,7 +98,7 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
             // transient fields — điền từ JOIN trong Repository
             tvDepartureLocation.setText(flight.getFromIata());
             tvArrivalLocation.setText(flight.getToIata());
-            tvSeatClass.setText(flight.getSelectedSeatClass());
+            tvFareClass.setText(flight.getFareClassName());
 
             // displayPrice — giá rẻ nhất từ fareOptions, tính trong Repository
             tvPrice.setText(String.format(Locale.getDefault(),

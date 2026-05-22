@@ -12,15 +12,11 @@ public class User {
     private String citizenCard;
     private String gender;
     private String avatar;
-    private int f_points; // Số điểm tích lũy
-    private List<String> myVouchers; // Danh sách mã đã đổi
-
-
 
     public User() {
     }
 
-    public User(String uId, String fullName, String email, String phoneNumber, int role, String dob, String citizenCard, String gender, String avatar, int f_points, List<String> myVouchers) {
+    public User(String uId, String fullName, String email, String phoneNumber, int role, String dob, String citizenCard, String gender, String avatar) {
         this.uId = uId;
         this.fullName = fullName;
         this.email = email;
@@ -30,8 +26,6 @@ public class User {
         this.citizenCard = citizenCard;
         this.gender = gender;
         this.avatar = avatar;
-        this.f_points = f_points;
-        this.myVouchers = myVouchers;
     }
 
     public User(String id, String fullName, String email, int role) {
@@ -113,19 +107,4 @@ public class User {
         this.fullName = fullName;
     }
 
-    public int getF_points() {
-        return f_points;
-    }
-
-    public void setF_points(int f_points) {
-        this.f_points = f_points;
-    }
-
-    public List<String> getMyVouchers() {
-        return myVouchers;
-    }
-
-    public void setMyVouchers(List<String> myVouchers) {
-        this.myVouchers = myVouchers;
-    }
 }

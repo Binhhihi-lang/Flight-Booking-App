@@ -18,7 +18,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FlightBookingApp">
         <activity
-            android:name=".ui.view.activity.FlightDetailBottomSheet"
+            android:name=".ui.view.activity.SeatSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.view.activity.PassengerInputActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.view.activity.BookingInfoActivity"
             android:exported="false" />
         <activity
             android:name=".ui.view.activity.SearchCityActivity"

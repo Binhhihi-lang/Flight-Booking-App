@@ -6,7 +6,7 @@ import com.example.flight_booking_app.data.model.Airline;
 import com.example.flight_booking_app.data.model.City;
 import com.example.flight_booking_app.data.model.FareClass;
 import com.example.flight_booking_app.data.model.Flight;
-import com.example.flight_booking_app.data.model.FlightFareOption;
+import com.example.flight_booking_app.data.model.FareOption;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -205,9 +205,7 @@ public class FlightRepository {
                     Flight flight = child.getValue(Flight.class);
                     if (flight == null) continue;
 
-                    // ═══════════════════════════════════════════════════════════════
-                    // BƯỚC 1: LỌC THEO TIÊU CHÍ CƠ BẢN
-                    // ═══════════════════════════════════════════════════════════════
+                    // LỌC THEO TIÊU CHÍ CƠ BẢN
 
                     // 1.1. Lọc toCityId
                     if (!toCityId.equals(flight.getToCityId())) continue;
@@ -220,22 +218,22 @@ public class FlightRepository {
                     // 1.3. Kiểm tra availableSeats
                     if (flight.getAvailableSeats() < totalPassengers) continue;
 
-                    // ═══════════════════════════════════════════════════════════════
-                    // BƯỚC 2: LỌC THEO HẠNG GHẾ (fareOptions)
-                    // ═══════════════════════════════════════════════════════════════
+                    // LỌC THEO HẠNG GHẾ (fareOptions) để tìm hạng vé
 
-                    List<FlightFareOption> fareOptions = flight.getFareOptions();
+                    List<FareOption> fareOptions = flight.getFareOptions();
                     if (fareOptions == null || fareOptions.isEmpty()) continue;
 
-                    // Tìm giá RẺ NHẤT trong fareOptions phù hợp với seatType
-                    double cheapestPrice = findCheapestPriceForSeatType(fareOptions, targetSeatType);
+                    //  Lọc theo status
+                    if (!"ON_TIME".equalsIgnoreCase(flight.getStatus())) {
+                        continue;
+                    }
 
-                    // Nếu không tìm thấy gói nào phù hợp với hạng ghế → skip
-                    if (cheapestPrice == 0.0) continue;
+                    // Tìm giá fareOption với giá rẻ nhất và  trong fareOptions phù hợp với seatType
+                    FareOption cheapestOption = findCheapestOptionForSeatType(fareOptions, targetSeatType);
+                    // Nếu không tìm thấy gói nào phù hợp với hạng ghế  skip
+                    if (cheapestOption == null) continue;
 
-                    // ═══════════════════════════════════════════════════════════════
-                    // BƯỚC 3: JOIN THÔNG TIN CITY / AIRLINE
-                    // ═══════════════════════════════════════════════════════════════
+                    // JOIN THÔNG TIN CITY / AIRLINE
 
                     City fromCity = citiesMap.get(flight.getFromCityId());
                     City toCity   = citiesMap.get(flight.getToCityId());
@@ -255,13 +253,17 @@ public class FlightRepository {
                         flight.setAirlineLogo(airline.getLogo());
                     }
 
-                    // ═══════════════════════════════════════════════════════════════
-                    // BƯỚC 4: GẮN GIÁ HIỂN THỊ
-                    // ═══════════════════════════════════════════════════════════════
+                    // 2. GẮN GIÁ HIỂN THỊ CHÍNH XÁC
+                    flight.setDisplayPrice(cheapestOption.getBasePrice());
 
-                    flight.setDisplayPrice(cheapestPrice);
-                    flight.setSelectedSeatClass(seatClass); // Gắn hạng ghế user chọn
+                    // 3. GẮN TÊN HẠNG VÉ CHÍNH XÁC TỪ OPTION ĐÃ CHỌN
+                    FareClass selectedFareClass = fareClassesMap.get(cheapestOption.getFareClassId());
 
+                    if (selectedFareClass != null) {
+                        // Gán tên hiển thị cụ thể (Ví dụ: "Phổ thông Tiết kiệm" hoặc "Eco Tiêu chuẩn")
+                        flight.setFareClassName(selectedFareClass.getTitle());
+
+                    }
                     result.add(flight);
                 }
 
@@ -282,10 +284,11 @@ public class FlightRepository {
      * @param targetSeatType Loại ghế cần tìm ("ECONOMY" / "BUSINESS")
      * @return Giá rẻ nhất, hoặc 0.0 nếu không tìm thấy
      */
-    private double findCheapestPriceForSeatType(List<FlightFareOption> fareOptions, String targetSeatType) {
+    private FareOption findCheapestOptionForSeatType(List<FareOption> fareOptions, String targetSeatType) {
+        FareOption cheapestOption = null;
         double minPrice = Double.MAX_VALUE;
 
-        for (FlightFareOption option : fareOptions) {
+        for (FareOption option : fareOptions) {
             // Kiểm tra còn chỗ không
             if (!option.isAvailable()) continue;
 
@@ -299,10 +302,11 @@ public class FlightRepository {
             // Lấy giá rẻ nhất
             if (option.getBasePrice() < minPrice) {
                 minPrice = option.getBasePrice();
+                cheapestOption = option;
             }
         }
 
-        return minPrice == Double.MAX_VALUE ? 0.0 : minPrice;
+        return cheapestOption;
     }
 
     /**
@@ -314,13 +318,16 @@ public class FlightRepository {
     private String mapSeatClassToType(String seatClass) {
         if (seatClass == null) return "ECONOMY";
 
-        switch (seatClass.toLowerCase()) {
+        switch (seatClass.toLowerCase().trim()) {
             case "phổ thông":
                 return "ECONOMY";
+
+            case "phổ thông đặc biệt":
+                return "PREMIUM_ECONOMY";
+
             case "thương gia":
                 return "BUSINESS";
-            case "hạng nhất":
-                return "FIRST_CLASS";
+
             default:
                 return "ECONOMY";
         }

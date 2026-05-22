@@ -47,13 +47,6 @@
             android:textSize="16sp"
             android:paddingVertical="12dp"/>
 
-        <RadioButton
-            android:id="@+id/rb_first_class"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Hạng nhất"
-            android:textSize="16sp"
-            android:paddingVertical="12dp"/>
     </RadioGroup>
 
 </LinearLayout>

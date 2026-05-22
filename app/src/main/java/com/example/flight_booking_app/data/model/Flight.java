@@ -11,8 +11,6 @@ import java.util.List;
  * Transient field KHÔNG lưu lên Firebase (Firebase bỏ qua transient).
  */
 public class Flight {
-
-    // ── Firebase fields (lưu trên DB) ────────────────────────────────────────
     private String flightId;
     private String flightNumber;
     private String airlineId;    // FK → Airlines
@@ -33,16 +31,17 @@ public class Flight {
 
     private String selectedSeatClass;
     private int checkedBaggage;
-
     private double taxFee;
+
     private double seatSelectionFee = 0;
     private double totalPrice;
-    private int rewardPoints;
 
-    private List<FlightFareOption> fareOptions = new ArrayList<>();
+    private List<FareOption> fareOptions = new ArrayList<>();
     private String fareRuleId;
 
-    // ── Transient display fields (KHÔNG lưu Firebase, điền sau JOIN) ─────────
+    private String status;
+
+    // Transient display fields (KHÔNG lưu Firebase, điền sau JOIN)
     // Repository sẽ set các field này sau khi JOIN City + Airline
     private transient String from;         // tên thành phố đi   "Hà Nội"
     private transient String fromIata;     // mã IATA điểm đi    "HAN"
@@ -53,81 +52,32 @@ public class Flight {
     private transient String airlineName;  // tên hãng            "Vietnam Airlines"
     private transient String airlineLogo;  // URL logo hãng
 
+    private transient String fareClassName; //  hạng vé
+    private transient double displayPrice;
+
+    public String getFareClassName() {
+        return fareClassName;
+    }
+
+    public void setFareClassName(String fareClassName) {
+        this.fareClassName = fareClassName;
+    }
+
     /**
      * Giá rẻ nhất hiển thị trên card — lấy từ fareOptions sau JOIN.
      * Nếu không có fareOptions thì = 0.
      */
-    private transient double displayPrice;
-
-
 
     public Flight() {
     }
 
-
-    // ── Business logic ────────────────────────────────────────────────────────
-
-    /**
-     * Tính giá rẻ nhất còn chỗ từ fareOptions.
-     * Dùng trong Repository sau khi load xong để set displayPrice.
-     */
-    public double computeCheapestPrice() {
-        double min = Double.MAX_VALUE;
-        for (FlightFareOption opt : fareOptions) {
-            if (opt.isAvailable() && opt.getBasePrice() < min) {
-                min = opt.getBasePrice();
-            }
-        }
-        return min == Double.MAX_VALUE ? 0.0 : min;
-    }
-
-    public double getCheapestPriceForSeatType(String targetSeatType,
-                                              List<FareClass> globalFareClasses) {
-        double minPrice = Double.MAX_VALUE;
-        for (FlightFareOption option : fareOptions) {
-            if (!option.isAvailable()) continue;
-            for (FareClass fareClass : globalFareClasses) {
-                if (fareClass.getFareRuleId().equals(option.getFareClassId())
-                        && fareClass.getSeatType().equalsIgnoreCase(targetSeatType)) {
-                    if (option.getBasePrice() < minPrice) {
-                        minPrice = option.getBasePrice();
-                    }
-                }
-            }
-        }
-        return minPrice == Double.MAX_VALUE ? 0.0 : minPrice;
-    }
-
-    public void calculateBookingTotal(FlightFareOption selectedOption) {
-        if (selectedOption == null) return;
-        double base = selectedOption.getBasePrice();
-        double adultTotal = (base + taxFee) * adultCount;
-        double childTotal = (base + taxFee) * 0.75 * childCount;
-        double babyTotal = (base + taxFee) * 0.10 * babyCount;
-        this.totalPrice = adultTotal + childTotal + babyTotal + seatSelectionFee;
-        this.rewardPoints = (int) (this.totalPrice / 100000);
-    }
-
-    public void applyFareRule(FareRule rule) {
-        this.selectedSeatClass = rule.getFareClassName();
-        this.checkedBaggage = rule.getCheckedBaggage();
-        updateFlightLogic();
-    }
-
     public void updateFlightLogic() {
         calculateBaggage();
-        calculatePoints();
     }
 
     private void calculateBaggage() {
         this.checkedBaggage = "Thương gia".equals(selectedSeatClass) ? 30 : 0;
     }
-
-    private void calculatePoints() {
-        this.rewardPoints = (int) (totalPrice / 100000);
-    }
-
-    // ── Getters / Setters Firebase fields ─────────────────────────────────────
 
     public String getFlightId() {
         return flightId;
@@ -289,19 +239,11 @@ public class Flight {
         totalPrice = v;
     }
 
-    public int getRewardPoints() {
-        return rewardPoints;
-    }
-
-    public void setRewardPoints(int v) {
-        rewardPoints = v;
-    }
-
-    public List<FlightFareOption> getFareOptions() {
+    public List<FareOption> getFareOptions() {
         return fareOptions;
     }
 
-    public void setFareOptions(List<FlightFareOption> v) {
+    public void setFareOptions(List<FareOption> v) {
         fareOptions = v;
     }
 
@@ -385,5 +327,12 @@ public class Flight {
 
     public void setDisplayPrice(double v) {
         displayPrice = v;
+    }
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

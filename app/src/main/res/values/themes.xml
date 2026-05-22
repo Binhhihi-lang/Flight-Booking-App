@@ -20,7 +20,7 @@
     </style>
 
     <!-- Bo góc dưới -->
-    <style name="RoundedBottomCorners" parent="">
+        <style name="RoundedBottomCorners" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">0dp</item>
         <item name="cornerSizeTopRight">0dp</item>

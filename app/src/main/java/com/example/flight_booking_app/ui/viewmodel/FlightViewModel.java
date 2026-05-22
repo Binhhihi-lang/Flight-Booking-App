@@ -32,8 +32,43 @@ public class FlightViewModel extends ViewModel {
     private final MutableLiveData<List<Flight>> flightList = new MutableLiveData<>();
     private final MutableLiveData<AuthResult>   loadState  = new MutableLiveData<>();
 
+    private final MutableLiveData<Boolean> selectedReturn = new MutableLiveData<>();
+
+    // Biến giữ chuyến bay khi chọn
+    private Flight selectedOutboundFlight = null; // Lưu chuyến bay đi đã chốt
+    private Flight selectedReturnFlight = null;   // Lưu chuyến bay về đã chốt
+    private boolean isSelectingReturn = false;     // Mẹo: false = đang chọn đi, true = đang chọn về
+    private Flight currentlyViewingFlight = null;  // Lưu chuyến bay đang xem trong BottomSheet
+
+
     public FlightViewModel() {
         repository = new FlightRepository();
+    }
+
+    public LiveData<Boolean> getReturnState() {
+        return selectedReturn;
+    }
+
+    // ── Getters và Setters cho các biến trạng thái
+    public Flight getSelectedOutboundFlight() { return selectedOutboundFlight; }
+    public void setSelectedOutboundFlight(Flight flight) { this.selectedOutboundFlight = flight; }
+
+    public Flight getSelectedReturnFlight() { return selectedReturnFlight; }
+    public void setSelectedReturnFlight(Flight flight) { this.selectedReturnFlight = flight; }
+
+    public boolean isSelectingReturn() { return isSelectingReturn; }
+    public void setSelectingReturn(boolean selectingReturn) { isSelectingReturn = selectingReturn; }
+
+    public Flight getCurrentlyViewingFlight() { return currentlyViewingFlight; }
+
+    public void setCurrentlyViewingFlight(Flight flight) { this.currentlyViewingFlight = flight; }
+
+    // Hàm xóa sạch dữ liệu cũ khi người dùng kết thúc đặt vé hoặc quay lại tìm chuyến khác
+    public void clearSession() {
+        this.selectedOutboundFlight = null;
+        this.selectedReturnFlight = null;
+        this.isSelectingReturn = false;
+        this.currentlyViewingFlight = null;
     }
 
     public LiveData<List<Flight>> getFlightList() {
@@ -44,17 +79,6 @@ public class FlightViewModel extends ViewModel {
         return loadState;
     }
 
-    /**
-     * Tìm kiếm chuyến bay đầy đủ.
-     *
-     * @param fromCityId    ID thành phố đi
-     * @param toCityId      ID thành phố đến
-     * @param departureDate Ngày bay (dd/MM/yyyy)
-     * @param seatClass     Hạng ghế ("Phổ thông" / "Thương gia")
-     * @param adultCount    Số người lớn
-     * @param childCount    Số trẻ em
-     * @param babyCount     Số em bé
-     */
     public void searchFlights(String fromCityId, String toCityId, String departureDate,
                               String seatClass, int adultCount, int childCount, int babyCount) {
 
@@ -93,4 +117,7 @@ public class FlightViewModel extends ViewModel {
         // Đảo chiều: toCityId → fromCityId
         searchFlights(toCityId, fromCityId, returnDate, seatClass, adultCount, childCount, babyCount);
     }
+
+
 }
+

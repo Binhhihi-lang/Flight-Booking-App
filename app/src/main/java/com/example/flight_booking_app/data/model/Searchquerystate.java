@@ -41,15 +41,13 @@ public class Searchquerystate {
         this.isRoundTrip = isRoundTrip;
     }
 
-    /**
-     * Giá trị mặc định khi app mở lần đầu
-     */
+    // set dữ liệu đầu vào
     public static Searchquerystate defaultState() {
         String today = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 .format(new Date());
         return new Searchquerystate(
-                new City("city_hn", "Hà Nội", "Sân bay quốc tế Nội Bài", "HAN"),
-                new City("city_hcm", "TP. Hồ Chí Minh", "Sân bay quốc tế Tân Sơn Nhất", "SGN"),
+                new City("HAN", "Hà Nội", "Sân bay quốc tế Nội Bài", "HAN"),
+                new City("SGN", "TP. Hồ Chí Minh", "Sân bay quốc tế Tân Sơn Nhất", "SGN"),
                 today, "",
                 1, 0, 0,
                 "Phổ thông",

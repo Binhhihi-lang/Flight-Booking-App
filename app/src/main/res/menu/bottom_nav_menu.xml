@@ -7,10 +7,7 @@
         android:id="@+id/nav_booking"
         android:icon="@drawable/ic_nav_booking"
         android:title="Booking" />
-    <item
-        android:id="@+id/nav_offer"
-        android:icon="@drawable/ic_nav_offer"
-        android:title="Offer" />
+
     <item
         android:id="@+id/nav_inbox"
         android:icon="@drawable/ic_nav_inbox"

@@ -22,7 +22,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:background="#F5F5F5"
-                android:padding="6dp"
+                android:padding="4dp"
                 android:src="@drawable/ic_airline"
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/RoundedCorners"
@@ -197,26 +197,26 @@
 
 
         <ImageView
-            android:id="@+id/iv_seat"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:id="@+id/iv_fare_class"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginTop="15dp"
-            android:src="@drawable/ic_seat_class"
+            android:src="@drawable/ic_fare_class"
             app:tint="#757575"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider" />
 
         <TextView
-            android:id="@+id/tv_seat_class"
+            android:id="@+id/tv_fare_class"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Phổ thông"
+            android:text="Phổ thông tiết kiệm"
             android:textColor="#757575"
             android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="@id/iv_seat"
-            app:layout_constraintStart_toEndOf="@id/iv_seat"
-            app:layout_constraintTop_toTopOf="@id/iv_seat" />
+            app:layout_constraintBottom_toBottomOf="@id/iv_fare_class"
+            app:layout_constraintStart_toEndOf="@id/iv_fare_class"
+            app:layout_constraintTop_toTopOf="@id/iv_fare_class" />
 
         <TextView
             android:id="@+id/tv_price"
@@ -226,9 +226,9 @@
             android:textColor="@color/primary_red"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/iv_seat"
+            app:layout_constraintBottom_toBottomOf="@id/iv_fare_class"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/iv_seat" />
+            app:layout_constraintTop_toTopOf="@id/iv_fare_class" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

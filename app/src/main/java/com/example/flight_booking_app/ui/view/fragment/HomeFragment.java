@@ -17,6 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -88,6 +91,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
+
     }
 
     @Override
@@ -194,10 +198,6 @@ public class HomeFragment extends Fragment {
         if (tvChildCount != null) tvChildCount.setText(s.childCount + " Trẻ em");
         if (tvBabyCount != null) tvBabyCount.setText(s.babyCount + " Em bé");
 
-        // Ẩn/hiện card ngày về
-//        if (cardReturn != null) {
-//            cardReturn.setVisibility(s.isRoundTrip ? View.VISIBLE : View.GONE);
-//        }
     }
 
     // ── Click listeners

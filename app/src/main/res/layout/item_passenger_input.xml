@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    item_passenger_input.xml
+    ──────────────────────────────────────────────────────────────
+    Layout cho 1 hành khách trong danh sách "Nhập thông tin hành khách".
+    BookingActivity dùng LayoutInflater.inflate() và addView() vào
+    layout_passenger_list theo số lượng adultCount / childCount / babyCount.
+
+    Tag ngoài là LinearLayout để dễ addView vào parent LinearLayout.
+    ──────────────────────────────────────────────────────────────
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@color/text_gray"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="14dp"
+    android:layout_marginBottom="8dp">
+
+    <!-- Icon theo loại hành khách (adult / child / baby) -->
+    <ImageView
+        android:id="@+id/img_passenger_icon"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@drawable/ic_nav_profile"
+        android:layout_marginEnd="10dp"
+        tools:src="@drawable/ic_nav_profile" />
+
+    <!-- Tên loại hành khách: Người lớn 0, Trẻ em 2, Em bé 3 -->
+    <TextView
+        android:id="@+id/tv_passenger_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Người lớn 0"
+        android:textColor="#333333"
+        android:textSize="14sp"
+        tools:text="Người lớn 0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ghế 4C"
+        android:layout_marginEnd="6dp"
+        android:textColor="#333333"
+        android:textSize="16sp" />
+
+    <!-- Dấu * bắt buộc -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="*"
+        android:textColor="#E53935"
+        android:textSize="20sp" />
+
+</LinearLayout>

@@ -22,7 +22,6 @@ public class ClassBottomSheet extends BottomSheetDialogFragment {
     RadioGroup rgSeatClass;
     RadioButton rbEconomy;
     RadioButton rbBusiness;
-    RadioButton rbFirst;
     RadioButton rbPremium;
 
     public ClassBottomSheet() {
@@ -55,7 +54,6 @@ public class ClassBottomSheet extends BottomSheetDialogFragment {
 
             if (id == R.id.rb_premium_economy) seatClassName = "Phổ thông đặc biệt";
             else if (id == R.id.rb_business) seatClassName = "Thương gia";
-            else if (id == R.id.rb_first_class) seatClassName = "Hạng nhất";
             else seatClassName = "Phổ thông";
 
             homeViewModel.setSeatClass(seatClassName);
@@ -65,7 +63,6 @@ public class ClassBottomSheet extends BottomSheetDialogFragment {
         // Gán cho tất cả các nút
         rbEconomy.setOnClickListener(listener);
         rbBusiness.setOnClickListener(listener);
-        rbFirst.setOnClickListener(listener);
         rbPremium.setOnClickListener(listener);
     }
 
@@ -81,9 +78,6 @@ public class ClassBottomSheet extends BottomSheetDialogFragment {
                 case "Thương gia":
                     rgSeatClass.check(R.id.rb_business);
                     break;
-                case "Hạng nhất":
-                    rgSeatClass.check(R.id.rb_first_class);
-                    break;
                 default:
                     rgSeatClass.check(R.id.rb_economy);
                     break;
@@ -96,7 +90,6 @@ public class ClassBottomSheet extends BottomSheetDialogFragment {
         rbEconomy = view.findViewById(R.id.rb_economy);
         rbPremium = view.findViewById(R.id.rb_premium_economy);
         rbBusiness = view.findViewById(R.id.rb_business);
-        rbFirst = view.findViewById(R.id.rb_first_class);
     }
 
 }

@@ -11,14 +11,6 @@ import com.example.flight_booking_app.data.model.City;
 import com.example.flight_booking_app.data.model.Searchquerystate;
 import com.example.flight_booking_app.ui.view.activity.SearchFlightActivity;
 
-/**
- * Trước: 8 MutableLiveData riêng lẻ → 8 getter → 8 setter → 8 observe
- * Sau:   1 MutableLiveData<SearchQueryState> → 1 observe duy nhất
- * <p>
- * Cách cập nhật state:
- * update(s -> s.withFromCity(city))
- * → tạo bản sao mới với đúng 1 field đổi, giữ nguyên 7 field còn lại.
- */
 public class HomeViewModel extends ViewModel {
 
     // SearchQueryState lưu thông tin chuyến bay cần tìm kiếm
@@ -27,7 +19,6 @@ public class HomeViewModel extends ViewModel {
 
     private final MutableLiveData<AuthResult> validationError = new MutableLiveData<>();
 
-    // ── Getters
 
     public LiveData<Searchquerystate> getSearchState() {
         return searchState;
@@ -68,15 +59,6 @@ public class HomeViewModel extends ViewModel {
     }
     public void setPassengerCount(int adultCount, int childCount, int babyCount){
         update(s -> s.withPassenger(adultCount, childCount, babyCount));
-    }
-    public void setAdultCount(int adultCount){
-        update(s -> s.withAdultCount(adultCount));
-    }
-    public void setChildCount(int childCount){
-        update(s -> s.withChildCount(childCount));
-    }
-    public void setBabyCount(int babyCount){
-        update(s -> s.withBabyCount(babyCount));
     }
 
     public void setSeatClass(String seatClass) {

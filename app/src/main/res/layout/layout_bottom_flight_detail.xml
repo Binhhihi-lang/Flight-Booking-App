@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:paddingBottom="16dp">
+
+    <View
+        android:id="@+id/view_drag_handle"
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="8dp"
+        android:background="#CCCCCC"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toTopOf="@+id/layout_footer"
+        app:layout_constraintTop_toBottomOf="@+id/view_drag_handle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:paddingHorizontal="18dp"
+                    android:paddingVertical="16dp">
+
+                    <TextView
+                        android:id="@+id/tv_title_flight_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thông tin chuyến bay"
+                        android:textColor="#000000"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tv_detail_flight_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="20/05/2026"
+                        android:textColor="#333333"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/col_left_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toStartOf="@id/col_center_time"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_title_flight_info">
+
+                        <TextView
+                            android:id="@+id/tv_detail_depart_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="05:30"
+                            android:textColor="#000000"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/card_depart_iata"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="6dp"
+                            app:cardElevation="0dp"
+                            app:strokeColor="#E0E0E0"
+                            app:strokeWidth="1dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_airport_code"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:paddingHorizontal="8dp"
+                                android:paddingVertical="4dp"
+                                android:text="HAN"
+                                android:textColor="#8E8E8E"
+                                android:textSize="12sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/col_center_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="@id/col_left_time"
+                        app:layout_constraintEnd_toStartOf="@id/col_right_time"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toEndOf="@id/col_left_time"
+                        app:layout_constraintTop_toTopOf="@id/col_left_time">
+
+                        <ImageView
+                            android:id="@+id/img_center_plane"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@drawable/ic_airplane"
+                            app:tint="@color/primary_blue" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_duration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:textColor="#333333"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            tools:text="2h10p" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/col_right_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toEndOf="@id/col_center_time"
+                        app:layout_constraintTop_toTopOf="@id/col_left_time">
+
+                        <TextView
+                            android:id="@+id/tv_detail_arrival_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#000000"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            tools:text="07:40" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/card_arrival_iata"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="6dp"
+                            app:cardElevation="0dp"
+                            app:strokeColor="#E0E0E0"
+                            app:strokeWidth="1dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_To_Iata"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:paddingHorizontal="8dp"
+                                android:paddingVertical="4dp"
+                                android:text="SGN"
+                                android:textColor="#8E8E8E"
+                                android:textSize="12sp" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/div_flight_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        android:background="#EEEEEE"
+                        app:layout_constraintTop_toBottomOf="@+id/col_left_time" />
+
+                    <LinearLayout
+                        android:id="@+id/col_left_info1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toStartOf="@id/col_center_info1"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/div_flight_info">
+
+                        <ImageView
+                            android:id="@+id/img_detail_airline_logo"
+                            android:layout_width="50dp"
+                            android:layout_height="30dp"
+                            android:scaleType="centerInside"
+                            tools:src="@android:drawable/sym_def_app_icon" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/col_center_info1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="@id/col_left_info1"
+                        app:layout_constraintEnd_toStartOf="@id/col_right_info1"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toEndOf="@id/col_left_info1"
+                        app:layout_constraintTop_toTopOf="@id/col_left_info1">
+
+                        <TextView
+                            android:id="@+id/tv_detail_flight_type"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bay Thẳng"
+                            android:textColor="#555555"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_flight_number"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="#333333"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            tools:text="VJ123" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/col_right_info1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toEndOf="@id/col_center_info1"
+                        app:layout_constraintTop_toTopOf="@id/col_left_info1">
+
+                        <TextView
+                            android:id="@+id/tv_detail_seat_class_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Loại vé"
+                            android:textColor="#888888"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_fare_class"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:maxWidth="90dp"
+                            android:singleLine="true"
+                            android:textColor="#1A1A2E"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            tools:text="Phổ thông" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/col_left_info2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toStartOf="@id/col_center_info2"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/col_left_info1">
+
+                        <TextView
+                            android:id="@+id/tv_lbl_base_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Giá vé"
+                            android:textColor="#888888"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_base_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="#D32F2F"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            tools:text="1.610.000đ" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/col_center_info2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="@id/col_left_info2"
+                        app:layout_constraintEnd_toStartOf="@id/col_right_info2"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toEndOf="@id/col_left_info2"
+                        app:layout_constraintTop_toTopOf="@id/col_left_info2">
+
+                        <TextView
+                            android:id="@+id/tv_lbl_tax_fee"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Thuế phí"
+                            android:textColor="#555555"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_tax_fee"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="#333333"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            tools:text="782.200đ" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/col_right_info2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toEndOf="@id/col_center_info2"
+                        app:layout_constraintTop_toTopOf="@id/col_left_info2">
+
+                        <TextView
+                            android:id="@+id/tv_lbl_total_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tổng cộng"
+                            android:textColor="#888888"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_total_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="#1565C0"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            tools:text="2.392.200đ" />
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="12dp">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:src="@drawable/ic_luggage"
+                            app:tint="@color/primary_blue">
+
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/tv_detail_baggage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="#333333"
+                            tools:text="Hành lý xách tay 7kg" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="12dp">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:src="@drawable/ic_check_box"
+                            >
+
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/tv_detail_refund_policy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Được phép đổi vé"
+                            android:textColor="#333333"/>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="12dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <View
+            android:id="@+id/div_footer"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_footer_lbl_price_per_person"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Tổng số tiền 1 người"
+            android:textColor="#666666"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_footer" />
+
+        <TextView
+            android:id="@+id/tv_footer_total_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2.392.200đ"
+            android:textColor="#D32F2F"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_footer_lbl_price_per_person" />
+
+        <TextView
+            android:id="@+id/tv_footer_lbl_tax_included"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Giá vé đã bao gồm thuế phí"
+            android:textColor="#999999"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_footer_lbl_price_per_person" />
+
+        <TextView
+            android:id="@+id/tv_footer_route_summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textColor="#333333"
+            android:textSize="13sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_footer_lbl_tax_included"
+            tools:text="Hà Nội → TP.HCM 05:30 21/05" />
+
+        <TextView
+            android:id="@+id/tv_footer_sub_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#333333"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_footer_route_summary"
+            tools:text="2.392.200đ" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/tv_footer_route_summary">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_detail_back"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:text="TRỞ VỀ"
+                android:textColor="#666666"
+                app:strokeColor="#CCCCCC" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_detail_select"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="2"
+                android:backgroundTint="#0091EA"
+                android:text="CHỌN"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
