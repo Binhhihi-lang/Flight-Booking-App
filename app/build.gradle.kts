@@ -59,6 +59,9 @@ dependencies {
     implementation("com.cloudinary:cloudinary-android-download:3.1.2")
     implementation("com.cloudinary:cloudinary-android-preprocess:3.1.2")
 
+    // sinh mã vạch
+    implementation("com.google.zxing:core:3.5.3")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
