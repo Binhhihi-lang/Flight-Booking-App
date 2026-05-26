@@ -3,7 +3,7 @@ package com.example.flight_booking_app.data.model;
 public class Aircraft {
     private String airCraftId;
     private String airlineId;
-    private String modelName;
+    private String modelName;  // boeing 737, ...
     private int totalSeats;
     private String seatMapId;  // mã ghế
 

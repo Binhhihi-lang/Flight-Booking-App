@@ -35,11 +35,12 @@
                 app:shapeAppearanceOverlay="@style/CircleImage"
                 android:scaleType="center"
                 app:tint="#FFFFFF" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="Huce Travel"
+                android:text="@string/app_brand_name"
                 android:textColor="#0175F3"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -50,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Join us today"
+            android:text="@string/signup_title_join_us"
             android:textColor="#1A1A1A"
             android:textSize="32sp"
             android:textStyle="bold"
@@ -64,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="Create an account to get exclusive flight deals."
+            android:text="@string/signup_subtitle_deals"
             android:textColor="#757575"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -91,7 +92,7 @@
                 android:id="@+id/et_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Full Name"
+                android:hint="@string/hint_full_name"
                 android:inputType="textPersonName"
                 android:paddingVertical="16dp"
                 android:textColor="#1A1A1A"
@@ -119,7 +120,7 @@
                 android:id="@+id/et_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email Address"
+                android:hint="@string/hint_email_short"
                 android:inputType="textEmailAddress"
                 android:paddingVertical="16dp"
                 android:textColor="#1A1A1A"
@@ -148,7 +149,7 @@
                 android:id="@+id/et_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
+                android:hint="@string/hint_password"
                 android:inputType="textPassword"
                 android:paddingVertical="16dp"
                 android:textColor="#1A1A1A"
@@ -159,9 +160,9 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_signup"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="60dp"
             android:layout_marginTop="32dp"
-            android:text="Create Account"
+            android:text="@string/btn_create_account"
             android:textAllCaps="false"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -188,7 +189,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:text="Or sign up with Google"
+                android:text="@string/text_or_signup_google"
                 android:textColor="#9E9E9E"
                 android:textSize="@dimen/text_size_body" />
 
@@ -205,7 +206,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="24dp"
-            android:text="Continue with Google"
+            android:text="@string/btn_continue_with_google"
             android:textAllCaps="false"
             android:textColor="#1A1A1A"
             android:textSize="18sp"
@@ -231,7 +232,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Already have an account? "
+                android:text="@string/text_already_have_account"
                 android:textColor="#757575"
                 android:textSize="18sp" />
 
@@ -239,10 +240,10 @@
                 android:id="@+id/tv_sign_in_here"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
+                android:layout_marginStart="5dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="Login"
+                android:text="@string/link_sign_in_here"
                 android:textColor="#0175F3"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -255,10 +256,8 @@
             android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            />
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

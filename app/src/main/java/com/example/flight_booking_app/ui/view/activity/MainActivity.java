@@ -14,7 +14,6 @@ import androidx.fragment.app.FragmentManager;
 import com.example.flight_booking_app.ui.view.fragment.BookingFragment;
 import com.example.flight_booking_app.ui.view.fragment.HomeFragment;
 import com.example.flight_booking_app.ui.view.fragment.InboxFragment;
-import com.example.flight_booking_app.ui.view.fragment.OfferFragment;
 import com.example.flight_booking_app.ui.view.fragment.ProfileFragment;
 import com.example.flight_booking_app.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -24,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     private final FragmentManager fm = getSupportFragmentManager();
     private final Fragment homeFragment = new HomeFragment();
     private final Fragment bookingFragment = new BookingFragment();
-    private final Fragment offerFragment = new OfferFragment();
     private final Fragment inboxFragment = new InboxFragment();
     private final Fragment profileFragment = new ProfileFragment();
     private Fragment activeFragment = homeFragment;
@@ -44,9 +42,8 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
         // Sử dụng commitNow() để đảm bảo fragment được add ngay lập tức trước khi thực hiện logic khác
-        fm.beginTransaction().add(R.id.fragment_container, profileFragment, "5").hide(profileFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, inboxFragment, "4").hide(inboxFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, offerFragment, "3").hide(offerFragment).commit();
+        fm.beginTransaction().add(R.id.fragment_container, profileFragment, "4").hide(profileFragment).commit();
+        fm.beginTransaction().add(R.id.fragment_container, inboxFragment, "3").hide(inboxFragment).commit();
         fm.beginTransaction().add(R.id.fragment_container, bookingFragment, "2").hide(bookingFragment).commit();
         fm.beginTransaction().add(R.id.fragment_container, homeFragment, "1").commit();
 

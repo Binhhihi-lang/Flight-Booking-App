@@ -16,6 +16,7 @@
         android:src="@drawable/login_img"
         app:layout_constraintHeight_percent="0.45"
         app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Huce Travel"
+            android:text="@string/app_brand_name"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -77,7 +78,7 @@
                         android:id="@+id/tv_signup_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Ready to explore?"
+                        android:text="@string/login_title_ready"
                         android:textColor="#1A1A1A"
                         android:textSize="28sp"
                         android:textStyle="bold"
@@ -88,7 +89,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Log in to book your next flight."
+                        android:text="@string/login_subtitle_explore"
                         android:textColor="#757575"
                         android:textSize="16sp"
                         app:layout_constraintTop_toBottomOf="@id/tv_signup_title" />
@@ -98,7 +99,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="32dp"
-                        android:text="Email Address"
+                        android:text="@string/label_email_address"
                         android:textColor="#424242"
                         android:textSize="@dimen/text_size_body"
                         android:textStyle="bold"
@@ -124,7 +125,7 @@
                             android:id="@+id/et_email"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="alex@example.com"
+                            android:hint="@string/hint_email_example"
                             android:focusable="true"
                             android:focusableInTouchMode="true"
                             android:inputType="textEmailAddress"
@@ -139,7 +140,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="Password"
+                        android:text="@string/label_password"
                         android:textColor="#424242"
                         android:textSize="@dimen/text_size_body"
                         android:textStyle="bold"
@@ -166,7 +167,7 @@
                             android:id="@+id/et_password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="password"
+                            android:hint="@string/hint_password"
                             android:inputType="textPassword"
                             android:paddingVertical="16dp"
                             android:textColor="#1A1A1A"
@@ -181,7 +182,7 @@
                         android:background="?attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true"
-                        android:text="Forgot password?"
+                        android:text="@string/link_forgot_password"
                         android:textColor="#0175F3"
                         android:textSize="@dimen/text_size_subtitle"
                         android:textStyle="bold"
@@ -193,7 +194,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="65dp"
                         android:layout_marginTop="24dp"
-                        android:text="Login"
+                        android:text="@string/btn_login"
                         android:textAllCaps="false"
                         android:textSize="20dp"
                         android:textStyle="bold"
@@ -220,7 +221,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="16dp"
-                            android:text="or continue with"
+                            android:text="@string/text_or_continue_with"
                             android:textColor="#9E9E9E"
                             android:textSize="@dimen/text_size_subtitle" />
 
@@ -237,7 +238,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:layout_marginTop="24dp"
-                        android:text="Continue with Google"
+                        android:text="@string/btn_continue_with_google"
                         android:textAllCaps="false"
                         android:textColor="#1A1A1A"
                         android:textSize="18sp"
@@ -262,7 +263,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Don't have an account? "
+                            android:text="@string/text_dont_have_account"
                             android:textColor="#757575"
                             android:textSize="18sp" />
 
@@ -273,7 +274,7 @@
                             android:background="?attr/selectableItemBackground"
                             android:clickable="true"
                             android:focusable="true"
-                            android:text="Sign up"
+                            android:text="@string/link_sign_up"
                             android:textColor="#0175F3"
                             android:textSize="20sp"
                             android:textStyle="bold" />
@@ -291,8 +292,6 @@
         android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

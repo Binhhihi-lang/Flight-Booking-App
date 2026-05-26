@@ -43,7 +43,6 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
     public static final String KEY_DEPART_DATE = "departure_date";
     public static final String KEY_BASE_PRICE = "display_price";
     public static final String KEY_TAX_FEE = "tax_fee";
-    public static final String KEY_SEAT_CLASS = "seat_class";
     public static final String KEY_FARE_CLASS_NAME = "fare_class_name";
     public static final String KEY_BAGGAGE = "checked_baggage";
     public static final String KEY_ADULT_COUNT = "adult_count";
@@ -89,7 +88,7 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
             String fromCity, String fromIata, String toCity, String toIata,
             String departTime, String arrivalTime, String duration, String departDate,
             double basePrice, double taxFee,
-            String seatClass, String fareClassName, int baggage,
+            String fareClassName, int baggage,
             int adultCount, int childCount, int babyCount,
             boolean isDepart, boolean isRoundTrip) {
 
@@ -107,8 +106,7 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
         args.putString(KEY_DEPART_DATE, departDate);
         args.putDouble(KEY_BASE_PRICE, basePrice);
         args.putDouble(KEY_TAX_FEE, taxFee);
-        args.putString(KEY_SEAT_CLASS, seatClass);
-        args.putString(KEY_FARE_CLASS_NAME, fareClassName != null ? fareClassName : seatClass);
+        args.putString(KEY_FARE_CLASS_NAME, fareClassName);
         args.putInt(KEY_BAGGAGE, baggage);
         args.putInt(KEY_ADULT_COUNT, adultCount);
         args.putInt(KEY_CHILD_COUNT, childCount);

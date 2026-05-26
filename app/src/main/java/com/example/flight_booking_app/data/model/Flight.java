@@ -50,6 +50,9 @@ public class Flight {
     private transient String toIata;       // mã IATA điểm đến
     private transient String toAirport;    // tên sân bay đến
     private transient String airlineName;  // tên hãng            "Vietnam Airlines"
+    private transient String airCraftName;
+    private transient String seatMapId;
+
     private transient String airlineLogo;  // URL logo hãng
 
     private transient String fareClassName; //  hạng vé
@@ -199,14 +202,6 @@ public class Flight {
         babyCount = v;
     }
 
-    public String getSelectedSeatClass() {
-        return selectedSeatClass;
-    }
-
-    public void setSelectedSeatClass(String v) {
-        selectedSeatClass = v;
-    }
-
     public int getCheckedBaggage() {
         return checkedBaggage;
     }
@@ -334,5 +329,28 @@ public class Flight {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    public String getSelectedSeatClass() {
+        return selectedSeatClass;
+    }
+
+    public void setSelectedSeatClass(String selectedSeatClass) {
+        this.selectedSeatClass = selectedSeatClass;
+    }
+
+    public String getSeatMapId() {
+        return seatMapId;
+    }
+
+    public void setSeatMapId(String seatMapId) {
+        this.seatMapId = seatMapId;
+    }
+
+    public String getAirCraftName() {
+        return airCraftName;
+    }
+
+    public void setAirCraftName(String airCraftName) {
+        this.airCraftName = airCraftName;
     }
 }

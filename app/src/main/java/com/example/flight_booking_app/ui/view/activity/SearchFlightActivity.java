@@ -44,14 +44,13 @@ public class SearchFlightActivity extends AppCompatActivity
     public static final String EXTRA_TO_IATA = "to_iata";
     public static final String EXTRA_DEPART_DATE = "departure_date";
     public static final String EXTRA_RETURN_DATE = "return_date";
-    public static final String EXTRA_SEAT_CLASS = "seat_class";
     public static final String EXTRA_ADULT = "adult_count";
     public static final String EXTRA_CHILD = "child_count";
     public static final String EXTRA_BABY = "baby_count";
     public static final String EXTRA_IS_ROUND_TRIP = "is_round_trip";
 
     private MaterialToolbar toolbar;
-    private TextView tvRoute, tvInfoDate, tvInfoClass;
+    private TextView tvRoute, tvInfoDate;
     private TextView tvAdultCount, tvChildCount, tvBabyCount;
     private LinearLayout layoutTripTabs;
     private TextView tabDepart, tabReturn;
@@ -67,7 +66,7 @@ public class SearchFlightActivity extends AppCompatActivity
     // ── State
     private String fromCityId, toCityId;
     private String fromCity, toCity;
-    private String departDate, returnDate, seatClass;
+    private String departDate, returnDate;
     private int adultCount, childCount, babyCount;
     private boolean isRoundTrip; // cờ tab hiển thị lượt đi , lượt về
 
@@ -126,7 +125,6 @@ public class SearchFlightActivity extends AppCompatActivity
         toCity = i.getStringExtra(EXTRA_TO_CITY);
         departDate = i.getStringExtra(EXTRA_DEPART_DATE);
         returnDate = i.getStringExtra(EXTRA_RETURN_DATE);
-        seatClass = i.getStringExtra(EXTRA_SEAT_CLASS);
         adultCount = i.getIntExtra(EXTRA_ADULT, 1);
         childCount = i.getIntExtra(EXTRA_CHILD, 0);
         babyCount = i.getIntExtra(EXTRA_BABY, 0);
@@ -137,7 +135,6 @@ public class SearchFlightActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbarFlights);
         tvRoute = findViewById(R.id.tv_route);
         tvInfoDate = findViewById(R.id.tv_info_date);
-        tvInfoClass = findViewById(R.id.tv_search_info_class);
         tvAdultCount = findViewById(R.id.tv_search_adult_count);
         tvChildCount = findViewById(R.id.tv_search_child_count);
         tvBabyCount = findViewById(R.id.tv_search_baby_count);
@@ -153,8 +150,6 @@ public class SearchFlightActivity extends AppCompatActivity
 
     private void setupToolbar() {
         updateToolbarRoute(fromCity, toCity, departDate);
-
-        tvInfoClass.setText(seatClass);
         tvAdultCount.setText(String.valueOf(adultCount));
         tvChildCount.setText(String.valueOf(childCount));
         tvBabyCount.setText(String.valueOf(babyCount));
@@ -188,7 +183,7 @@ public class SearchFlightActivity extends AppCompatActivity
         updateToolbarRoute(fromCity, toCity, departDate);
         flightViewModel.searchFlights(
                 fromCityId, toCityId, departDate,
-                seatClass, adultCount, childCount, babyCount
+                adultCount, childCount, babyCount
         );
     }
 
@@ -202,7 +197,7 @@ public class SearchFlightActivity extends AppCompatActivity
         updateToolbarRoute(toCity, fromCity, returnDate);
         flightViewModel.searchReturnFlights(
                 fromCityId, toCityId, returnDate,
-                seatClass, adultCount, childCount, babyCount
+                adultCount, childCount, babyCount
         );
     }
 
@@ -246,12 +241,12 @@ public class SearchFlightActivity extends AppCompatActivity
 
         if (flightViewModel.isSelectingReturn()) {
             flightViewModel.searchReturnFlights(fromCityId, toCityId, returnDate,
-                    seatClass, adultCount, childCount, babyCount);
+                    adultCount, childCount, babyCount);
         } else {
             // Nếu đang ở lượt đi bình thường (hoặc lần đầu vào màn hình)
             flightViewModel.searchFlights(
                     fromCityId, toCityId, departDate,
-                    seatClass, adultCount, childCount, babyCount
+                    adultCount, childCount, babyCount
             );
         }
     }
@@ -279,7 +274,6 @@ public class SearchFlightActivity extends AppCompatActivity
                 isReturnFlight ? returnDate : departDate,
                 flight.getDisplayPrice(),
                 flight.getTaxFee(),
-                seatClass,
                 flight.getFareClassName(),
                 flight.getCheckedBaggage(),
                 adultCount, childCount, babyCount,
@@ -333,38 +327,51 @@ public class SearchFlightActivity extends AppCompatActivity
         Intent intent = new Intent(this, BookingInfoActivity.class);
 
         // Thông tin lượt đi
-        intent.putExtra("outbound_flight_number", outbound.getFlightNumber());
-        intent.putExtra("outbound_airline_name", outbound.getAirlineName());
-        intent.putExtra("outbound_airline_logo", outbound.getAirlineLogo());
-        intent.putExtra("outbound_from_city", outbound.getFrom());
-        intent.putExtra("outbound_from_iata", outbound.getFromIata());
-        intent.putExtra("outbound_to_city", outbound.getTo());
-        intent.putExtra("outbound_to_iata", outbound.getToIata());
-        intent.putExtra("outbound_depart_time", outbound.getDepartureTime());
-        intent.putExtra("outbound_arrival_time", outbound.getArrivalTime());
-        intent.putExtra("outbound_duration", outbound.getDuration());
-        intent.putExtra("outbound_date", departDate);
-        intent.putExtra("outbound_price", outbound.getDisplayPrice());
-        intent.putExtra("outbound_fare_class", outbound.getFareClassName());
-        intent.putExtra("outbound_baggage", outbound.getCheckedBaggage());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FLIGHT_NUMBER, outbound.getFlightNumber());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_AIRLINE_LOGO, outbound.getAirlineLogo());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FROM_CITY, outbound.getFrom());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FROM_IATA, outbound.getFromIata());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_TO_CITY, outbound.getTo());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_TO_IATA, outbound.getToIata());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_DEPART_TIME, outbound.getDepartureTime());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_ARRIVAL_TIME, outbound.getArrivalTime());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_DURATION, outbound.getDuration());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_DATE , departDate);
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_BASE_PRICE, outbound.getDisplayPrice());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FARE_CLASS, outbound.getFareClassName());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_SEAT_MAP_ID, outbound.getSeatMapId());
+
+        // Seat
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_AIRCRAFT_NAME, outbound.getAirCraftName());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_AIRLINE_NAME, outbound.getAirlineName());
+
+
 
         // Thông tin lượt về (nếu có)
-        intent.putExtra("is_round_trip", isRoundTrip);
+        intent.putExtra(BookingInfoActivity.EXTRA_IS_ROUND_TRIP, isRoundTrip);
         if (isRoundTrip && returnFlight != null) {
-            intent.putExtra("return_flight_number", returnFlight.getFlightNumber());
-            intent.putExtra("return_from_iata", returnFlight.getFromIata());
-            intent.putExtra("return_to_iata", returnFlight.getToIata());
-            intent.putExtra("return_depart_time", returnFlight.getDepartureTime());
-            intent.putExtra("return_arrival_time", returnFlight.getArrivalTime());
-            intent.putExtra("return_date", returnDate);
-            intent.putExtra("return_price", returnFlight.getDisplayPrice());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_FLIGHT_NUMBER, returnFlight.getFlightNumber());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_AIRLINE_LOGO, returnFlight.getAirlineLogo());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_FROM_CITY, returnFlight.getFrom());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_FROM_IATA, returnFlight.getFromIata());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_TO_CITY, returnFlight.getTo());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_TO_IATA, returnFlight.getToIata());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_DEPART_TIME, returnFlight.getDepartureTime());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_ARRIVAL_TIME, returnFlight.getArrivalTime());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_DURATION, returnFlight.getDuration());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_DATE , returnDate);
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_BASE_PRICE, returnFlight.getDisplayPrice());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_FARE_CLASS, returnFlight.getFareClassName());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_SEAT_MAP_ID, returnFlight.getSeatMapId());
+
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_AIRCRAFT_NAME, returnFlight.getAirCraftName());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_AIRLINE_NAME, returnFlight.getAirlineName());
         }
 
         // Thông tin hành khách & hạng ghế
-        intent.putExtra("seat_class", seatClass);
-        intent.putExtra("adult_count", adultCount);
-        intent.putExtra("child_count", childCount);
-        intent.putExtra("baby_count", babyCount);
+        intent.putExtra(BookingInfoActivity.EXTRA_ADULT_COUNT, adultCount);
+        intent.putExtra(BookingInfoActivity.EXTRA_CHILD_COUNT, childCount);
+        intent.putExtra(BookingInfoActivity.EXTRA_BABY_COUNT, babyCount);
 
         startActivity(intent);
     }

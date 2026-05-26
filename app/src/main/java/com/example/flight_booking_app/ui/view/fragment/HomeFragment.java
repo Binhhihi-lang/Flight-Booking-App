@@ -17,9 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -30,7 +27,6 @@ import com.example.flight_booking_app.data.model.City;
 import com.example.flight_booking_app.data.model.Searchquerystate;
 import com.example.flight_booking_app.ui.view.activity.SearchCityActivity;
 import com.example.flight_booking_app.ui.view.activity.SearchFlightActivity;
-import com.example.flight_booking_app.ui.view.activity.ClassBottomSheet;
 import com.example.flight_booking_app.ui.view.activity.PassengerBottomSheet;
 import com.example.flight_booking_app.ui.viewmodel.HomeViewModel;
 import com.example.flight_booking_app.ui.viewmodel.UserViewModel;
@@ -47,14 +43,13 @@ import java.util.Locale;
 public class HomeFragment extends Fragment {
     private ImageView imgAvatar;
     private CardView cardFrom, cardTo, cardDeparture, cardReturn;
-    private CardView cardClass, cardTraveller;
+    private CardView cardTraveller;
     private FloatingActionButton fabSwap;
     private Button rbOneWay, rbRoundTrip, btnSearchFlight;
 
     private TextView tvFromCity, tvFromCode, tvFromAirport;
     private TextView tvToCity, tvToCode, tvToAirport;
     private TextView tvDepartureDate, tvReturnDate;
-    private TextView tvSeatClass;
     private TextView tvAdultCount, tvChildCount, tvBabyCount;
 
 
@@ -107,7 +102,6 @@ public class HomeFragment extends Fragment {
         cardTo = view.findViewById(R.id.card_to);
         cardDeparture = view.findViewById(R.id.card_departure);
         cardReturn = view.findViewById(R.id.card_return);
-        cardClass = view.findViewById(R.id.card_class);
         cardTraveller = view.findViewById(R.id.card_traveller);
         fabSwap = view.findViewById(R.id.fab_swap);
         rbOneWay = view.findViewById(R.id.btn_one_way);
@@ -122,7 +116,6 @@ public class HomeFragment extends Fragment {
         tvToAirport = view.findViewById(R.id.tv_to_airport);
         tvDepartureDate = view.findViewById(R.id.tv_departure_date);
         tvReturnDate = view.findViewById(R.id.tv_return_date);
-        tvSeatClass = view.findViewById(R.id.tv_seat_class_summary);
         tvAdultCount = view.findViewById(R.id.tv_adult_count);
         tvChildCount = view.findViewById(R.id.tv_child_count);
         tvBabyCount = view.findViewById(R.id.tv_infant_count);
@@ -188,9 +181,6 @@ public class HomeFragment extends Fragment {
         else{
             tvReturnDate.setText("");
         }
-
-        // Hạng ghế
-        if (tvSeatClass != null ) tvSeatClass.setText(s.seatClass);
 
 
         // Hành khách
@@ -301,8 +291,6 @@ public class HomeFragment extends Fragment {
         // Hành khách gọi bottomSheet
         cardTraveller.setOnClickListener(v -> new PassengerBottomSheet().show(getChildFragmentManager(), "passenger_sheet"));
 
-        // Hạng ghế
-        cardClass.setOnClickListener(v -> new ClassBottomSheet().show(getChildFragmentManager(), "class_sheet"));
 
         // đổi thành phố
         fabSwap.setOnClickListener(v->{

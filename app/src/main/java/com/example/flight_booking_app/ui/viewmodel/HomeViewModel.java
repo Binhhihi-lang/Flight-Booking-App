@@ -61,10 +61,6 @@ public class HomeViewModel extends ViewModel {
         update(s -> s.withPassenger(adultCount, childCount, babyCount));
     }
 
-    public void setSeatClass(String seatClass) {
-        update(s -> s.withSeatClass(seatClass));
-    }
-
     public void setRoundTrip(boolean v) {
         update(s -> s.withRoundTrip(v));
     }
@@ -123,8 +119,6 @@ public class HomeViewModel extends ViewModel {
         intent.putExtra(SearchFlightActivity.EXTRA_ADULT, s.adultCount);
         intent.putExtra(SearchFlightActivity.EXTRA_CHILD, s.childCount);
         intent.putExtra(SearchFlightActivity.EXTRA_BABY, s.babyCount);
-        intent.putExtra(SearchFlightActivity.EXTRA_SEAT_CLASS, s.seatClass);
-
     }
 
 }

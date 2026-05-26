@@ -63,210 +63,271 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/card_outbound_flight"
-                        android:layout_width="340dp"
+                    android:id="@+id/card_outbound_flight"
+                    android:layout_width="340dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="3dp"
+                    app:cardBackgroundColor="@color/white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        app:cardCornerRadius="14dp"
-                        app:cardElevation="3dp"
-                        app:cardBackgroundColor="@color/white">
+                        android:orientation="vertical"
+                        android:paddingHorizontal="14dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="14dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="10dp">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_airline"
+                                app:tint="@color/primary_blue"
+                                android:layout_marginEnd="6dp" />
+
+                            <TextView
+                                android:id="@+id/tv_outbound_route"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Hà Nội → TP.HCM"
+                                android:textColor="#1A1A2E"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                tools:text="Hà Nội → TP.HCM" />
+
+                            <TextView
+                                android:id="@+id/tv_outbound_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Thứ năm, 21/05"
+                                android:textColor="#1A1A2E"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                tools:text="Thứ năm, 21/05" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#F0F0F0"
+                            android:layout_marginVertical="8dp" />
+
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="12dp"
+                            android:background="@color/white">
+
+                            <LinearLayout
+                                android:id="@+id/col_left_time"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                app:layout_constraintEnd_toStartOf="@id/col_center_time"
+                                app:layout_constraintHorizontal_weight="1"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <TextView
+                                    android:id="@+id/tv_outbound_depart_time"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="05:30"
+                                    android:textColor="#1A1A2E"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_outbound_from_iata"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:background="@drawable/bg_iata_chip_outline"
+                                    android:paddingHorizontal="8dp"
+                                    android:paddingVertical="4dp"
+                                    android:text="HAN"
+                                    android:textColor="#888888"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/col_center_time"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                app:layout_constraintBottom_toBottomOf="@id/col_left_time"
+                                app:layout_constraintEnd_toStartOf="@id/col_right_time"
+                                app:layout_constraintHorizontal_weight="1"
+                                app:layout_constraintStart_toEndOf="@id/col_left_time"
+                                app:layout_constraintTop_toTopOf="@id/col_left_time">
+
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:src="@drawable/ic_airplane"
+                                    app:tint="@color/primary_blue" />
+
+                                <TextView
+                                    android:id="@+id/tv_outbound_duration"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="2h10p"
+                                    android:textColor="#555555"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/col_right_time"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_weight="1"
+                                app:layout_constraintStart_toEndOf="@id/col_center_time"
+                                app:layout_constraintTop_toTopOf="@id/col_left_time">
+
+                                <TextView
+                                    android:id="@+id/tv_outbound_arrival_time"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="07:40"
+                                    android:textColor="#1A1A2E"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_outbound_to_iata"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:background="@drawable/bg_iata_chip_outline"
+                                    android:paddingHorizontal="8dp"
+                                    android:paddingVertical="4dp"
+                                    android:text="SGN"
+                                    android:textColor="#888888"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:id="@+id/div_flight_info"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="12dp"
+                                android:background="#EEEEEE"
+                                app:layout_constraintTop_toBottomOf="@+id/col_left_time" />
+
+                            <LinearLayout
+                                android:id="@+id/col_left_info"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                app:layout_constraintEnd_toStartOf="@id/col_center_info"
+                                app:layout_constraintHorizontal_weight="1"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/div_flight_info">
+
+                                <ImageView
+                                    android:id="@+id/img_outbound_airline_logo"
+                                    android:layout_width="50dp"
+                                    android:layout_height="30dp"
+                                    android:scaleType="centerInside"
+                                    android:src="@drawable/ic_airline" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/col_center_info"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                app:layout_constraintBottom_toBottomOf="@id/col_left_info"
+                                app:layout_constraintEnd_toStartOf="@id/col_right_info"
+                                app:layout_constraintHorizontal_weight="1"
+                                app:layout_constraintStart_toEndOf="@id/col_left_info"
+                                app:layout_constraintTop_toTopOf="@id/col_left_info">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Bay Thẳng"
+                                    android:textColor="#555555"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_outbound_flight_number"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="VJ123"
+                                    android:textColor="#333333"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/col_right_info"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                app:layout_constraintBottom_toBottomOf="@id/col_left_info"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_weight="1"
+                                app:layout_constraintStart_toEndOf="@id/col_center_info"
+                                app:layout_constraintTop_toTopOf="@id/col_left_info">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Loại vé"
+                                    android:textColor="#888888"
+                                    android:textSize="11sp" />
+
+                                <TextView
+                                    android:id="@+id/tv_outbound_fare_class"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:gravity="center"
+                                    android:singleLine="true"
+                                    android:textColor="#1A1A2E"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"
+                                    tools:text="Phổ thông linh hoạt" />
+                            </LinearLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#F0F0F0"
+                            android:layout_marginVertical="8dp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:paddingHorizontal="14dp"
-                            android:paddingTop="12dp"
-                            android:paddingBottom="14dp">
+                            >
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical"
-                                android:layout_marginBottom="10dp">
-
-                                <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="18dp"
-                                    android:src="@drawable/ic_airline"
-                                    app:tint="@color/primary_blue"
-                                    android:layout_marginEnd="6dp" />
-
-                                <TextView
-                                    android:id="@+id/tv_outbound_route"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Hà Nội → TP.HCM"
-                                    android:textColor="#1A1A2E"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"
-                                    tools:text="Hà Nội → TP.HCM" />
-
-                                <TextView
-                                    android:id="@+id/tv_outbound_date"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Thứ năm, 21/05"
-                                    android:textColor="#1A1A2E"
-                                    android:textSize="13sp"
-                                    android:textStyle="bold"
-                                    tools:text="Thứ năm, 21/05" />
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:background="#F0F0F0"
-                                android:layout_marginVertical="8dp" />
-
-                            <androidx.constraintlayout.widget.ConstraintLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:paddingVertical="12dp"
-                                android:background="@color/white">
-
-                                <LinearLayout
-                                    android:id="@+id/col_left"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:orientation="vertical"
-                                    app:layout_constraintHorizontal_weight="1"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintEnd_toStartOf="@id/col_center"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintBottom_toBottomOf="parent">
-
-                                    <TextView
-                                        android:id="@+id/tv_outbound_depart_time"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="05:30"
-                                        android:textColor="#1A1A2E"
-                                        android:textSize="15sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:id="@+id/tv_outbound_from_iata"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
-                                        android:text="HAN"
-                                        android:textColor="#888888"
-                                        android:textSize="12sp" />
-
-                                    <ImageView
-                                        android:id="@+id/img_outbound_airline_logo"
-                                        android:layout_width="36dp"
-                                        android:layout_height="36dp"
-                                        android:scaleType="centerInside"
-                                        android:src="@drawable/ic_airline" />
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:id="@+id/col_center"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:orientation="vertical"
-                                    app:layout_constraintHorizontal_weight="1"
-                                    app:layout_constraintStart_toEndOf="@id/col_left"
-                                    app:layout_constraintEnd_toStartOf="@id/col_right"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintBottom_toBottomOf="parent">
-
-                                    <ImageView
-                                        android:layout_width="22dp"
-                                        android:layout_height="22dp"
-                                        android:src="@drawable/ic_airplane"
-                                        app:tint="@color/primary_blue" />
-
-                                    <TextView
-                                        android:id="@+id/tv_outbound_duration"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="2h10p"
-                                        android:textColor="#555555"
-                                        android:textSize="12sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Bay Thẳng"
-                                        android:textColor="#555555"
-                                        android:textSize="12sp" />
-
-                                    <TextView
-                                        android:id="@+id/tv_outbound_flight_number"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="VJ123"
-                                        android:textColor="#333333"
-                                        android:textSize="12sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:id="@+id/col_right"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:gravity="center"
-                                    android:orientation="vertical"
-                                    app:layout_constraintHorizontal_weight="1"
-                                    app:layout_constraintStart_toEndOf="@id/col_center"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintBottom_toBottomOf="parent">
-
-                                    <TextView
-                                        android:id="@+id/tv_outbound_arrival_time"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="07:40"
-                                        android:textColor="#1A1A2E"
-                                        android:textSize="15sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:id="@+id/tv_outbound_to_iata"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
-                                        android:text="SGN"
-                                        android:textColor="#888888"
-                                        android:textSize="12sp" />
-
-                                    <LinearLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:gravity="center"
-                                        android:orientation="vertical">
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="Loại vé"
-                                            android:textColor="#888888"
-                                            android:textSize="11sp" />
-                                        <TextView
-                                            android:id="@+id/tv_outbound_fare_class"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="Phổ thông"
-                                            android:textColor="#1A1A2E"
-                                            android:textSize="12sp"
-                                            android:textStyle="bold" />
-                                    </LinearLayout>
-                                </LinearLayout>
-                            </androidx.constraintlayout.widget.ConstraintLayout>
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:background="#F0F0F0"
-                                android:layout_marginVertical="8dp" />
-
+                            <!-- Giá người lớn -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -277,19 +338,97 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:text="Tổng giá vé lượt đi"
-                                    android:textColor="#555555"
-                                    android:textSize="13sp" />
+                                    android:textColor="#1A1A2E"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp" />
                                 <TextView
                                     android:id="@+id/tv_outbound_total_price"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="2.392.200đ"
+                                    android:text="9.554.8000đ"
                                     android:textColor="#E53935"
-                                    android:textSize="14sp"
+                                    android:textSize="16sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
+
+                            <!-- Giá người lớn -->
+                            <LinearLayout
+                                android:id="@+id/layout_outbound_adult_price"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+                                <TextView
+                                    android:id="@+id/tv_outbound_adult"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Giá vé người lớn "
+                                    android:textColor="#555555"
+                                    android:textSize="13sp" />
+                                <TextView
+                                    android:id="@+id/tv_outbound_adult_price"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="2 x 3.133.000đ"
+                                    android:textColor="#868686"
+                                    android:textSize="14sp"
+                                     />
+                            </LinearLayout>
+
+                            <!-- Giá trẻ em -->
+                            <LinearLayout
+                                android:id="@+id/layout_outbound_child_price"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Giá vé trẻ con"
+                                    android:textColor="#555555"
+                                    android:textSize="13sp" />
+                                <TextView
+                                    android:id="@+id/tv_outbound_child_price"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="1 x 2.828.500đ"
+                                    android:textColor="#868686"
+                                    android:textSize="14sp"
+                                     />
+                            </LinearLayout>
+
+                            <!-- Giá em bé -->
+                            <LinearLayout
+                                android:id="@+id/layout_outbound_baby_price"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Giá vé em bé"
+                                    android:textColor="#555555"
+                                    android:textSize="13sp" />
+                                <TextView
+                                    android:id="@+id/tv_outbound_baby_price"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="1 x 463.300đ"
+                                    android:textColor="#868686"
+                                    android:textSize="14sp"
+                                    />
+                            </LinearLayout>
+
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/card_return_flight"
@@ -352,20 +491,19 @@
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:paddingVertical="12dp"
+                                android:paddingHorizontal="12dp"
                                 android:background="@color/white">
 
                                 <LinearLayout
-                                    android:id="@+id/col_left_return"
+                                    android:id="@+id/col_left_time_return"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
                                     android:orientation="vertical"
+                                    app:layout_constraintEnd_toStartOf="@id/col_center_time_return"
                                     app:layout_constraintHorizontal_weight="1"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintEnd_toStartOf="@id/col_center_return"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintBottom_toBottomOf="parent">
+                                    app:layout_constraintTop_toTopOf="parent">
 
                                     <TextView
                                         android:id="@+id/tv_return_depart_time"
@@ -380,30 +518,26 @@
                                         android:id="@+id/tv_return_from_iata"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
+                                        android:layout_marginTop="4dp"
+                                        android:background="@drawable/bg_iata_chip_outline"
+                                        android:paddingHorizontal="8dp"
+                                        android:paddingVertical="4dp"
                                         android:text="SGN"
                                         android:textColor="#888888"
                                         android:textSize="12sp" />
-
-                                    <ImageView
-                                        android:id="@+id/img_return_airline_logo"
-                                        android:layout_width="36dp"
-                                        android:layout_height="36dp"
-                                        android:scaleType="centerInside"
-                                        android:src="@drawable/ic_airline" />
                                 </LinearLayout>
 
                                 <LinearLayout
-                                    android:id="@+id/col_center_return"
+                                    android:id="@+id/col_center_time_return"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
                                     android:orientation="vertical"
+                                    app:layout_constraintBottom_toBottomOf="@id/col_left_time_return"
+                                    app:layout_constraintEnd_toStartOf="@id/col_right_time_return"
                                     app:layout_constraintHorizontal_weight="1"
-                                    app:layout_constraintStart_toEndOf="@id/col_left_return"
-                                    app:layout_constraintEnd_toStartOf="@id/col_right_return"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintBottom_toBottomOf="parent">
+                                    app:layout_constraintStart_toEndOf="@id/col_left_time_return"
+                                    app:layout_constraintTop_toTopOf="@id/col_left_time_return">
 
                                     <ImageView
                                         android:layout_width="22dp"
@@ -415,38 +549,23 @@
                                         android:id="@+id/tv_return_duration"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
                                         android:text="2h10p"
                                         android:textColor="#555555"
-                                        android:textSize="12sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Bay Thẳng"
-                                        android:textColor="#555555"
-                                        android:textSize="12sp" />
-
-                                    <TextView
-                                        android:id="@+id/tv_return_flight_number"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="VJ456"
-                                        android:textColor="#333333"
                                         android:textSize="12sp"
                                         android:textStyle="bold" />
                                 </LinearLayout>
 
                                 <LinearLayout
-                                    android:id="@+id/col_right_return"
+                                    android:id="@+id/col_right_time_return"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    app:layout_constraintHorizontal_weight="1"
-                                    app:layout_constraintStart_toEndOf="@id/col_center_return"
                                     app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintBottom_toBottomOf="parent">
+                                    app:layout_constraintHorizontal_weight="1"
+                                    app:layout_constraintStart_toEndOf="@id/col_center_time_return"
+                                    app:layout_constraintTop_toTopOf="@id/col_left_time_return">
 
                                     <TextView
                                         android:id="@+id/tv_return_arrival_time"
@@ -461,32 +580,105 @@
                                         android:id="@+id/tv_return_to_iata"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
+                                        android:layout_marginTop="4dp"
+                                        android:background="@drawable/bg_iata_chip_outline"
+                                        android:paddingHorizontal="8dp"
+                                        android:paddingVertical="4dp"
                                         android:text="HAN"
                                         android:textColor="#888888"
                                         android:textSize="12sp" />
+                                </LinearLayout>
 
-                                    <LinearLayout
+                                <View
+                                    android:id="@+id/div_return_info"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="12dp"
+                                    android:background="#EEEEEE"
+                                    app:layout_constraintTop_toBottomOf="@+id/col_left_time_return" />
+
+                                <LinearLayout
+                                    android:id="@+id/col_left_info_return"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    app:layout_constraintEnd_toStartOf="@id/col_center_info_return"
+                                    app:layout_constraintHorizontal_weight="1"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/div_return_info">
+
+                                    <ImageView
+                                        android:id="@+id/img_return_airline_logo"
+                                        android:layout_width="50dp"
+                                        android:layout_height="30dp"
+                                        android:scaleType="centerInside"
+                                        android:src="@drawable/ic_airline" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/col_center_info_return"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    app:layout_constraintBottom_toBottomOf="@id/col_left_info_return"
+                                    app:layout_constraintEnd_toStartOf="@id/col_right_info_return"
+                                    app:layout_constraintHorizontal_weight="1"
+                                    app:layout_constraintStart_toEndOf="@id/col_left_info_return"
+                                    app:layout_constraintTop_toTopOf="@id/col_left_info_return">
+
+                                    <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:gravity="center"
-                                        android:orientation="vertical">
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="Loại vé"
-                                            android:textColor="#888888"
-                                            android:textSize="11sp" />
-                                        <TextView
-                                            android:id="@+id/tv_return_fare_class"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="Phổ thông"
-                                            android:textColor="#1A1A2E"
-                                            android:textSize="12sp"
-                                            android:textStyle="bold" />
-                                    </LinearLayout>
+                                        android:text="Bay Thẳng"
+                                        android:textColor="#555555"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_return_flight_number"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="VJ456"
+                                        android:textColor="#333333"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold" />
                                 </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/col_right_info_return"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:orientation="vertical"
+                                    app:layout_constraintBottom_toBottomOf="@id/col_left_info_return"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintHorizontal_weight="1"
+                                    app:layout_constraintStart_toEndOf="@id/col_center_info_return"
+                                    app:layout_constraintTop_toTopOf="@id/col_left_info_return">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Loại vé"
+                                        android:textColor="#888888"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/tv_return_fare_class"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:gravity="center"
+                                        android:singleLine="true"
+                                        android:textColor="#1A1A2E"
+                                        android:textSize="12sp"
+                                        android:textStyle="bold"
+                                        tools:text="Phổ thông linh hoạt" />
+                                </LinearLayout>
+
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
                             <View
@@ -498,24 +690,109 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:gravity="center_vertical">
-                                <TextView
-                                    android:layout_width="0dp"
+                                android:orientation="vertical"
+                                >
+
+                                <!-- Giá người lớn -->
+                                <LinearLayout
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="Tổng giá vé lượt về"
-                                    android:textColor="#555555"
-                                    android:textSize="13sp" />
-                                <TextView
-                                    android:id="@+id/tv_return_total_price"
-                                    android:layout_width="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical">
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Tổng giá vé lượt về"
+                                        android:textColor="#1A1A2E"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp" />
+                                    <TextView
+                                        android:id="@+id/tv_return_total_price"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="9.554.8000đ"
+                                        android:textColor="#E53935"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <!-- Giá người lớn -->
+                                <LinearLayout
+                                    android:id="@+id/layout_return_adult_price"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="1.980.000đ"
-                                    android:textColor="#E53935"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold" />
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical">
+                                    <TextView
+                                        android:id="@+id/tv_return_adult"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Giá vé người lớn "
+                                        android:textColor="#555555"
+                                        android:textSize="13sp" />
+                                    <TextView
+                                        android:id="@+id/tv_return_adult_price"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="2 x 3.133.000đ"
+                                        android:textColor="#868686"
+                                        android:textSize="14sp"
+                                        />
+                                </LinearLayout>
+
+                                <!-- Giá trẻ em -->
+                                <LinearLayout
+                                    android:id="@+id/layout_return_child_price"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical">
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Giá vé trẻ con"
+                                        android:textColor="#555555"
+                                        android:textSize="13sp" />
+                                    <TextView
+                                        android:id="@+id/tv_return_child_price"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="1 x 2.828.500đ"
+                                        android:textColor="#868686"
+                                        android:textSize="14sp"
+                                        />
+                                </LinearLayout>
+
+                                <!-- Giá em bé -->
+                                <LinearLayout
+                                    android:id="@+id/layout_return_baby_price"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical">
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Giá vé em bé"
+                                        android:textColor="#555555"
+                                        android:textSize="13sp" />
+                                    <TextView
+                                        android:id="@+id/tv_return_baby_price"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="1 x 463.300đ"
+                                        android:textColor="#868686"
+                                        android:textSize="14sp"
+                                        />
+                                </LinearLayout>
+
                             </LinearLayout>
+
+
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -738,7 +1015,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_contact_name"
                                 android:layout_width="match_parent"
-                                android:layout_height="35dp"
+                                android:layout_height="40dp"
                                 android:hint="VD: NGUYEN VAN AN"
                                 android:inputType="textCapCharacters"
                                 android:textSize="13sp"
@@ -775,7 +1052,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_contact_phone"
                                 android:layout_width="match_parent"
-                                android:layout_height="35dp"
+                                android:layout_height="40dp"
                                 android:inputType="phone"
                                 android:textSize="13sp"
                                 android:paddingVertical="0dp" />
@@ -811,7 +1088,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_contact_email"
                                 android:layout_width="match_parent"
-                                android:layout_height="35dp"
+                                android:layout_height="40dp"
                                 android:inputType="textEmailAddress"
                                 android:textSize="13sp"
                                 android:paddingVertical="0dp" />

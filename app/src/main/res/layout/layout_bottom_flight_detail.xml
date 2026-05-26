@@ -251,7 +251,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
+
                         android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="@+id/col_left_info1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_weight="1"
                         app:layout_constraintStart_toEndOf="@id/col_center_info1"
@@ -270,13 +272,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:ellipsize="end"
-                            android:maxWidth="90dp"
+                            android:gravity="center"
                             android:singleLine="true"
                             android:textColor="#1A1A2E"
                             android:textSize="12sp"
                             android:textStyle="bold"
-                            tools:text="Phổ thông" />
+                            tools:text="Phổ thông đặc biệt " />
                     </LinearLayout>
 
                     <LinearLayout

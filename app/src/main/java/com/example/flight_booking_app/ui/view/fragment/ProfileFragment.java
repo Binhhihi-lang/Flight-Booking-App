@@ -12,12 +12,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.R;
 import com.example.flight_booking_app.data.model.AuthResult;
+import com.example.flight_booking_app.ui.view.activity.ForgotPasswordActivity;
 import com.example.flight_booking_app.ui.view.activity.LoginActivity;
 import com.example.flight_booking_app.ui.view.activity.UserEditProfileActivity;
 import com.example.flight_booking_app.ui.viewmodel.UserViewModel;
@@ -31,6 +34,7 @@ import com.google.android.material.button.MaterialButton;
 public class ProfileFragment extends Fragment {
 
     private TextView tvFullName, tvEmail, tvPhone;
+    private TextView btnChangePassword, btnPolicy, btnSupport, btnLanguage;
     private ImageView imgAvatar, imgSmallAvatar;
     private MaterialToolbar toolbar;
     private MaterialButton btnLogout;
@@ -75,6 +79,10 @@ public class ProfileFragment extends Fragment {
         toolbar       = view.findViewById(R.id.toolbarInfoProfile);
         btnLogout     = view.findViewById(R.id.btnLogout);
         imgUpdateView = view.findViewById(R.id.imgEditProfile);
+        btnChangePassword = view.findViewById(R.id.btnChangePassword);
+        btnPolicy = view.findViewById(R.id.btnPolicy);
+        btnSupport = view.findViewById(R.id.btnSupport);
+        btnLanguage = view.findViewById(R.id.btnLanguage);
     }
 
     private void setupGoogleSignIn() {
@@ -149,6 +157,10 @@ public class ProfileFragment extends Fragment {
         });
 
         btnLogout.setOnClickListener(v -> showLogoutDialog());
+
+        btnChangePassword.setOnClickListener(v -> startActivity(new Intent(getActivity(), ForgotPasswordActivity.class)));
+
+        btnLanguage.setOnClickListener(v -> showLanguageDialog());
     }
 
     // đăng xuất
@@ -170,5 +182,36 @@ public class ProfileFragment extends Fragment {
                 userViewModel.logout(); // gọi viewModel đăng xuất
             }
         });
+    }
+    private void showLanguageDialog() {
+        String[] languages = {"Tiếng Việt", "English"};
+
+        // Lấy ngôn ngữ hiện tại của app để đánh dấu check sẵn vào Dialog cho chuyên nghiệp
+        LocaleListCompat currentLocales = AppCompatDelegate.getApplicationLocales();
+        int checkedItem = 0; // Mặc định chọn Tiếng Việt (index 0)
+
+        // Nếu app đang cài tiếng Anh thì đổi checkItem sang 1
+        if (!currentLocales.isEmpty() && currentLocales.get(0).getLanguage().equals("en")) {
+            checkedItem = 1;
+        }
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Chọn ngôn ngữ / Select Language")
+                .setSingleChoiceItems(languages, checkedItem, (dialog, which) -> {
+                    if (which == 0) {
+                        setAppLanguage("vi"); // Tiếng Việt
+                    } else {
+                        setAppLanguage("en"); // Tiếng Anh
+                    }
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    private void setAppLanguage(String languageCode) {
+        // Hàm này sẽ tự động lưu ngôn ngữ và khởi động lại Activity đang chạy để áp dụng string mới
+        LocaleListCompat appLocale = LocaleListCompat.forLanguageTags(languageCode);
+        AppCompatDelegate.setApplicationLocales(appLocale);
     }
 }

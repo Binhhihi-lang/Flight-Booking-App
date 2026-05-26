@@ -32,8 +32,6 @@ public class FlightViewModel extends ViewModel {
     private final MutableLiveData<List<Flight>> flightList = new MutableLiveData<>();
     private final MutableLiveData<AuthResult>   loadState  = new MutableLiveData<>();
 
-    private final MutableLiveData<Boolean> selectedReturn = new MutableLiveData<>();
-
     // Biến giữ chuyến bay khi chọn
     private Flight selectedOutboundFlight = null; // Lưu chuyến bay đi đã chốt
     private Flight selectedReturnFlight = null;   // Lưu chuyến bay về đã chốt
@@ -43,10 +41,6 @@ public class FlightViewModel extends ViewModel {
 
     public FlightViewModel() {
         repository = new FlightRepository();
-    }
-
-    public LiveData<Boolean> getReturnState() {
-        return selectedReturn;
     }
 
     // ── Getters và Setters cho các biến trạng thái
@@ -80,13 +74,13 @@ public class FlightViewModel extends ViewModel {
     }
 
     public void searchFlights(String fromCityId, String toCityId, String departureDate,
-                              String seatClass, int adultCount, int childCount, int babyCount) {
+                              int adultCount, int childCount, int babyCount) {
 
         loadState.setValue(AuthResult.loading());
 
         int totalPassengers = adultCount + childCount + babyCount;
 
-        repository.searchFlights(fromCityId, toCityId, departureDate, seatClass, totalPassengers,
+        repository.searchFlights(fromCityId, toCityId, departureDate, totalPassengers,
                 new FlightRepository.OnFlightsLoaded() {
                     @Override
                     public void onLoaded(List<Flight> flights) {
@@ -108,14 +102,11 @@ public class FlightViewModel extends ViewModel {
                 });
     }
 
-    /**
-     * Tìm chuyến bay lượt về (tab LƯỢT VỀ).
-     * Đảo cityId + thay departureDate thành returnDate.
-     */
+
     public void searchReturnFlights(String fromCityId, String toCityId, String returnDate,
-                                    String seatClass, int adultCount, int childCount, int babyCount) {
+                                    int adultCount, int childCount, int babyCount) {
         // Đảo chiều: toCityId → fromCityId
-        searchFlights(toCityId, fromCityId, returnDate, seatClass, adultCount, childCount, babyCount);
+        searchFlights(toCityId, fromCityId, returnDate, adultCount, childCount, babyCount);
     }
 
 

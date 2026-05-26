@@ -28,6 +28,7 @@
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:src="@drawable/ic_nav_profile"
+        android:backgroundTint="@color/primary_blue"
         android:layout_marginEnd="10dp"
         tools:src="@drawable/ic_nav_profile" />
 
@@ -43,6 +44,7 @@
         tools:text="Người lớn 0" />
 
     <TextView
+        android:id="@+id/tv_passenger_seat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ghế 4C"
@@ -50,12 +52,6 @@
         android:textColor="#333333"
         android:textSize="16sp" />
 
-    <!-- Dấu * bắt buộc -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="*"
-        android:textColor="#E53935"
-        android:textSize="20sp" />
+
 
 </LinearLayout>

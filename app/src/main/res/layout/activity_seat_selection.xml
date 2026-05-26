@@ -1,43 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    activity_seat_selection.xml
-    ══════════════════════════════════════════════════════════════════
-    Màn hình chọn ghế ngồi.
 
-    CẤU TRÚC:
-    ┌─ AppBar (Toolbar + Tab LƯỢT ĐI | LƯỢT VỀ) ──────────────────┐
-    │                                                               │
-    ├─ Body (ngang) ────────────────────────────────────────────────┤
-    │  LEFT (scroll dọc)            RIGHT (fixed)                  │
-    │  ┌─ Legend (6 loại) ─┐   ┌─ Máy bay icon + model ─┐         │
-    │  ├─ Airline label    ─┤   ├─ FROM iata ────────────┤         │
-    │  └─ SeatMap Grid  ───┘   ├─ icon máy bay + line ──┤         │
-    │                           └─ TO iata ──────────────┘         │
-    ├─ Bottom bar ─────────────────────────────────────────────────┤
-    │  [icon] "Ghế đang chọn / tên ghế"    "Đã bao gồm VAT"       │
-    │  [TRỞ VỀ]                   [TIẾP TỤC]                      │
-    └───────────────────────────────────────────────────────────────┘
-
-    KEY IDs (dùng trong SeatSelectionActivity.java):
-      toolbar_seat              - Toolbar back + title
-      tab_seat_depart           - Tab "LƯỢT ĐI"
-      tab_seat_return           - Tab "LƯỢT VỀ"
-      layout_seat_return_tab    - Container 2 tab (gone khi 1 chiều)
-      scroll_seat_map           - NestedScrollView chứa map ghế
-      layout_legend             - LinearLayout chứa 6 dòng chú giải
-      tv_seat_airline_name      - Tên hãng bay (vd: Vietjet Air)
-      rv_seat_map               - RecyclerView hiển thị sơ đồ ghế
-      tv_aircraft_model         - Tên tàu bay (vd: A321)
-      tv_seat_from_iata         - Mã sân bay đi (vd: HAN)
-      tv_seat_to_iata           - Mã sân bay đến (vd: SGN)
-      layout_selected_seat_info - Bottom bar info ghế đang chọn
-      tv_selected_seat_label    - "Ghế đang chọn" hoặc số hiệu ghế
-      tv_selected_seat_price    - Giá ghế đang chọn
-      tv_vat_note               - "Đã bao gồm VAT"
-      btn_seat_back             - Nút TRỞ VỀ
-      btn_seat_continue         - Nút TIẾP TỤC
-    ══════════════════════════════════════════════════════════════════
--->
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -72,7 +34,7 @@
         <!-- Tab Row: LƯỢT ĐI | LƯỢT VỀ -->
         <!-- gone khi 1 chiều, visible khi khứ hồi -->
         <LinearLayout
-            android:id="@+id/layout_seat_return_tab"
+            android:id="@+id/layout_seat_tab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -91,7 +53,7 @@
                 android:textColor="#333333"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                android:background="@drawable/bg_seat_tab_selected" />
+                 />
 
             <!-- Tab LƯỢT VỀ -->
             <TextView
@@ -100,328 +62,360 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
+
                 android:paddingVertical="12dp"
                 android:text="LƯỢT VỀ"
                 android:textColor="#333333"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                android:background="@drawable/bg_seat_tab_unselected" />
+                 />
 
         </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- ══════════════════════════════════════════
-         MAIN BODY: Left (seat map) + Right (plane diagram)
-         ══════════════════════════════════════════ -->
-    <LinearLayout
-        android:id="@+id/layout_seat_body"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_booking"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:paddingBottom="140dp"
+        android:fillViewport="true"
+        android:paddingBottom="120dp"
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- ────────────────────────────────────────
-             LEFT COLUMN: Legend + Airline + Seat Map
-             ──────────────────────────────────────── -->
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scroll_seat_map"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/layout_seat_body"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#F0F4F8">
+            android:orientation="horizontal"
+            android:paddingBottom="140dp"
+            android:clipToPadding="false"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="12dp"
-                android:paddingHorizontal="10dp"
-                android:paddingBottom="16dp">
+            <!-- ────────────────────────────────────────
+                 LEFT COLUMN: Legend + Airline + Seat Map
+                 ──────────────────────────────────────── -->
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scroll_seat_map"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#F0F4F8">
 
-                <!-- ── LEGEND (6 loại ghế) ───────────────── -->
                 <LinearLayout
-                    android:id="@+id/layout_legend"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_legend_card"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="10dp"
-                    android:layout_marginBottom="14dp">
+                    android:paddingTop="12dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingBottom="16dp">
 
-                    <!-- Ghế cao cấp -->
+                    <!-- ── LEGEND (6 loại ghế) ───────────────── -->
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:id="@+id/layout_legend"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="7dp">
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_legend_card"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="10dp"
+                        android:layout_marginBottom="14dp">
 
-                        <View
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:background="@drawable/bg_seat_premium"
-                            android:layout_marginEnd="10dp" />
-
-                        <TextView
+                        <!-- Ghế cao cấp -->
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Ghế cao cấp"
-                            android:textColor="#333333"
-                            android:textSize="13sp" />
-                    </LinearLayout>
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="7dp">
 
-                    <!-- Ghế hàng trước -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="7dp">
+                            <View
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/bg_seat_premium"
+                                android:layout_marginEnd="10dp" />
 
-                        <View
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:background="@drawable/bg_seat_front"
-                            android:layout_marginEnd="10dp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ghế cao cấp"
+                                android:textColor="#333333"
+                                android:textSize="13sp" />
+                        </LinearLayout>
 
-                        <TextView
+                        <!-- Ghế hàng trước -->
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Ghế hàng trước"
-                            android:textColor="#333333"
-                            android:textSize="13sp" />
-                    </LinearLayout>
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="7dp">
 
-                    <!-- Ghế tiêu chuẩn -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="7dp">
+                            <View
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/bg_seat_front"
+                                android:layout_marginEnd="10dp" />
 
-                        <View
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:background="@drawable/bg_seat_standard"
-                            android:layout_marginEnd="10dp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ghế hàng trước"
+                                android:textColor="#333333"
+                                android:textSize="13sp" />
+                        </LinearLayout>
 
-                        <TextView
+                        <!-- Ghế tiêu chuẩn -->
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Ghế tiêu chuẩn"
-                            android:textColor="#333333"
-                            android:textSize="13sp" />
-                    </LinearLayout>
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="7dp">
 
-                    <!-- Ghế để chân rộng -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="7dp">
+                            <View
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/bg_seat_standard"
+                                android:layout_marginEnd="10dp" />
 
-                        <View
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:background="@drawable/bg_seat_exit_row"
-                            android:layout_marginEnd="10dp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ghế tiêu chuẩn"
+                                android:textColor="#333333"
+                                android:textSize="13sp" />
+                        </LinearLayout>
 
-                        <TextView
+                        <!-- Ghế để chân rộng -->
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Ghế để chân rộng..."
-                            android:textColor="#333333"
-                            android:textSize="13sp"
-                            android:maxWidth="120dp"
-                            android:ellipsize="end"
-                            android:singleLine="true" />
-                    </LinearLayout>
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="7dp">
 
-                    <!-- Ghế đang chọn -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="7dp">
+                            <View
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/bg_seat_exit_row"
+                                android:layout_marginEnd="10dp" />
 
-                        <View
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:background="@drawable/bg_seat_selecting"
-                            android:layout_marginEnd="10dp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ghế để chân rộng"
+                                android:textColor="#333333"
+                                android:textSize="13sp"
+                                android:maxWidth="120dp"
+                                android:ellipsize="end"
+                                android:singleLine="true" />
+                        </LinearLayout>
 
-                        <TextView
+                        <!-- Ghế đang chọn -->
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Ghế đang chọn"
-                            android:textColor="#333333"
-                            android:textSize="13sp" />
-                    </LinearLayout>
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="7dp">
 
-                    <!-- Đã có người -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                            <View
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/bg_seat_selecting"
+                                android:layout_marginEnd="10dp" />
 
-                        <View
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:background="@drawable/bg_seat_booked"
-                            android:layout_marginEnd="10dp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ghế đang chọn"
+                                android:textColor="#333333"
+                                android:textSize="13sp" />
+                        </LinearLayout>
 
-                        <TextView
+                        <!-- Đã có người -->
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Đã có người"
-                            android:textColor="#333333"
-                            android:textSize="13sp" />
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <View
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:background="@drawable/bg_seat_booked"
+                                android:layout_marginEnd="10dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Đã có người"
+                                android:textColor="#333333"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
                     </LinearLayout>
+
+                    <!-- ── TÊN HÃNG BAY ───────────────────────── -->
+                    <TextView
+                        android:id="@+id/tv_seat_airline_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center"
+                        android:layout_marginBottom="10dp"
+                        android:text="Vietjet Air"
+                        android:textColor="#333333"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:text="Vietjet Air" />
+
+                    <!-- ── SEAT MAP (RecyclerView) ────────────── -->
+                    <!--
+                        RecyclerView với GridLayoutManager hoặc custom adapter.
+                        Mỗi item = 1 ô ghế (SeatItem).
+                        Adapter phân biệt: số hàng (row number) vs ghế (A/B/C/D/E/F).
+                        SpanCount = 7 (cột A B C | số | D E F).
+                        Layout manager: GridLayoutManager(ctx, 7).
+                    -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_seat_map"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"
+                        tools:itemCount="5"
+                        tools:listitem="@layout/item_seat_cell" />
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+            <!-- ────────────────────────────────────────
+                 RIGHT COLUMN: Aircraft diagram + Route
+                 Fixed, không scroll
+                 ──────────────────────────────────────── -->
+            <LinearLayout
+                android:id="@+id/layout_seat_right_panel"
+                android:layout_width="90dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:background="#F0F4F8"
+                android:paddingTop="16dp"
+                android:paddingHorizontal="8dp">
+
+                <!-- Icon máy bay -->
+                <ImageView
+                    android:id="@+id/img_aircraft_icon"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/ic_aircraft_top_view"
+                    android:layout_marginBottom="4dp"
+                    app:tint="@color/primary_blue" />
+
+                <!-- Model tàu bay -->
+                <TextView
+                    android:id="@+id/tv_aircraft_model"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A321"
+                    android:textColor="#1A1A2E"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="20dp"
+                    tools:text="A321" />
+
+                <!-- Illustration: 2 ghế -->
+                <ImageView
+                    android:id="@+id/img_seat_illustration"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_seat_illustration"
+                    app:tint="@color/primary_blue"
+                    />
+                <TextView
+                    android:id="@+id/tv_seat_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4B"
+                    android:textColor="#1A1A2E"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="20dp"
+                    tools:text="4B" />
+
+                <!-- Route diagram: FROM → plane → TO -->
+                <TextView
+                    android:id="@+id/tv_seat_from_iata"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HAN"
+                    android:textColor="#333333"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_iata_chip_outline"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    tools:text="HAN" />
+
+                <!-- Đường thẳng + icon máy bay -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:layout_marginVertical="4dp">
+
+                    <View
+                        android:layout_width="2dp"
+                        android:layout_height="28dp"
+                        android:background="@color/primary_blue" />
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_airplane"
+                        app:tint="@color/primary_blue" />
+
+                    <View
+                        android:layout_width="2dp"
+                        android:layout_height="28dp"
+                        android:background="@color/primary_blue" />
 
                 </LinearLayout>
 
-                <!-- ── TÊN HÃNG BAY ───────────────────────── -->
                 <TextView
-                    android:id="@+id/tv_seat_airline_name"
+                    android:id="@+id/tv_seat_to_iata"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:layout_marginBottom="10dp"
-                    android:text="Vietjet Air"
+                    android:text="SGN"
                     android:textColor="#333333"
-                    android:textSize="14sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
-                    tools:text="Vietjet Air" />
-
-                <!-- ── SEAT MAP (RecyclerView) ────────────── -->
-                <!--
-                    RecyclerView với GridLayoutManager hoặc custom adapter.
-                    Mỗi item = 1 ô ghế (SeatItem).
-                    Adapter phân biệt: số hàng (row number) vs ghế (A/B/C/D/E/F).
-                    SpanCount = 7 (cột A B C | số | D E F).
-                    Layout manager: GridLayoutManager(ctx, 7).
-                -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_seat_map"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:overScrollMode="never"
-                    tools:itemCount="42"
-                    tools:listitem="@layout/item_seat_cell" />
+                    android:background="@drawable/bg_iata_chip_outline"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    tools:text="SGN" />
 
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-
-        <!-- ────────────────────────────────────────
-             RIGHT COLUMN: Aircraft diagram + Route
-             Fixed, không scroll
-             ──────────────────────────────────────── -->
-        <LinearLayout
-            android:id="@+id/layout_seat_right_panel"
-            android:layout_width="90dp"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:background="#F0F4F8"
-            android:paddingTop="16dp"
-            android:paddingHorizontal="8dp">
-
-            <!-- Icon máy bay -->
-            <ImageView
-                android:id="@+id/img_aircraft_icon"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:src="@drawable/ic_aircraft_top_view"
-                android:layout_marginBottom="4dp"
-                app:tint="@color/primary_blue" />
-
-            <!-- Model tàu bay -->
-            <TextView
-                android:id="@+id/tv_aircraft_model"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="A321"
-                android:textColor="#1A1A2E"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="20dp"
-                tools:text="A321" />
-
-            <!-- Illustration: 2 ghế -->
-            <ImageView
-                android:id="@+id/img_seat_illustration"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@drawable/ic_seat_illustration"
-                app:tint="@color/primary_blue"
-                android:layout_marginBottom="32dp" />
-
-            <!-- Route diagram: FROM → plane → TO -->
-            <TextView
-                android:id="@+id/tv_seat_from_iata"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="HAN"
-                android:textColor="#333333"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:background="@drawable/bg_iata_chip_outline"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
-                tools:text="HAN" />
-
-            <!-- Đường thẳng + icon máy bay -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_marginVertical="4dp">
-
-                <View
-                    android:layout_width="2dp"
-                    android:layout_height="28dp"
-                    android:background="@color/primary_blue" />
-
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:src="@drawable/ic_airplane"
-                    app:tint="@color/primary_blue" />
-
-                <View
-                    android:layout_width="2dp"
-                    android:layout_height="28dp"
-                    android:background="@color/primary_blue" />
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_seat_to_iata"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SGN"
-                android:textColor="#333333"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:background="@drawable/bg_iata_chip_outline"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
-                tools:text="SGN" />
 
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- ══════════════════════════════════════════
+         MAIN BODY: Left (seat map) + Right (plane diagram)
+         ══════════════════════════════════════════ -->
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        />
 
     <!-- ══════════════════════════════════════════
          BOTTOM BAR: Thông tin ghế + 2 nút

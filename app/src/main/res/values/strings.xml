@@ -1,82 +1,57 @@
 <resources>
-    <!-- Login -->
     <string name="app_name">Flight-Booking-App</string>
+    <string name="app_brand_name">Huce Travel</string>
     <string name="client_id">471903679923-fhdod172h93pcsteqo70h2gsf8doc7lo.apps.googleusercontent.com</string>
 
-    <string name="login_title">Login</string>
-    <string name="login_subtitle">Welcome back to the app</string>
+    <string name="login_title_ready">Sẵn sàng khám phá?</string>
+    <string name="login_subtitle_explore">Đăng nhập để đặt chuyến bay tiếp theo của bạn.</string>
+    <string name="label_email_address">Địa chỉ Email</string>
+    <string name="hint_email_example">alex@example.com</string>
+    <string name="label_password">Mật khẩu</string>
+    <string name="hint_password">Mật khẩu</string>
+    <string name="link_forgot_password">Quên mật khẩu?</string>
+    <string name="btn_login">Đăng nhập</string>
+    <string name="text_or_continue_with">hoặc tiếp tục với</string>
+    <string name="btn_continue_with_google">Tiếp tục với Google</string>
+    <string name="text_dont_have_account">Bạn chưa có tài khoản? </string>
+    <string name="link_sign_up">Đăng ký</string>
 
-    <string name="label_email">Email Address</string>
-    <string name="label_password">Password</string>
+    <string name="signup_title_join_us">Đăng ký ngay hôm nay</string>
+    <string name="signup_subtitle_deals">Tạo tài khoản để nhận các ưu đãi vé máy bay độc quyền.</string>
+    <string name="hint_full_name">Họ và tên</string>
+    <string name="hint_email_short">Email</string>
+    <string name="btn_create_account">Tạo tài khoản</string>
+    <string name="text_or_signup_google">Hoặc đăng ký bằng Google</string>
+    <string name="text_already_have_account">Bạn đã có tài khoản? </string>
+    <string name="link_sign_in_here">Đăng nhập</string>
 
-    <string name="hint_email">hello@example.com</string>
-    <string name="hint_password">password</string>
+    <string name="forgot_pw_title">Quên mật khẩu?</string>
+    <string name="forgot_pw_subtitle">Nhập địa chỉ email của bạn để nhận liên kết đặt lại mật khẩu.</string>
+    <string name="hint_email_address_only">Nhập Email</string>
+    <string name="btn_reset_password">Đặt lại mật khẩu</string>
+    <string name="link_create_account">Tạo tài khoản</string>
 
-    <string name="link_forgot_password">Forgot Password?</string>
-    <string name="check_remember_me">Keep me signed in</string>
-    <string name="text_or_divider">or sign in with</string>
+    <string name="home_header_title">Đặt Vé Máy Bay</string>
+    <string name="home_header_subtitle">Hãy khám phá các chuyến bay cùng chúng tôi !!!</string>
+    <string name="tab_one_way">MỘT CHIỀU</string>
+    <string name="tab_round">KHỨ HỒI</string>
+    <string name="label_departure_from">Khởi hành từ</string>
+    <string name="label_arrival_to">Đến</string>
+    <string name="label_departure_date">Ngày đi</string>
+    <string name="label_return_date">Ngày về</string>
+    <string name="label_passengers">Hành khách</string>
+    <string name="btn_search_flights">TÌM CHUYẾN BAY</string>
 
-    <string name="btn_login">Login</string>
+    <string name="default_from_city">Hà Nội</string>
+    <string name="default_from_code">HAN</string>
+    <string name="default_from_airport">Sân bay quốc tế Nội Bài</string>
+    <string name="default_to_city">TP.Hồ Chí Minh</string>
+    <string name="default_to_code">SGN</string>
+    <string name="default_to_airport">Sân bay quốc tế Tân Sơn Nhất</string>
+    <string name="default_date">15/07/2026</string>
+    <string name="default_adult_count">1 Người lớn</string>
+    <string name="default_child_count">0 Trẻ em</string>
+    <string name="default_infant_count">0 Em bé</string>
 
-    <string name="btn_google_signin">Continue with Google</string>
-    <string name="link_create_account">Create an account</string>
-
-    <string name="error_invalid_email">Email không hợp lệ</string>
-    <string name="error_empty_password">Vui lòng nhập mật khẩu</string>
-
-    <!-- Signup   -->
-    <string name="signup_title">Create an Account</string>
-
-    <string name="label_name">Name</string>
-
-    <string name="hint_name">John Doe</string>
-
-    <string name="btn_signup">Sign up</string>
-    <string name="btn_google_signup">Continue with Google</string>
-    <string name="text_or">or</string>
-
-    <string name="text_terms_part1">By continuing, you agree to our </string>
-    <string name="text_terms_link">terms of service.</string>
-
-    <string name="text_already_have_account">Already have an account? </string>
-    <string name="text_sign_in_link">Sign in here</string>
-
-    <!-- Home   -->
-    <string name="title_book_flight">Book Flight</string>
-
-    <string name="tab_one_way">One way</string>
-    <string name="tab_round">Round</string>
-
-    <string name="label_from">From</string>
-    <string name="label_to">To</string>
-    <string name="label_departure">Departure</string>
-    <string name="label_return">Return</string>
-    <string name="label_traveller">Traveller</string>
-    <string name="label_class">Class</string>
-
-    <string name="sample_city_from">Delhi</string>
-    <string name="sample_code_from">DEL</string>
-    <string name="sample_airport_from">Indira Gandhi International Airport</string>
-
-    <string name="sample_city_to">Kolkata</string>
-    <string name="sample_code_to">CCU</string>
-    <string name="sample_airport_to">Subhash Chandra International Airport</string>
-
-    <string name="sample_date_dep">15/07/2022</string>
-    <string name="hint_add_return">+ Add Return Date</string>
-
-
-    <string name="sample_traveller">1 Adult</string>
-    <string name="sample_class">Economy</string>
-
-    <string name="btn_search_flight">Search</string>
-
-    <string name="nav_home">Home</string>
-    <string name="nav_booking">Booking</string>
-    <string name="nav_offer">Offer</string>
-    <string name="nav_inbox">Inbox</string>
-    <string name="nav_profile">Profile</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

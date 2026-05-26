@@ -107,14 +107,6 @@
                             android:src="@drawable/ic_baby"
                             app:tint="@color/white" />
 
-                        <TextView
-                            android:id="@+id/tv_search_info_class"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
-                            android:text="phổ thông "
-                            android:textColor="#E0E0E0"
-                            android:textSize="16sp" />
 
                     </LinearLayout>
 

@@ -6,6 +6,8 @@ import android.os.Handler;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
 
 import com.example.flight_booking_app.R;
 
@@ -15,6 +17,12 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleListCompat currentLocales = AppCompatDelegate.getApplicationLocales();
+        if (currentLocales.isEmpty()) {
+            // Nếu chưa từng cấu hình ngôn ngữ, ép buộc app chọn tiếng Việt ("vi")
+            LocaleListCompat appLocale = LocaleListCompat.forLanguageTags("vi");
+            AppCompatDelegate.setApplicationLocales(appLocale);
+        }
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash);
 

@@ -1,0 +1,53 @@
+<resources>
+    <string name="app_name">Flight-Booking-App</string>
+    <string name="app_brand_name">Huce Travel</string>
+    <string name="client_id">471903679923-fhdod172h93pcsteqo70h2gsf8doc7lo.apps.googleusercontent.com</string>
+
+    <string name="login_title_ready">Ready to explore?</string>
+    <string name="login_subtitle_explore">Sign in to book your next flight.</string>
+    <string name="label_email_address">Email Address</string>
+    <string name="hint_email_example">alex@example.com</string>
+    <string name="label_password">Password</string>
+    <string name="hint_password">Password</string>
+    <string name="link_forgot_password">Forgot password?</string>
+    <string name="btn_login">Sign In</string>
+    <string name="text_or_continue_with">or continue with</string>
+    <string name="btn_continue_with_google">Continue with Google</string>
+    <string name="text_dont_have_account">Don\'t have an account? </string> <string name="link_sign_up">Sign up</string>
+
+    <string name="signup_title_join_us">Join us today</string>
+    <string name="signup_subtitle_deals">Create an account to get exclusive flight deals.</string>
+    <string name="hint_full_name">Full Name</string>
+    <string name="hint_email_short">Email</string>
+    <string name="btn_create_account">Create Account</string>
+    <string name="text_or_signup_google">Or sign up with Google</string>
+    <string name="text_already_have_account">Already have an account? </string>
+    <string name="link_sign_in_here">Sign in</string>
+
+    <string name="forgot_pw_title">Forgot Password?</string>
+    <string name="forgot_pw_subtitle">Enter your email address to receive a password reset link.</string>
+    <string name="hint_email_address_only">Enter Email</string>
+    <string name="btn_reset_password">Reset Password</string>
+    <string name="link_create_account">Create an account</string>
+
+    <string name="home_header_title">Book Your Flight</string>
+    <string name="home_header_subtitle">Explore the world with us!!!</string>
+    <string name="tab_one_way">ONE WAY</string>
+    <string name="tab_round">ROUND TRIP</string>
+    <string name="label_departure_from">Departure From</string>
+    <string name="label_arrival_to">Arrival To</string>
+    <string name="label_departure_date">Departure Date</string>
+    <string name="label_return_date">Return Date</string>
+    <string name="label_passengers">Passengers</string>
+    <string name="btn_search_flights">SEARCH FLIGHTS</string>
+
+    <string name="default_from_city">Hanoi</string>
+    <string name="default_from_code">HAN</string>
+    <string name="default_from_airport">Noi Bai Intl Airport</string> <string name="default_to_city">Ho Chi Minh City</string>
+    <string name="default_to_code">SGN</string>
+    <string name="default_to_airport">Tan Son Nhat Intl Airport</string>
+    <string name="default_date">15/07/2026</string>
+    <string name="default_adult_count">1 Adult</string>
+    <string name="default_child_count">0 Child</string>
+    <string name="default_infant_count">0 Infant</string>
+</resources>
