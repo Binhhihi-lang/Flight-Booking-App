@@ -29,23 +29,23 @@ import java.util.Locale;
 
 /**
  * BookingInfoActivity – Màn hình nhập thông tin đặt vé.
- *
+ * <p>
  * NHẬN từ SearchFlightActivity:
- *   - Thông tin chuyến đi / chuyến về
- *   - Số lượng hành khách: adultCount, childCount, babyCount
- *   - Giá vé: basePrice, taxFee
- *   - Mã sơ đồ ghế: seatMapId (từ Aircraft)
- *
+ * - Thông tin chuyến đi / chuyến về
+ * - Số lượng hành khách: adultCount, childCount, babyCount
+ * - Giá vé: basePrice, taxFee
+ * - Mã sơ đồ ghế: seatMapId (từ Aircraft)
+ * <p>
  * QUY TẮC GHÉP GHẾ:
- *   - Người lớn (ADULT) : cần ghế riêng
- *   - Trẻ em   (CHILD)  : cần ghế riêng
- *   - Em bé    (BABY)   : ngồi cùng người lớn, KHÔNG cần ghế riêng
- *   → seatsNeeded = adultCount + childCount
- *
+ * - Người lớn (ADULT) : cần ghế riêng
+ * - Trẻ em   (CHILD)  : cần ghế riêng
+ * - Em bé    (BABY)   : ngồi cùng người lớn, KHÔNG cần ghế riêng
+ * → seatsNeeded = adultCount + childCount
+ * <p>
  * TÍNH GIÁ VÉ:
- *   - Người lớn: 100%
- *   - Trẻ em:    75%
- *   - Em bé:     10%
+ * - Người lớn: 100%
+ * - Trẻ em:    75%
+ * - Em bé:     10%
  */
 public class BookingInfoActivity extends AppCompatActivity {
 
@@ -57,69 +57,68 @@ public class BookingInfoActivity extends AppCompatActivity {
     // ══════════════════════════════════════════════════════════════════════
 
     // ── Chuyến đi ─────────────────────────────────────────────────────────
-    public static final String EXTRA_OUT_FLIGHT_NUMBER   = "out_flight_number";
-    public static final String EXTRA_OUT_AIRLINE_LOGO    = "out_airline_logo";
-    public static final String EXTRA_OUT_AIRLINE_NAME    = "out_airline_name";   // FIX: trước = "Boeing 737"
-    public static final String EXTRA_OUT_AIRCRAFT_NAME   = "out_aircraft_name";  // FIX: trước = "Airbus A320"
-    public static final String EXTRA_OUT_SEAT_MAP_ID     = "out_seat_map_id";    // FIX: trước = "seat_map_id" → trùng với RET
-    public static final String EXTRA_OUT_FROM_CITY       = "out_from_city";
-    public static final String EXTRA_OUT_FROM_IATA       = "out_from_iata";
-    public static final String EXTRA_OUT_TO_CITY         = "out_to_city";
-    public static final String EXTRA_OUT_TO_IATA         = "out_to_iata";
-    public static final String EXTRA_OUT_DEPART_TIME     = "out_depart_time";
-    public static final String EXTRA_OUT_ARRIVAL_TIME    = "out_arrival_time";
-    public static final String EXTRA_OUT_DURATION        = "out_duration";
-    public static final String EXTRA_OUT_DATE            = "out_date";
-    public static final String EXTRA_OUT_BASE_PRICE      = "out_base_price";
-    public static final String EXTRA_OUT_FARE_CLASS      = "out_fare_class";
+    public static final String EXTRA_OUT_FLIGHT_ID = "out_flight_id";
+    public static final String EXTRA_OUT_FLIGHT_NUMBER = "out_flight_number";
+    public static final String EXTRA_OUT_AIRLINE_LOGO = "out_airline_logo";
+    public static final String EXTRA_OUT_AIRLINE_NAME = "out_airline_name";   // FIX: trước = "Boeing 737"
+    public static final String EXTRA_OUT_AIRCRAFT_NAME = "out_aircraft_name";  // FIX: trước = "Airbus A320"
+    public static final String EXTRA_OUT_SEAT_MAP_ID = "out_seat_map_id";    // FIX: trước = "seat_map_id" → trùng với RET
+    public static final String EXTRA_OUT_FROM_CITY = "out_from_city";
+    public static final String EXTRA_OUT_FROM_IATA = "out_from_iata";
+    public static final String EXTRA_OUT_TO_CITY = "out_to_city";
+    public static final String EXTRA_OUT_TO_IATA = "out_to_iata";
+    public static final String EXTRA_OUT_DEPART_TIME = "out_depart_time";
+    public static final String EXTRA_OUT_ARRIVAL_TIME = "out_arrival_time";
+    public static final String EXTRA_OUT_DURATION = "out_duration";
+    public static final String EXTRA_OUT_DATE = "out_date";
+    public static final String EXTRA_OUT_BASE_PRICE = "out_base_price";
+    public static final String EXTRA_OUT_FARE_CLASS = "out_fare_class";
     public static final String EXTRA_OUT_CHECKED_BAGGAGE = "out_checked_baggage";
-    public static final String EXTRA_OUT_TAX_FEE         = "out_tax_fee";
+    public static final String EXTRA_OUT_TAX_FEE = "out_tax_fee";
 
     // ── Chuyến về (optional, chỉ khi khứ hồi) ────────────────────────────
-    public static final String EXTRA_RET_FLIGHT_NUMBER   = "ret_flight_number";
-    public static final String EXTRA_RET_AIRLINE_LOGO    = "ret_airline_logo";
-    public static final String EXTRA_RET_AIRLINE_NAME    = "ret_airline_name";   // FIX: trước = ""
-    public static final String EXTRA_RET_AIRCRAFT_NAME   = "ret_aircraft_name";  // FIX: trước = ""
-    public static final String EXTRA_RET_SEAT_MAP_ID     = "ret_seat_map_id";    // FIX: trước = "seat_map_id" → trùng OUT
-    public static final String EXTRA_RET_FROM_CITY       = "ret_from_city";
-    public static final String EXTRA_RET_FROM_IATA       = "ret_from_iata";
-    public static final String EXTRA_RET_TO_CITY         = "ret_to_city";
-    public static final String EXTRA_RET_TO_IATA         = "ret_to_iata";
-    public static final String EXTRA_RET_DEPART_TIME     = "ret_depart_time";
-    public static final String EXTRA_RET_ARRIVAL_TIME    = "ret_arrival_time";
-    public static final String EXTRA_RET_DURATION        = "ret_duration";
-    public static final String EXTRA_RET_DATE            = "ret_date";
-    public static final String EXTRA_RET_BASE_PRICE      = "ret_base_price";
-    public static final String EXTRA_RET_TAX_FEE         = "ret_tax_fee";
-    public static final String EXTRA_RET_FARE_CLASS      = "ret_fare_class";
+    public static final String EXTRA_RET_FLIGHT_ID = "ret_flight_id";
+    public static final String EXTRA_RET_FLIGHT_NUMBER = "ret_flight_number";
+    public static final String EXTRA_RET_AIRLINE_LOGO = "ret_airline_logo";
+    public static final String EXTRA_RET_AIRLINE_NAME = "ret_airline_name";   // FIX: trước = ""
+    public static final String EXTRA_RET_AIRCRAFT_NAME = "ret_aircraft_name";  // FIX: trước = ""
+    public static final String EXTRA_RET_SEAT_MAP_ID = "ret_seat_map_id";    // FIX: trước = "seat_map_id" → trùng OUT
+    public static final String EXTRA_RET_FROM_CITY = "ret_from_city";
+    public static final String EXTRA_RET_FROM_IATA = "ret_from_iata";
+    public static final String EXTRA_RET_TO_CITY = "ret_to_city";
+    public static final String EXTRA_RET_TO_IATA = "ret_to_iata";
+    public static final String EXTRA_RET_DEPART_TIME = "ret_depart_time";
+    public static final String EXTRA_RET_ARRIVAL_TIME = "ret_arrival_time";
+    public static final String EXTRA_RET_DURATION = "ret_duration";
+    public static final String EXTRA_RET_DATE = "ret_date";
+    public static final String EXTRA_RET_BASE_PRICE = "ret_base_price";
+    public static final String EXTRA_RET_TAX_FEE = "ret_tax_fee";
+    public static final String EXTRA_RET_FARE_CLASS = "ret_fare_class";
 
     // ── Hành khách ────────────────────────────────────────────────────────
-    public static final String EXTRA_ADULT_COUNT         = "adult_count";
-    public static final String EXTRA_CHILD_COUNT         = "child_count";
-    public static final String EXTRA_BABY_COUNT          = "baby_count";
+    public static final String EXTRA_ADULT_COUNT = "adult_count";
+    public static final String EXTRA_CHILD_COUNT = "child_count";
+    public static final String EXTRA_BABY_COUNT = "baby_count";
 
     // ── Flags ─────────────────────────────────────────────────────────────
-    public static final String EXTRA_IS_ROUND_TRIP       = "is_round_trip";
+    public static final String EXTRA_IS_ROUND_TRIP = "is_round_trip";
 
-    // ══════════════════════════════════════════════════════════════════════
-    // Views
-    // ══════════════════════════════════════════════════════════════════════
     private MaterialToolbar toolbar;
 
-    private TextView  tvOutRoute, tvOutDate;
-    private TextView  tvOutDepartTime, tvOutFromIata, tvOutDuration, tvOutArrivalTime, tvOutToIata;
-    private TextView  tvOutFlightNumber, tvOutFareClass;
+    private TextView tvOutRoute, tvOutDate;
+    private TextView tvOutDepartTime, tvOutFromIata, tvOutDuration, tvOutArrivalTime, tvOutToIata;
+    private TextView tvOutFlightNumber, tvOutFareClass;
     private ImageView imgOutLogo;
 
-    private CardView  cardReturnFlight;
-    private CardView  btnSelectSeat;
-    private TextView  tvRetRoute, tvRetDate;
-    private TextView  tvRetDepartTime, tvRetFromIata, tvRetDuration, tvRetArrivalTime, tvRetToIata;
-    private TextView  tvRetFlightNumber, tvRetFareClass;
+    private CardView cardReturnFlight;
+    private CardView btnSelectSeat;
+    private TextView tvRetRoute, tvRetDate;
+    private TextView tvRetDepartTime, tvRetFromIata, tvRetDuration, tvRetArrivalTime, tvRetToIata;
+    private TextView tvRetFlightNumber, tvRetFareClass;
     private ImageView imgRetLogo;
 
-    private LinearLayout  layoutPassengerList;
-    private TextView      tvSubtotalPrice, tvGrandTotalPrice;
+    private LinearLayout layoutPassengerList;
+    private TextView tvSubtotalPrice, tvGrandTotalPrice;
     private MaterialButton btnBookNow;
     private TextView tvSeatSummary;
 
@@ -127,16 +126,16 @@ public class BookingInfoActivity extends AppCompatActivity {
     // Data
     // ══════════════════════════════════════════════════════════════════════
     private boolean isRoundTrip;
-    private int     adultCount, childCount, babyCount;
-    private double  outBasePrice, outTaxFee;
-    private double  retBasePrice, retTaxFee;
+    private int adultCount, childCount, babyCount;
+    private double outBasePrice, outTaxFee;
+    private double retBasePrice, retTaxFee;
 
     // Dữ liệu truyền sang SeatSelectionActivity
-    private String outSeatMapId, outAircraftName, outAirlineName, outFromIata, outToIata;
-    private String retSeatMapId, retAircraftName, retAirlineName, retFromIata, retToIata;
+    private String outboundFlightId, outSeatMapId, outAircraftName, outAirlineName, outFromIata, outToIata;
+    private String returnFlightId, retSeatMapId, retAircraftName, retAirlineName, retFromIata, retToIata;
 
-    private final ArrayList<Passenger> passengerList     = new ArrayList<>();
-    private       ArrayList<String>    selectedSeatCodes = new ArrayList<>();
+    private final ArrayList<Passenger> passengerList = new ArrayList<>();
+    private ArrayList<String> selectedSeatCodes = new ArrayList<>();
 
     // registerForActivityResult PHẢI được gọi trước onCreate → khai báo trực tiếp ở field
     // 1. Tạo 2 biến danh sách lưu giữ mã ghế toàn cục tại BookingInfoActivity
@@ -157,8 +156,7 @@ public class BookingInfoActivity extends AppCompatActivity {
 
                     // Cập nhật giao diện: gán số ghế lên từng hàng hành khách
                     mapSeatsToPassengers();
-                    // Cập nhật nút chọn ghế để phản ánh ghế đã chọn
-                    updateSeatButtonLabel();
+
                 }
             }
     );
@@ -189,34 +187,34 @@ public class BookingInfoActivity extends AppCompatActivity {
     private void bindViews() {
         toolbar = findViewById(R.id.toolbar_booking);
 
-        tvOutRoute        = findViewById(R.id.tv_outbound_route);
-        tvOutDate         = findViewById(R.id.tv_outbound_date);
-        tvOutDepartTime   = findViewById(R.id.tv_outbound_depart_time);
-        tvOutFromIata     = findViewById(R.id.tv_outbound_from_iata);
-        tvOutDuration     = findViewById(R.id.tv_outbound_duration);
-        tvOutArrivalTime  = findViewById(R.id.tv_outbound_arrival_time);
-        tvOutToIata       = findViewById(R.id.tv_outbound_to_iata);
+        tvOutRoute = findViewById(R.id.tv_outbound_route);
+        tvOutDate = findViewById(R.id.tv_outbound_date);
+        tvOutDepartTime = findViewById(R.id.tv_outbound_depart_time);
+        tvOutFromIata = findViewById(R.id.tv_outbound_from_iata);
+        tvOutDuration = findViewById(R.id.tv_outbound_duration);
+        tvOutArrivalTime = findViewById(R.id.tv_outbound_arrival_time);
+        tvOutToIata = findViewById(R.id.tv_outbound_to_iata);
         tvOutFlightNumber = findViewById(R.id.tv_outbound_flight_number);
-        imgOutLogo        = findViewById(R.id.img_outbound_airline_logo);
-        tvOutFareClass    = findViewById(R.id.tv_outbound_fare_class);
+        imgOutLogo = findViewById(R.id.img_outbound_airline_logo);
+        tvOutFareClass = findViewById(R.id.tv_outbound_fare_class);
 
-        cardReturnFlight  = findViewById(R.id.card_return_flight);
-        tvRetRoute        = findViewById(R.id.tv_return_route);
-        tvRetDate         = findViewById(R.id.tv_return_date);
-        tvRetDepartTime   = findViewById(R.id.tv_return_depart_time);
-        tvRetFromIata     = findViewById(R.id.tv_return_from_iata);
-        tvRetDuration     = findViewById(R.id.tv_return_duration);
-        tvRetArrivalTime  = findViewById(R.id.tv_return_arrival_time);
-        tvRetToIata       = findViewById(R.id.tv_return_to_iata);
+        cardReturnFlight = findViewById(R.id.card_return_flight);
+        tvRetRoute = findViewById(R.id.tv_return_route);
+        tvRetDate = findViewById(R.id.tv_return_date);
+        tvRetDepartTime = findViewById(R.id.tv_return_depart_time);
+        tvRetFromIata = findViewById(R.id.tv_return_from_iata);
+        tvRetDuration = findViewById(R.id.tv_return_duration);
+        tvRetArrivalTime = findViewById(R.id.tv_return_arrival_time);
+        tvRetToIata = findViewById(R.id.tv_return_to_iata);
         tvRetFlightNumber = findViewById(R.id.tv_return_flight_number);
-        imgRetLogo        = findViewById(R.id.img_return_airline_logo);
-        tvRetFareClass    = findViewById(R.id.tv_return_fare_class);
+        imgRetLogo = findViewById(R.id.img_return_airline_logo);
+        tvRetFareClass = findViewById(R.id.tv_return_fare_class);
 
-        btnSelectSeat     = findViewById(R.id.card_select_seat);
+        btnSelectSeat = findViewById(R.id.card_select_seat);
         layoutPassengerList = findViewById(R.id.layout_passenger_list);
-        tvSubtotalPrice   = findViewById(R.id.tv_subtotal_price);
+        tvSubtotalPrice = findViewById(R.id.tv_subtotal_price);
         tvGrandTotalPrice = findViewById(R.id.tv_grand_total_price);
-        btnBookNow        = findViewById(R.id.btn_book_now);
+        btnBookNow = findViewById(R.id.btn_book_now);
         tvSeatSummary = findViewById(R.id.tv_passenger_seat);
 
     }
@@ -229,19 +227,20 @@ public class BookingInfoActivity extends AppCompatActivity {
     private void renderFlightInfo() {
         Intent i = getIntent();
 
-        isRoundTrip  = i.getBooleanExtra(EXTRA_IS_ROUND_TRIP, false);
-        adultCount   = i.getIntExtra(EXTRA_ADULT_COUNT, 1);
-        childCount   = i.getIntExtra(EXTRA_CHILD_COUNT, 0);
-        babyCount    = i.getIntExtra(EXTRA_BABY_COUNT, 0);
+        isRoundTrip = i.getBooleanExtra(EXTRA_IS_ROUND_TRIP, false);
+        adultCount = i.getIntExtra(EXTRA_ADULT_COUNT, 1);
+        childCount = i.getIntExtra(EXTRA_CHILD_COUNT, 0);
+        babyCount = i.getIntExtra(EXTRA_BABY_COUNT, 0);
         outBasePrice = i.getDoubleExtra(EXTRA_OUT_BASE_PRICE, 0);
-        outTaxFee    = i.getDoubleExtra(EXTRA_OUT_TAX_FEE, 0);
+        outTaxFee = i.getDoubleExtra(EXTRA_OUT_TAX_FEE, 0);
 
         // Dữ liệu truyền sang SeatSelectionActivity
-        outSeatMapId    = i.getStringExtra(EXTRA_OUT_SEAT_MAP_ID);
+        outboundFlightId = i.getStringExtra(EXTRA_OUT_FLIGHT_ID);
+        outSeatMapId = i.getStringExtra(EXTRA_OUT_SEAT_MAP_ID);
         outAircraftName = i.getStringExtra(EXTRA_OUT_AIRCRAFT_NAME);
-        outAirlineName  = i.getStringExtra(EXTRA_OUT_AIRLINE_NAME);
-        outFromIata     = i.getStringExtra(EXTRA_OUT_FROM_IATA);
-        outToIata       = i.getStringExtra(EXTRA_OUT_TO_IATA);
+        outAirlineName = i.getStringExtra(EXTRA_OUT_AIRLINE_NAME);
+        outFromIata = i.getStringExtra(EXTRA_OUT_FROM_IATA);
+        outToIata = i.getStringExtra(EXTRA_OUT_TO_IATA);
 
         // ── Chuyến đi ─────────────────────────────────────────────────────
         tvOutRoute.setText(i.getStringExtra(EXTRA_OUT_FROM_CITY) + " → " + i.getStringExtra(EXTRA_OUT_TO_CITY));
@@ -258,14 +257,15 @@ public class BookingInfoActivity extends AppCompatActivity {
 
         // ── Chuyến về (chỉ khi khứ hồi) ──────────────────────────────────
         if (isRoundTrip) {
-            retBasePrice    = i.getDoubleExtra(EXTRA_RET_BASE_PRICE, 0);
-            retTaxFee       = i.getDoubleExtra(EXTRA_RET_TAX_FEE, 0);
-            retSeatMapId    = i.getStringExtra(EXTRA_RET_SEAT_MAP_ID);
-            retAircraftName = i.getStringExtra(EXTRA_RET_AIRCRAFT_NAME);
-            retAirlineName  = i.getStringExtra(EXTRA_RET_AIRLINE_NAME);
-            retFromIata     = i.getStringExtra(EXTRA_RET_FROM_IATA);
-            retToIata       = i.getStringExtra(EXTRA_RET_TO_IATA);
+            retBasePrice = i.getDoubleExtra(EXTRA_RET_BASE_PRICE, 0);
+            retTaxFee = i.getDoubleExtra(EXTRA_RET_TAX_FEE, 0);
 
+            retSeatMapId = i.getStringExtra(EXTRA_RET_SEAT_MAP_ID);
+            retAircraftName = i.getStringExtra(EXTRA_RET_AIRCRAFT_NAME);
+            retAirlineName = i.getStringExtra(EXTRA_RET_AIRLINE_NAME);
+            retFromIata = i.getStringExtra(EXTRA_RET_FROM_IATA);
+            retToIata = i.getStringExtra(EXTRA_RET_TO_IATA);
+            returnFlightId = i.getStringExtra(EXTRA_RET_FLIGHT_ID);
             cardReturnFlight.setVisibility(View.VISIBLE);
             tvRetRoute.setText(i.getStringExtra(EXTRA_RET_FROM_CITY) + " → " + i.getStringExtra(EXTRA_RET_TO_CITY));
             tvRetDate.setText(i.getStringExtra(EXTRA_RET_DATE));
@@ -309,7 +309,7 @@ public class BookingInfoActivity extends AppCompatActivity {
     private void addPassengerRow(LayoutInflater inflater, Passenger passenger, int iconRes) {
         View row = inflater.inflate(R.layout.item_passenger_input, layoutPassengerList, false);
         ((ImageView) row.findViewById(R.id.img_passenger_icon)).setImageResource(iconRes);
-        ((TextView)  row.findViewById(R.id.tv_passenger_label)).setText(passenger.getLabel());
+        ((TextView) row.findViewById(R.id.tv_passenger_label)).setText(passenger.getLabel());
         row.setOnClickListener(v -> openPassengerInput(passenger));
         layoutPassengerList.addView(row);
     }
@@ -347,9 +347,7 @@ public class BookingInfoActivity extends AppCompatActivity {
         });
     }
 
-    // ══════════════════════════════════════════════════════════════════════
     // Seat selection
-    // ══════════════════════════════════════════════════════════════════════
 
     /**
      * Mở màn hình chọn ghế.
@@ -359,23 +357,25 @@ public class BookingInfoActivity extends AppCompatActivity {
         int seatsNeeded = adultCount + childCount;
 
         Intent intent = new Intent(this, SeatSelectionActivity.class);
-        intent.putExtra(SeatSelectionActivity.EXTRA_MAX_PASSENGERS,  seatsNeeded);
-        intent.putExtra(SeatSelectionActivity.EXTRA_IS_ROUND_TRIP,   isRoundTrip);
+        intent.putExtra(SeatSelectionActivity.EXTRA_MAX_PASSENGERS, seatsNeeded);
+        intent.putExtra(SeatSelectionActivity.EXTRA_IS_ROUND_TRIP, isRoundTrip);
 
         // Chuyến đi
-        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEAT_MAP_ID,   outSeatMapId);
+        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_FLIGHT_ID, outboundFlightId);
+        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEAT_MAP_ID, outSeatMapId);
         intent.putExtra(SeatSelectionActivity.EXTRA_OUT_AIRCRAFT_NAME, outAircraftName);
-        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_AIRLINE_NAME,  outAirlineName);
+        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_AIRLINE_NAME, outAirlineName);
         intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEAT_FROM_IATA, outFromIata);
-        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEAT_TO_IATA,   outToIata);
+        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEAT_TO_IATA, outToIata);
 
         // Chuyến về (chỉ khi khứ hồi)
         if (isRoundTrip) {
-            intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEAT_MAP_ID,   retSeatMapId);
+            intent.putExtra(SeatSelectionActivity.EXTRA_RET_FLIGHT_ID, returnFlightId);
+            intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEAT_MAP_ID, retSeatMapId);
             intent.putExtra(SeatSelectionActivity.EXTRA_RET_AIRCRAFT_NAME, retAircraftName);
-            intent.putExtra(SeatSelectionActivity.EXTRA_RET_AIRLINE_NAME,  retAirlineName);
+            intent.putExtra(SeatSelectionActivity.EXTRA_RET_AIRLINE_NAME, retAirlineName);
             intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEAT_FROM_IATA, retFromIata);
-            intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEAT_TO_IATA,   retToIata);
+            intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEAT_TO_IATA, retToIata);
         }
 
         seatSelectionLauncher.launch(intent);
@@ -384,7 +384,6 @@ public class BookingInfoActivity extends AppCompatActivity {
     /**
      * Ánh xạ ghế đã chọn vào từng hành khách (ADULT → CHILD → bỏ qua BABY).
      */
-    // 3. Viết lại hàm ánh xạ hiển thị số ghế chi tiết cho cả 2 chiều Đi - Về độc lập
     private void mapSeatsToPassengers() {
         int departIndex = 0;
         int returnIndex = 0;
@@ -392,7 +391,6 @@ public class BookingInfoActivity extends AppCompatActivity {
         for (int i = 0; i < layoutPassengerList.getChildCount(); i++) {
             View row = layoutPassengerList.getChildAt(i);
             TextView tvSeat = row.findViewById(R.id.tv_passenger_seat);
-            if (tvSeat == null) continue;
 
             Passenger p = passengerList.get(i);
 
@@ -405,17 +403,16 @@ public class BookingInfoActivity extends AppCompatActivity {
 
             StringBuilder seatDisplayBuilder = new StringBuilder();
 
-            // Xử lý thông tin hiển thị Ghế chiều đi
-            if (departSeatCodes != null && departIndex < departSeatCodes.size()) {
-                seatDisplayBuilder.append("Đi: ").append(departSeatCodes.get(departIndex));
-                p.setSeatNumber(departSeatCodes.get(departIndex)); // Đóng gói lưu vào Object hành khách
-                departIndex++;
-            } else {
-                seatDisplayBuilder.append("Đi: --");
-            }
-
             // Xử lý thông tin hiển thị Ghế chiều về (chỉ render nếu chọn khứ hồi)
             if (isRoundTrip) {
+                // Xử lý thông tin hiển thị Ghế chiều đi
+                if (departSeatCodes != null && departIndex < departSeatCodes.size()) {
+                    seatDisplayBuilder.append("Đi: ").append(departSeatCodes.get(departIndex));
+                    p.setSeatNumber(departSeatCodes.get(departIndex)); // Đóng gói lưu vào Object hành khách
+                    departIndex++;
+                } else {
+                    seatDisplayBuilder.append("Đi: --");
+                }
                 if (returnSeatCodes != null && returnIndex < returnSeatCodes.size()) {
                     seatDisplayBuilder.append(" | Về: ").append(returnSeatCodes.get(returnIndex));
                     // Bạn có thể thiết lập thêm trường returnSeatNumber trong Passenger model nếu cần quản lý nâng cao
@@ -423,36 +420,22 @@ public class BookingInfoActivity extends AppCompatActivity {
                 } else {
                     seatDisplayBuilder.append(" | Về: --");
                 }
+            } else {
+                if (departSeatCodes != null && departIndex < departSeatCodes.size()) {
+                    seatDisplayBuilder.append(departSeatCodes.get(departIndex));
+                    p.setSeatNumber(departSeatCodes.get(departIndex)); // Đóng gói lưu vào Object hành khách
+                    departIndex++;
+                } else {
+                    seatDisplayBuilder.append("Đi: --");
+                }
             }
+
 
             tvSeat.setText(seatDisplayBuilder.toString());
             tvSeat.setTextColor(Color.parseColor("#1565C0"));
         }
     }
 
-    /**
-     * Cập nhật label trên nút "Chọn ghế ngồi" sau khi nhận kết quả từ SeatSelectionActivity.
-     * Hiển thị tóm tắt ghế đã chọn: "Đi: 4A, 5B | Về: 3C, 3D" hoặc "4A, 5B" nếu 1 chiều.
-     */
-    private void updateSeatButtonLabel() {
-        if (tvSeatSummary == null) return; // View chưa có → bỏ qua
-
-        if (departSeatCodes.isEmpty()) {
-            tvSeatSummary.setText("Chọn ghế ngồi");
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        if (isRoundTrip) {
-            sb.append("Đi: ").append(String.join(", ", departSeatCodes));
-            if (!returnSeatCodes.isEmpty()) {
-                sb.append(" | Về: ").append(String.join(", ", returnSeatCodes));
-            }
-        } else {
-            sb.append(String.join(", ", departSeatCodes));
-        }
-        tvSeatSummary.setText(sb.toString());
-    }
 
     private String formatPrice(double price) {
         return String.format(Locale.getDefault(), "%,.0fđ", price);

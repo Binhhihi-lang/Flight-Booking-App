@@ -30,67 +30,65 @@ import java.util.List;
 
 /**
  * SeatSelectionActivity – Màn hình chọn ghế ngồi.
- *
+ * <p>
  * NHẬN từ BookingInfoActivity (qua Intent):
- *   - EXTRA_MAX_PASSENGERS    (int)    : số ghế tối đa = adultCount + childCount
- *   - EXTRA_IS_ROUND_TRIP     (bool)   : hiển thị tab Đi/Về hay không
- *   - EXTRA_OUT_SEAT_MAP_ID   (String) : seatMapId chuyến đi
- *   - EXTRA_OUT_AIRCRAFT_NAME (String) : tên máy bay chuyến đi
- *   - EXTRA_OUT_AIRLINE_NAME  (String) : tên hãng chuyến đi
- *   - EXTRA_OUT_SEAT_FROM_IATA(String) : IATA điểm đi
- *   - EXTRA_OUT_SEAT_TO_IATA  (String) : IATA điểm đến
- *   (Tương tự EXTRA_RET_* cho chuyến về)
- *
+ * - EXTRA_MAX_PASSENGERS    (int)    : số ghế tối đa = adultCount + childCount
+ * - EXTRA_IS_ROUND_TRIP     (bool)   : hiển thị tab Đi/Về hay không
+ * - EXTRA_OUT_SEAT_MAP_ID   (String) : seatMapId chuyến đi
+ * - EXTRA_OUT_AIRCRAFT_NAME (String) : tên máy bay chuyến đi
+ * - EXTRA_OUT_AIRLINE_NAME  (String) : tên hãng chuyến đi
+ * - EXTRA_OUT_SEAT_FROM_IATA(String) : IATA điểm đi
+ * - EXTRA_OUT_SEAT_TO_IATA  (String) : IATA điểm đến
+ * (Tương tự EXTRA_RET_* cho chuyến về)
+ * <p>
  * TRẢ VỀ BookingInfoActivity qua "selected_seats_depart" và "selected_seats_return".
  */
 public class SeatSelectionActivity extends AppCompatActivity {
 
     // ─── Intent keys ──────────────────────────────────────────────────────
-    public static final String EXTRA_MAX_PASSENGERS     = "max_passengers";
-    public static final String EXTRA_IS_ROUND_TRIP      = "is_round_trip";
-    public static final String RESULT_SELECTED_SEATS    = "selected_seats"; // legacy, không dùng nữa
+    public static final String EXTRA_MAX_PASSENGERS = "max_passengers";
+    public static final String EXTRA_IS_ROUND_TRIP = "is_round_trip";
+    public static final String RESULT_SELECTED_SEATS = "selected_seats"; // legacy, không dùng nữa
 
     // Chuyến đi
-    public static final String EXTRA_OUT_SEAT_MAP_ID    = "out_seat_map_id";
-    public static final String EXTRA_OUT_AIRCRAFT_NAME  = "out_aircraft_name";
-    public static final String EXTRA_OUT_AIRLINE_NAME   = "out_airline_name";
+    public static final String EXTRA_OUT_FLIGHT_ID = "out_flight_id";
+    public static final String EXTRA_OUT_SEAT_MAP_ID = "out_seat_map_id";
+    public static final String EXTRA_OUT_AIRCRAFT_NAME = "out_aircraft_name";
+    public static final String EXTRA_OUT_AIRLINE_NAME = "out_airline_name";
     public static final String EXTRA_OUT_SEAT_FROM_IATA = "out_seat_from_iata";
-    public static final String EXTRA_OUT_SEAT_TO_IATA   = "out_seat_to_iata";
+    public static final String EXTRA_OUT_SEAT_TO_IATA = "out_seat_to_iata";
 
     // Chuyến về
-    public static final String EXTRA_RET_SEAT_MAP_ID    = "ret_seat_map_id";
-    public static final String EXTRA_RET_AIRCRAFT_NAME  = "ret_aircraft_name";
-    public static final String EXTRA_RET_AIRLINE_NAME   = "ret_airline_name";
+    public static final String EXTRA_RET_FLIGHT_ID = "ret_flight_id";
+    public static final String EXTRA_RET_SEAT_MAP_ID = "ret_seat_map_id";
+    public static final String EXTRA_RET_AIRCRAFT_NAME = "ret_aircraft_name";
+    public static final String EXTRA_RET_AIRLINE_NAME = "ret_airline_name";
     public static final String EXTRA_RET_SEAT_FROM_IATA = "ret_seat_from_iata";
-    public static final String EXTRA_RET_SEAT_TO_IATA   = "ret_seat_to_iata";
+    public static final String EXTRA_RET_SEAT_TO_IATA = "ret_seat_to_iata";
 
     private static final int GRID_SPAN_COUNT = 7; // 3 ghế | lối đi | 3 ghế
 
     // ─── Views ────────────────────────────────────────────────────────────
-    private RecyclerView    rvSeatMap;
+    private RecyclerView rvSeatMap;
     private MaterialToolbar toolbarSeat;
-    private LinearLayout    layoutTripTabs;
-    private SeatAdapter     seatAdapter;
-    private TextView        tvSelectedSeatLabel, tvSelectedSeatPrice;
-    private Button          btnSeatBack, btnSeatContinue;
-    private ProgressBar     progressBar;
-    private TextView        tabDepart, tabReturn;
-    private TextView        tvAirCraftName, tvSeatAirlineName;
-    private TextView        tvSeatFromIata, tvSeatToIata, tvSeatName;
+    private LinearLayout layoutTripTabs;
+    private SeatAdapter seatAdapter;
+    private TextView tvSelectedSeatLabel, tvSelectedSeatPrice;
+    private Button btnSeatBack, btnSeatContinue;
+    private ProgressBar progressBar;
+    private TextView tabDepart, tabReturn;
+    private TextView tvAirCraftName, tvSeatAirlineName;
+    private TextView tvSeatFromIata, tvSeatToIata, tvSeatName;
 
     // ─── Data từ Intent ───────────────────────────────────────────────────
-    private int     maxPassengers = 1;
+    private int maxPassengers = 1;
     private boolean isRoundTrip;
 
-    private String outSeatMapId, outAircraftName, outAirlineName, outFromIata, outToIata;
-    private String retSeatMapId, retAircraftName, retAirlineName, retFromIata, retToIata;
+    private String outboundFlightId, outSeatMapId, outAircraftName, outAirlineName, outFromIata, outToIata;
+    private String returnFlightId, retSeatMapId, retAircraftName, retAirlineName, retFromIata, retToIata;
 
-    // ─── ViewModel ────────────────────────────────────────────────────────
     private SeatViewModel seatViewModel;
 
-    // ══════════════════════════════════════════════════════════════════════
-    // Lifecycle
-    // ══════════════════════════════════════════════════════════════════════
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,46 +111,44 @@ public class SeatSelectionActivity extends AppCompatActivity {
         setupClickListeners();
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    // Setup
-    // ══════════════════════════════════════════════════════════════════════
-
     private void receiveIntentData() {
-        Intent i      = getIntent();
+        Intent i = getIntent();
         maxPassengers = i.getIntExtra(EXTRA_MAX_PASSENGERS, 1);
-        isRoundTrip   = i.getBooleanExtra(EXTRA_IS_ROUND_TRIP, false);
+        isRoundTrip = i.getBooleanExtra(EXTRA_IS_ROUND_TRIP, false);
 
-        outSeatMapId    = i.getStringExtra(EXTRA_OUT_SEAT_MAP_ID);
+        outboundFlightId = i.getStringExtra(EXTRA_OUT_FLIGHT_ID);
+        outSeatMapId = i.getStringExtra(EXTRA_OUT_SEAT_MAP_ID);
         outAircraftName = i.getStringExtra(EXTRA_OUT_AIRCRAFT_NAME);
-        outAirlineName  = i.getStringExtra(EXTRA_OUT_AIRLINE_NAME);
-        outFromIata     = i.getStringExtra(EXTRA_OUT_SEAT_FROM_IATA);
-        outToIata       = i.getStringExtra(EXTRA_OUT_SEAT_TO_IATA);
+        outAirlineName = i.getStringExtra(EXTRA_OUT_AIRLINE_NAME);
+        outFromIata = i.getStringExtra(EXTRA_OUT_SEAT_FROM_IATA);
+        outToIata = i.getStringExtra(EXTRA_OUT_SEAT_TO_IATA);
 
         if (isRoundTrip) {
-            retSeatMapId    = i.getStringExtra(EXTRA_RET_SEAT_MAP_ID);
+            returnFlightId = i.getStringExtra(EXTRA_RET_FLIGHT_ID);
+            retSeatMapId = i.getStringExtra(EXTRA_RET_SEAT_MAP_ID);
             retAircraftName = i.getStringExtra(EXTRA_RET_AIRCRAFT_NAME);
-            retAirlineName  = i.getStringExtra(EXTRA_RET_AIRLINE_NAME);
-            retFromIata     = i.getStringExtra(EXTRA_RET_SEAT_FROM_IATA);
-            retToIata       = i.getStringExtra(EXTRA_RET_SEAT_TO_IATA);
+            retAirlineName = i.getStringExtra(EXTRA_RET_AIRLINE_NAME);
+            retFromIata = i.getStringExtra(EXTRA_RET_SEAT_FROM_IATA);
+            retToIata = i.getStringExtra(EXTRA_RET_SEAT_TO_IATA);
         }
     }
 
     private void bindViews() {
-        toolbarSeat         = findViewById(R.id.toolbar_seat);
-        rvSeatMap           = findViewById(R.id.rv_seat_map);
+        toolbarSeat = findViewById(R.id.toolbar_seat);
+        rvSeatMap = findViewById(R.id.rv_seat_map);
         tvSelectedSeatLabel = findViewById(R.id.tv_selected_seat_label);
         tvSelectedSeatPrice = findViewById(R.id.tv_selected_seat_price);
-        btnSeatBack         = findViewById(R.id.btn_seat_back);
-        btnSeatContinue     = findViewById(R.id.btn_seat_continue);
-        progressBar         = findViewById(R.id.progress_bar);
-        tabDepart           = findViewById(R.id.tab_seat_depart);
-        tabReturn           = findViewById(R.id.tab_seat_return);
-        tvAirCraftName      = findViewById(R.id.tv_aircraft_model);
-        tvSeatAirlineName   = findViewById(R.id.tv_seat_airline_name);
-        tvSeatName          = findViewById(R.id.tv_seat_name);
-        tvSeatFromIata      = findViewById(R.id.tv_seat_from_iata);
-        tvSeatToIata        = findViewById(R.id.tv_seat_to_iata);
-        layoutTripTabs      = findViewById(R.id.layout_seat_tab);
+        btnSeatBack = findViewById(R.id.btn_seat_back);
+        btnSeatContinue = findViewById(R.id.btn_seat_continue);
+        progressBar = findViewById(R.id.progress_bar);
+        tabDepart = findViewById(R.id.tab_seat_depart);
+        tabReturn = findViewById(R.id.tab_seat_return);
+        tvAirCraftName = findViewById(R.id.tv_aircraft_model);
+        tvSeatAirlineName = findViewById(R.id.tv_seat_airline_name);
+        tvSeatName = findViewById(R.id.tv_seat_name);
+        tvSeatFromIata = findViewById(R.id.tv_seat_from_iata);
+        tvSeatToIata = findViewById(R.id.tv_seat_to_iata);
+        layoutTripTabs = findViewById(R.id.layout_seat_tab);
     }
 
     private void setupToolbar() {
@@ -176,6 +172,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
 
     private void setupViewModel() {
         // Quan sát lưới ghế
+
         seatViewModel.getSeatMapData().observe(this, uiSeats -> {
             if (uiSeats != null) {
                 seatAdapter.setSeats(uiSeats);
@@ -202,18 +199,19 @@ public class SeatSelectionActivity extends AppCompatActivity {
                 // Tab vừa được reset (chuyển từ lượt đi sang lượt về)
                 tvSelectedSeatLabel.setText("Vui lòng chọn");
                 tvSelectedSeatPrice.setText("");
-                tvSeatName.setText("Vui lòng chọn");
+                tvSeatName.setText("");
             } else {
-                // Còn chỗ chọn → hiển thị ghế đang xem
+                // Còn chỗ chọn hiển thị ghế đang xem
                 tvSeatName.setText(seat.getSeatNumber());
+
             }
         });
 
-        // Load sơ đồ ghế đúng theo tab hiện tại (khôi phục sau xoay màn hình)
+        // Load sơ đồ ghế đúng theo tab hiện tại
         if (seatViewModel.isSelectingReturn()) {
-            seatViewModel.loadSeatMap(retSeatMapId);
+            seatViewModel.loadSeatMap(retSeatMapId,returnFlightId);
         } else {
-            seatViewModel.loadSeatMap(outSeatMapId);
+            seatViewModel.loadSeatMap(outSeatMapId,outboundFlightId);
         }
     }
 
@@ -306,6 +304,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
         if (seat.isSelected()) {
             // Bỏ chọn ghế đang chọn
             seatViewModel.deselectSeat(seat);
+            tvSeatName.setText("");
         } else {
             // Kiểm tra đã đủ ghế chưa
             if (seatViewModel.getSelectedSeats().size() >= maxPassengers) {
@@ -327,7 +326,6 @@ public class SeatSelectionActivity extends AppCompatActivity {
 
     /**
      * Cập nhật bottom bar theo danh sách ghế đang chọn.
-     * Đây là nguồn sự thật duy nhất cho label/giá khi ghế đã chọn thay đổi.
      */
     private void updateBottomBar() {
         List<Seat> seats = seatViewModel.getSelectedSeats();
@@ -336,8 +334,8 @@ public class SeatSelectionActivity extends AppCompatActivity {
             tvSelectedSeatPrice.setText("");
             return;
         }
-        StringBuilder sb    = new StringBuilder();
-        double        total = 0;
+        StringBuilder sb = new StringBuilder();
+        double total = 0;
         for (int i = 0; i < seats.size(); i++) {
             Seat s = seats.get(i);
             if (i > 0) sb.append(", ");
@@ -350,37 +348,44 @@ public class SeatSelectionActivity extends AppCompatActivity {
     }
 
     private void updateInfoPanel(String aircraft, String airline, String fromIata, String toIata) {
-        if (tvAirCraftName   != null) tvAirCraftName.setText(aircraft != null ? aircraft : "");
+        if (tvAirCraftName != null) tvAirCraftName.setText(aircraft != null ? aircraft : "");
         if (tvSeatAirlineName != null) tvSeatAirlineName.setText(airline != null ? airline : "");
-        if (tvSeatFromIata   != null) tvSeatFromIata.setText(fromIata != null ? fromIata : "");
-        if (tvSeatToIata     != null) tvSeatToIata.setText(toIata != null ? toIata : "");
+        if (tvSeatFromIata != null) tvSeatFromIata.setText(fromIata != null ? fromIata : "");
+        if (tvSeatToIata != null) tvSeatToIata.setText(toIata != null ? toIata : "");
     }
 
     private void switchToOutboundTab() {
         seatViewModel.setSelectingReturn(false);
         selectTab(false);
         updateInfoPanel(outAircraftName, outAirlineName, outFromIata, outToIata);
-        // Khôi phục lại selectedSeats từ outboundSeats để bottom bar hiển thị đúng
-        seatViewModel.clearCurrentSelections();
-        for (Seat s : seatViewModel.getSelectedOutboundSeats()) {
-            seatViewModel.selectSeat(s);
-        }
-        seatViewModel.loadSeatMap(outSeatMapId);
+
+        //  Mã Sơ đồ mẫu + Mã Chuyến bay Lượt Đi
+        seatViewModel.loadSeatMap(outSeatMapId, outboundFlightId);
     }
 
     private void switchToReturnTab() {
         seatViewModel.setSelectingReturn(true);
         selectTab(true);
         updateInfoPanel(retAircraftName, retAirlineName, retFromIata, retToIata);
-        seatViewModel.loadSeatMap(retSeatMapId);
-    }
 
+        // Mã Sơ đồ mẫu + Mã Chuyến bay Lượt Về
+        seatViewModel.loadSeatMap(retSeatMapId, returnFlightId);
+    }
     private void selectTab(boolean isReturnTab) {
+        // LƯỢT ĐI
         tabDepart.setBackgroundResource(isReturnTab
-                ? R.drawable.bg_tab_unselected : R.drawable.bg_tab_selected);
-        tabDepart.setAlpha(isReturnTab ? 0.5f : 1f);
+                ? R.drawable.bg_seat_tab_unselected
+                : R.drawable.bg_seat_tab_selected);
+        tabDepart.setTextColor(isReturnTab
+                ? getColor(R.color.text_sub_grey)
+                : getColor(R.color.primary_blue));
+
+        // LƯỢT VỀ
         tabReturn.setBackgroundResource(isReturnTab
-                ? R.drawable.bg_tab_selected : R.drawable.bg_tab_unselected);
-        tabReturn.setAlpha(isReturnTab ? 1f : 0.5f);
+                ? R.drawable.bg_seat_tab_selected
+                : R.drawable.bg_seat_tab_unselected);
+        tabReturn.setTextColor(isReturnTab
+                ? getColor(R.color.primary_blue)
+                : getColor(R.color.text_sub_grey));
     }
 }

@@ -3,6 +3,7 @@ package com.example.flight_booking_app.data.model;
 import java.io.Serializable;
 
 public class Passenger implements Serializable {
+    private String passengerId;
     private String type;          // "ADULT", "CHILD", "BABY"
     private int index;
     private String label;
@@ -27,7 +28,15 @@ public class Passenger implements Serializable {
                 && dateOfBirth != null && !dateOfBirth.trim().isEmpty();
     }
 
-    // Getters & Setters
+
+    public String getPassengerId() {
+        return passengerId;
+    }
+
+    public void setPassengerId(String passengerId) {
+        this.passengerId = passengerId;
+    }
+
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
     public int getIndex() { return index; }

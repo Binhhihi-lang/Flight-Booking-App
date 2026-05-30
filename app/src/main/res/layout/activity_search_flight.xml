@@ -134,11 +134,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_tab_selected"
+                    android:background="@drawable/bg_seat_tab_selected"
                     android:gravity="center"
                     android:paddingVertical="10dp"
                     android:text="LƯỢT ĐI"
-                    android:textColor="@color/white"
                     android:textSize="13sp"
                     android:textStyle="bold"
                     android:alpha="1.0"
@@ -150,14 +149,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_tab_unselected"
+                    android:background="@drawable/bg_seat_tab_unselected"
                     android:gravity="center"
                     android:paddingVertical="10dp"
                     android:text="LƯỢT VỀ"
-                    android:textColor="@color/white"
                     android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:alpha="0.5"/>
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -168,6 +165,7 @@
 
     <!-- app:layout_behavior="@string/appbar_scrolling_view_behavior" né phần toolbar-->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -266,5 +264,6 @@
         android:visibility="gone"
         android:layout_gravity="center"
         />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

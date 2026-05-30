@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    item_filter_airline.xml
+    Mỗi hàng trong rv_filter_airlines:  [Checkbox] [Logo] [Tên hãng]  [Giá thấp nhất]
+    ID:
+      cb_airline_check  — CheckBox
+      img_airline_logo  — Logo hãng
+      tv_airline_name   — Tên hãng (vd: Vietnam Airlines)
+      tv_airline_min_price — Giá rẻ nhất của hãng này trong kết quả tìm kiếm
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="12dp">
+
+    <CheckBox
+        android:id="@+id/cb_airline_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="#0175F3"
+        android:checked="true" />
+
+    <ImageView
+        android:id="@+id/img_airline_logo"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_airline"
+        tools:src="@drawable/ic_airline" />
+
+    <TextView
+        android:id="@+id/tv_airline_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="10dp"
+        android:text="Vietnam Airlines"
+        android:textColor="#1A1A1A"
+        android:textSize="14sp"
+        tools:text="Vietnam Airlines" />
+
+
+</LinearLayout>

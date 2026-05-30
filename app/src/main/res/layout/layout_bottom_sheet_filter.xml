@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    layout_bottom_sheet_filter.xml
+    ══════════════════════════════════════════════════════════════════
+    BottomSheet lọc chuyến bay — mở từ fabFilter trong SearchFlightActivity.
+
+    CẤU TRÚC:
+    ┌─ CoordinatorLayout ─────────────────────────────────────────┐
+    │  ┌─ AppBarLayout ──────────────────────────────────────────┐│
+    │  │  Toolbar: "Bộ lọc tìm kiếm"  |  btn "Thiết lập lại"   ││
+    │  └────────────────────────────────────────────────────────┘│
+    │  ┌─ NestedScrollView ─────────────────────────────────────┐│
+    │  │   1. Hiển thị giá       (2 chip: Đầy đủ / NET)        ││
+    │  │   2. Sắp xếp theo       (RadioGroup)                   ││
+    │  │   3. Khoảng giá         (RangeSlider)                  ││
+    │  │   4. Hãng bay           (rv_airlines — inflate động)   ││
+    │  │   5. Thời gian khởi hành(4 chip: Sáng/Trưa/Chiều/Tối) ││
+    │  │   6. Hạng ghế           (RadioGroup)                   ││
+    │  └────────────────────────────────────────────────────────┘│
+    │  ┌─ Sticky bottom: btn_apply ─────────────────────────────┐│
+    │  └────────────────────────────────────────────────────────┘│
+    └─────────────────────────────────────────────────────────────┘
+
+    KEY IDs:
+      toolbar_filter           Toolbar (tiêu đề + đóng)
+      tv_btn_reset             "Thiết lập lại" — reset toàn bộ filter
+      rg_price_display         RadioGroup: Giá đầy đủ / Giá NET
+      rb_price_full            Radio: Giá đầy đủ
+      rb_price_net             Radio: Giá NET
+      rg_sort_by               RadioGroup: sắp xếp
+      rb_sort_price_asc        Radio: Giá thấp nhất
+      rb_sort_price_desc       Radio: Giá cao nhất
+      rb_sort_depart_early     Radio: Giờ đi sớm nhất
+      rb_sort_depart_late      Radio: Giờ đi muộn nhất
+      rb_sort_duration         Radio: Bay ngắn nhất
+      slider_price_range       RangeSlider: khoảng giá
+      tv_price_range_min       Label giá thấp (cập nhật theo slider)
+      tv_price_range_max       Label giá cao (cập nhật theo slider)
+      rv_filter_airlines       RecyclerView hãng bay (inflate động từ Activity)
+      chip_time_morning        Chip: Sáng 00:00-06:00
+      chip_time_noon           Chip: Trưa 06:00-12:00
+      chip_time_afternoon      Chip: Chiều 12:00-18:00
+      chip_time_night          Chip: Tối  18:00-24:00
+      rg_seat_class            RadioGroup: hạng ghế
+      rb_class_all             Radio: Tất cả
+      rb_class_economy         Radio: Phổ thông
+      rb_class_premium_economy Radio: Phổ thông đặc biệt
+      rb_class_business        Radio: Thương gia
+      btn_apply_filter         Nút ÁP DỤNG (sticky bottom)
+    ══════════════════════════════════════════════════════════════════
+-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- ══════════════════════════════════════════
+         APPBAR: Tiêu đề + Thiết lập lại
+         ══════════════════════════════════════════ -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:elevation="2dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/tool_bar_back"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_close"
+            app:navigationIconTint="@color/primary_blue"
+            android:paddingStart="4dp"
+            app:title="Bộ lọc tìm kiếm"
+            app:titleCentered="true"
+            app:titleTextColor="#212121">
+
+            <!-- Thiết lập lại — căn phải -->
+            <TextView
+                android:id="@+id/tv_btn_reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="8dp"
+                android:padding="8dp"
+                android:text="Thiết lập lại"
+                android:textColor="#0175F3"
+                 />
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+        <!-- Divider dưới AppBar -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#EEEEEE" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- ══════════════════════════════════════════
+         SCROLLABLE CONTENT
+         ══════════════════════════════════════════ -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_scroll_filter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp">
+
+            <!-- ════════════════════════════════════════
+                 1. HIỂN THỊ GIÁ
+                 ════════════════════════════════════════ -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hiển thị giá"
+                android:textColor="#1A1A1A"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <RadioGroup
+                android:id="@+id/rg_price_display"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <!-- Giá đầy đủ -->
+                <LinearLayout
+                    android:id="@+id/layout_price_full"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_filter_chip_selected"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="12dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_full_price"
+                        app:tint="#0175F3" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Giá đầy đủ"
+                        android:textColor="#0175F3"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bao gồm thuế phí"
+                        android:textColor="#757575"
+                        android:textSize="11sp" />
+
+                    <!-- RadioButton ẩn để tham gia RadioGroup logic -->
+                    <RadioButton
+                        android:id="@+id/rb_price_full"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:checked="true"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- Giá NET -->
+                <LinearLayout
+                    android:id="@+id/layout_price_net"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_filter_chip_unselected"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="12dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_net_price"
+                        app:tint="#757575" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Giá NET"
+                        android:textColor="#757575"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chưa bao gồm thuế phí"
+                        android:textColor="#757575"
+                        android:textSize="11sp" />
+
+                    <RadioButton
+                        android:id="@+id/rb_price_net"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </RadioGroup>
+
+            <!-- Divider -->
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="#F0F0F0" android:layout_marginBottom="20dp"/>
+
+            <!-- ════════════════════════════════════════
+                 2. SẮP XẾP THEO
+                 ════════════════════════════════════════ -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sắp xếp theo"
+                android:textColor="#1A1A1A"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <RadioGroup
+                android:id="@+id/rg_sort_by"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_filter_group_card"
+                android:paddingHorizontal="12dp"
+                android:layout_marginBottom="20dp">
+
+                <RadioButton
+                    android:id="@+id/rb_sort_price_asc"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:checked="true"
+                    android:text="Giá thấp nhất"
+                    android:textColor="#1A1A1A"
+                    android:textSize="14sp"
+                    android:buttonTint="#0175F3" />
+
+
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0"/>
+
+                <RadioButton
+                    android:id="@+id/rb_sort_depart_early"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Giờ đi sớm nhất"
+                    android:textColor="#1A1A1A"
+                    android:textSize="14sp"
+                    android:buttonTint="#0175F3" />
+
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0"/>
+
+                <RadioButton
+                    android:id="@+id/rb_sort_duration"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Bay ngắn nhất"
+                    android:textColor="#1A1A1A"
+                    android:textSize="14sp"
+                    android:buttonTint="#0175F3" />
+            </RadioGroup>
+
+
+            <!-- Divider -->
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="#F0F0F0" android:layout_marginBottom="20dp"/>
+
+            <!-- ════════════════════════════════════════
+                 4. HÃNG MÁY BAY (inflate động từ Activity)
+                 ════════════════════════════════════════ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Hãng hàng không"
+                    android:textColor="#1A1A1A"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+            <!--
+                RecyclerView hãng bay — được inflate động bởi FilterBottomSheet.
+                Adapter = AirlineFilterAdapter (CheckBox + Logo + Tên hãng).
+                nestedScrollingEnabled="false" bắt buộc để NestedScrollView kiểm soát scroll.
+            -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_filter_airlines"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:background="@drawable/bg_filter_group_card"
+                tools:itemCount="4"
+                tools:listitem="@layout/item_filter_airline" />
+
+            <!-- Divider -->
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="#F0F0F0" android:layout_marginBottom="20dp"/>
+
+            <!-- ════════════════════════════════════════
+                 5. THỜI GIAN KHỞI HÀNH (4 chip)
+                 ════════════════════════════════════════ -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thời gian khởi hành"
+                android:textColor="#1A1A1A"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <!-- Sáng 00:00-12:00 -->
+                <LinearLayout
+                    android:id="@+id/chip_time_morning"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="@drawable/bg_filter_chip_unselected"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_morning"
+                        app:tint="@color/primary_blue"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sáng"
+                        android:textColor="#1A1A1A"
+                        android:textStyle="bold"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00:00-12:00"
+                        android:textColor="#757575"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <!-- Chiều 12:00-18:00 -->
+                <LinearLayout
+                    android:id="@+id/chip_time_afternoon"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="@drawable/bg_filter_chip_unselected"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_afternoon"
+                        app:tint="@color/primary_blue"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chiều"
+                        android:textColor="#1A1A1A"
+                        android:textStyle="bold"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12:00-18:00"
+                        android:textColor="#757575"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <!-- Tối 18:00-24:00 -->
+                <LinearLayout
+                    android:id="@+id/chip_time_night"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/bg_filter_chip_unselected"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_evening"
+                        app:tint="@color/primary_blue"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tối"
+                        android:textColor="#1A1A1A"
+                        android:textStyle="bold"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="18:00-24:00"
+                        android:textColor="#757575"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="#F0F0F0" android:layout_marginBottom="20dp"/>
+
+            <!-- ════════════════════════════════════════
+                 6. HẠNG GHẾ
+                 ════════════════════════════════════════ -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hạng ghế"
+                android:textColor="#1A1A1A"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <RadioGroup
+                android:id="@+id/rg_seat_class"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_filter_group_card"
+                android:paddingHorizontal="12dp"
+                android:layout_marginBottom="16dp">
+
+                <RadioButton
+                    android:id="@+id/rb_class_all"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:checked="true"
+                    android:text="Tất cả"
+                    android:textColor="#1A1A1A"
+                    android:textSize="14sp"
+                    android:buttonTint="#0175F3" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0"/>
+
+                <RadioButton
+                    android:id="@+id/rb_class_economy"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Phổ thông"
+                    android:textColor="#1A1A1A"
+                    android:textSize="14sp"
+                    android:buttonTint="#0175F3" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0"/>
+
+                <RadioButton
+                    android:id="@+id/rb_class_premium_economy"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Phổ thông đặc biệt"
+                    android:textColor="#1A1A1A"
+                    android:textSize="14sp"
+                    android:buttonTint="#0175F3" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0"/>
+
+                <RadioButton
+                    android:id="@+id/rb_class_business"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Thương gia"
+                    android:textColor="#1A1A1A"
+                    android:textSize="14sp"
+                    android:buttonTint="#0175F3" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- ══════════════════════════════════════════
+         STICKY BOTTOM: NÚT ÁP DỤNG
+         ══════════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/layout_filter_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp">
+
+        <!-- Divider trên nút -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#EEEEEE"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_apply_filter"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Áp dụng"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:backgroundTint="#0175F3"
+            app:cornerRadius="28dp" />
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -28,12 +28,14 @@ public class Seat {
      * BLOCKED   – Bị khoá (lỗi kỹ thuật, không bán)
      */
     private String status;
+    private String passengerId;
+
+
 
     // ─── Transient fields – KHÔNG lưu Firebase ───────────────────────────
     private transient boolean isSelected  = false;
     private transient boolean isSelecting = false;
 
-    // ─── Constructors ─────────────────────────────────────────────────────
     public Seat() {}
 
     public Seat(String seatId, String seatNumber, int row, String column,
@@ -84,6 +86,9 @@ public class Seat {
 
     public String getStatus()                  { return status; }
     public void   setStatus(String status)     { this.status = status; }
+
+    public String getPassengerId() { return passengerId; }
+    public void setPassengerId(String passengerId) { this.passengerId = passengerId; }
 
     public boolean isSelected()                { return isSelected; }
     public void    setSelected(boolean v)      { this.isSelected = v; }
