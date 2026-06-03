@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:buttonTint="#0175F3"
-        android:checked="true" />
+        />
 
     <ImageView
         android:id="@+id/img_airline_logo"

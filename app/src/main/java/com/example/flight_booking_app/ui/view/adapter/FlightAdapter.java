@@ -17,11 +17,6 @@ import com.example.flight_booking_app.data.model.Flight;
 
 import java.util.Locale;
 
-/**
- * - Dùng flight.getDisplayPrice() thay vì flight.getPrice()
- * (Flight không còn field price — giá lấy từ fareOptions sau JOIN)
- * - Dùng flight.getFromIata() / getToIata() — là transient field, điền sau JOIN
- */
 public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewHolder> {
 
     public interface OnFlightClickListener {
@@ -30,16 +25,26 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
 
     private final OnFlightClickListener listener;
 
+    // 1. MỚI THÊM: Biến lưu trạng thái hiển thị giá (Mặc định là Giá đầy đủ = true)
+    private boolean showFullPrice = true;
+
     public FlightAdapter(OnFlightClickListener listener) {
         super(DIFF_CALLBACK);
         this.listener = listener;
+    }
+
+    // 2. MỚI THÊM: Hàm để Activity/Fragment gọi vào khi người dùng đổi bộ lọc
+    public void setShowFullPrice(boolean showFullPrice) {
+        if (this.showFullPrice != showFullPrice) {
+            this.showFullPrice = showFullPrice;
+            notifyDataSetChanged(); // Yêu cầu Adapter vẽ lại toàn bộ danh sách đang hiển thị để cập nhật giá
+        }
     }
 
     private static final DiffUtil.ItemCallback<Flight> DIFF_CALLBACK =
             new DiffUtil.ItemCallback<Flight>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull Flight a, @NonNull Flight b) {
-                    // So sánh bằng flightId (unique key trên Firebase)
                     if (a.getFlightId() == null || b.getFlightId() == null) return false;
                     return a.getFlightId().equals(b.getFlightId());
                 }
@@ -62,7 +67,8 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
 
     @Override
     public void onBindViewHolder(@NonNull FlightViewHolder holder, int position) {
-        holder.bind(getItem(position), listener);
+        // 3. MỚI THÊM: Truyền biến showFullPrice vào cho ViewHolder để nó biết đường tính toán
+        holder.bind(getItem(position), listener, showFullPrice);
     }
 
     static class FlightViewHolder extends RecyclerView.ViewHolder {
@@ -87,7 +93,8 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
             tvPrice = itemView.findViewById(R.id.tv_price);
         }
 
-        void bind(Flight flight, OnFlightClickListener listener) {
+        // 4. MỚI THÊM: Nhận thêm biến boolean showFullPrice
+        void bind(Flight flight, OnFlightClickListener listener, boolean showFullPrice) {
             tvFlightNumber.setText(flight.getFlightNumber());
             tvFlightAirline.setText(flight.getAirlineName());
             tvDuration.setText(flight.getDuration());
@@ -95,16 +102,21 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
             tvDepartureTime.setText(flight.getDepartureTime());
             tvArrivalTime.setText(flight.getArrivalTime());
 
-            // transient fields — điền từ JOIN trong Repository
             tvDepartureLocation.setText(flight.getFromIata());
             tvArrivalLocation.setText(flight.getToIata());
             tvFareClass.setText(flight.getFareClassName());
 
-            // displayPrice — giá rẻ nhất từ fareOptions, tính trong Repository
-            tvPrice.setText(String.format(Locale.getDefault(),
-                    "%,d đ", (long) flight.getDisplayPrice()));
+            // 5. MỚI THÊM: Logic tính toán giá dựa theo lựa chọn của người dùng
+            double finalPriceToDisplay;
+            if (showFullPrice) {
+                finalPriceToDisplay = flight.getDisplayPrice() + flight.getTaxFee(); // Giá + Thuế
+            } else {
+                finalPriceToDisplay = flight.getDisplayPrice(); // Chỉ giá NET
+            }
 
-            // airlineLogo — transient field từ JOIN Airline
+            // Dùng %,.0f để format số double tránh lỗi thay vì ép kiểu (long)
+            tvPrice.setText(String.format(Locale.getDefault(), "%,.0f đ", finalPriceToDisplay));
+
             Glide.with(itemView.getContext())
                     .load(flight.getAirlineLogo())
                     .placeholder(R.drawable.ic_airline)

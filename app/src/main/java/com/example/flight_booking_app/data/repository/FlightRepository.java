@@ -263,9 +263,11 @@
                             // --- GẮN GIÁ VÀ TÊN HẠNG VÉ RIÊNG BIỆT CHO THẺ NÀY ---
                             flightCard.setDisplayPrice(option.getBasePrice());
 
+                            // lấy hạng vé và hạng ghế để lọc
                             FareClass fareClass = fareClassesMap.get(option.getFareClassId());
                             if (fareClass != null) {
                                 flightCard.setFareClassName(fareClass.getTitle()); // VD: "Economy Flex" hoặc "Premium Economy"
+                                flightCard.setSeatType(fareClass.getSeatType());
                             }
 
                             if (flightCard.getAircraftId() != null) {
@@ -282,7 +284,7 @@
                         }
                     }
 
-                    // 3. SẮP XẾP TOÀN BỘ DANH SÁCH TỪ RẺ ĐẾN ĐẮT NHƯ TRONG ẢNH APP 123.BAY
+                    // sắp xết giá rẻ nhất
                     result.sort(Comparator.comparingDouble(Flight::getDisplayPrice));
 
                     callback.onLoaded(result);
@@ -295,55 +297,4 @@
             });
         }
 
-        /**
-         * Tìm giá rẻ nhất trong fareOptions phù hợp với seatType.
-         *
-         * @param fareOptions  Danh sách gói vé của chuyến bay
-         * @return Giá rẻ nhất, hoặc 0.0 nếu không tìm thấy
-         */
-    //    private FareOption findCheapestOptionForSeatType(List<FareOption> fareOptions) {
-    //        FareOption cheapestOption = null;
-    //        double minPrice = Double.MAX_VALUE;
-    //
-    //        for (FareOption option : fareOptions) {
-    //            // Kiểm tra còn chỗ không
-    //            if (!option.isAvailable()) continue;
-    //
-    //            // Lấy FareClass để biết seatType
-    //            FareClass fareClass = fareClassesMap.get(option.getFareClassId());
-    //            if (fareClass == null) continue;
-    //
-    //            // Lấy giá rẻ nhất
-    //            if (option.getBasePrice() < minPrice) {
-    //                minPrice = option.getBasePrice();
-    //                cheapestOption = option;
-    //            }
-    //        }
-    //
-    //        return cheapestOption;
-    //    }
-
-    //    private String mapSeatClassToType(String seatClass) {
-    //        if (seatClass == null) return "ECONOMY";
-    //
-    //        switch (seatClass.toLowerCase()) {
-    //            case "phổ thông":
-    //                return "ECONOMY";
-    //            case "thương gia":
-    //                return "BUSINESS";
-    //            case "hạng nhất":
-    //                return "FIRST_CLASS";
-    //            default:
-    //                return "ECONOMY";
-    //        }
-    //    }
-
-        /**
-         * Clear cache khi cần refresh.
-         */
-    //    public void clearCache() {
-    //        citiesMap.clear();
-    //        airlinesMap.clear();
-    //        fareClassesMap.clear();
-    //    }
     }

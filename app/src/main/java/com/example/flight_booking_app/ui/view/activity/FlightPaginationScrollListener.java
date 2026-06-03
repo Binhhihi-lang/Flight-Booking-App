@@ -30,8 +30,11 @@ public abstract class FlightPaginationScrollListener extends RecyclerView.OnScro
         int totalItemCount = layoutManager.getItemCount();            // tổng item trong adapter
         int firstVisiblePos = layoutManager.findFirstVisibleItemPosition(); // vị trí item đầu tiên
 
+        // load xong hoặc đến trang cuối
+        // loading = true và lastPage = true thì không load
         if (isLoading() || isLastPage()) return;
 
+        // Nếu (số item + vị trí item đầu tiên) > tổng số Item thì load trang tiếp
         boolean reachedBottom = (firstVisiblePos >= 0)
                 && (visibleItemCount + firstVisiblePos) >= totalItemCount;
 

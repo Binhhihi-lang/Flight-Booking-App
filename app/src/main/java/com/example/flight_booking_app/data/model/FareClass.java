@@ -6,7 +6,7 @@ public class FareClass implements Serializable {
     private String fareClassId; // Mã định danh thống nhất: ECO_SAVE, ECO_STANDARD, ECO_FLEX, BIZ_STANDARD, BIZ_FLEX
     private String airlineId;    // Thuộc hãng nào
     private String title;        // Tên hiển thị: Thương gia linh hoạt, Phổ thông Tiết kiệm
-    private String seatType;     // Loại ghế vật lý: BUSINESS, ECONOMY, FIRST_CLASS
+    private String seatType;     // Loại ghế vật lý: BUSINESS, ECONOMY, PREMIUM_ECONOMY
 
     // Liên kết với điều kiện (FareRule)
     private String fareRuleId;

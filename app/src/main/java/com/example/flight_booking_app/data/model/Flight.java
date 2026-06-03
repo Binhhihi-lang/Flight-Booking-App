@@ -30,10 +30,9 @@ public class Flight {
     private int babyCount = 0;
 
     private String selectedSeatClass;
-    private int checkedBaggage;
-    private double taxFee;
-
+    private int checkedBaggage; // (Số kg hành lý ký gửi
     private double seatSelectionFee = 0;
+    private double taxFee;
     private double totalPrice;
 
     private List<FareOption> fareOptions = new ArrayList<>();
@@ -56,6 +55,16 @@ public class Flight {
     private transient String airlineLogo;  // URL logo hãng
 
     private transient String fareClassName; //  hạng vé
+    private transient String seatType; // loại hạng ghế để lọc
+
+    public String getSeatType() {
+        return seatType;
+    }
+
+    public void setSeatType(String seatType) {
+        this.seatType = seatType;
+    }
+
     private transient double displayPrice;
 
     public String getFareClassName() {
@@ -74,13 +83,6 @@ public class Flight {
     public Flight() {
     }
 
-    public void updateFlightLogic() {
-        calculateBaggage();
-    }
-
-    private void calculateBaggage() {
-        this.checkedBaggage = "Thương gia".equals(selectedSeatClass) ? 30 : 0;
-    }
 
     public String getFlightId() {
         return flightId;

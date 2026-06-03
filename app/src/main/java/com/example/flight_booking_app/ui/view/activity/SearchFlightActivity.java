@@ -19,7 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.flight_booking_app.R;
 import com.example.flight_booking_app.data.model.AuthResult;
 import com.example.flight_booking_app.data.model.Flight;
+import com.example.flight_booking_app.data.model.FlightFilterState;
 import com.example.flight_booking_app.ui.view.adapter.FlightAdapter;
+import com.example.flight_booking_app.ui.viewmodel.FlightFilterViewModel;
 import com.example.flight_booking_app.ui.viewmodel.FlightViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -71,11 +73,13 @@ public class SearchFlightActivity extends AppCompatActivity
     private RecyclerView         rvFlights;
     private LinearLayout         layoutEmptyState;
     private MaterialButton       btnSearchOtherDate;
-    private ProgressBar          progressBar; // toàn màn hình – search mới / chuyển tab
+    private ProgressBar          progressBarMain; // toàn màn hình – search mới / chuyển tab
+    private ProgressBar          progressBarMore; // footer – load thêm trang
     private FloatingActionButton fabFilter;
 
     // ── ViewModel & Adapter ───────────────────────────────────────────────
     private FlightViewModel flightViewModel;
+    private FlightFilterViewModel filterViewModel;
     private FlightAdapter   adapter;
 
     /**
@@ -134,7 +138,8 @@ public class SearchFlightActivity extends AppCompatActivity
         rvFlights          = findViewById(R.id.rv_flights);
         layoutEmptyState   = findViewById(R.id.layout_empty_state);
         btnSearchOtherDate = findViewById(R.id.btn_search_other_date);
-        progressBar    = findViewById(R.id.progress_bar);       // ProgressBar toàn màn hình
+        progressBarMain    = findViewById(R.id.progress_bar);       // ProgressBar toàn màn hình
+        progressBarMore    = findViewById(R.id.progress_bar_more);  // Footer ProgressBar (thêm vào layout)
         fabFilter          = findViewById(R.id.fab_filter);
     }
 
@@ -176,7 +181,7 @@ public class SearchFlightActivity extends AppCompatActivity
         rvFlights.setLayoutManager(layoutManager);
         rvFlights.setAdapter(adapter);
 
-        // ── Gắn Pagination Scroll Listener
+        // ── Gắn Pagination Scroll Listener vào rv
         paginationScrollListener = new FlightPaginationScrollListener(layoutManager) {
             @Override
             public void loadMoreItems() {
@@ -199,6 +204,7 @@ public class SearchFlightActivity extends AppCompatActivity
 
     private void setupViewModel() {
         flightViewModel = new ViewModelProvider(this).get(FlightViewModel.class);
+        filterViewModel = new ViewModelProvider(this).get(FlightFilterViewModel.class);
 
         // ── Observer 1: Danh sách chuyến bay hiển thị (tích lũy theo trang) ──
         flightViewModel.getPagedFlightsLive().observe(this, flights -> {
@@ -215,7 +221,7 @@ public class SearchFlightActivity extends AppCompatActivity
 
         // ── Observer 2: Trạng thái load lần đầu (search mới / chuyển tab) ──
         flightViewModel.getLoadState().observe(this, state -> {
-            progressBar.setVisibility(
+            progressBarMain.setVisibility(
                     state.getStatus() == AuthResult.Status.LOADING ? View.VISIBLE : View.GONE);
             if (state.getStatus() == AuthResult.Status.ERROR) {
                 Toast.makeText(this, state.getMessage(), Toast.LENGTH_SHORT).show();
@@ -224,15 +230,32 @@ public class SearchFlightActivity extends AppCompatActivity
 
         // ── Observer 3: Trạng thái load thêm trang ──
         flightViewModel.getLoadingMoreLive().observe(this, isLoadingMore -> {
-            if (progressBar != null) {
-                progressBar.setVisibility(isLoadingMore ? View.VISIBLE : View.GONE);
+            if (progressBarMain != null) {
+                progressBarMore.setVisibility(isLoadingMore ? View.VISIBLE : View.GONE);
             }
         });
 
         // ── Observer 4: Đã đến trang cuối ──
         flightViewModel.getIsLastPageLive().observe(this, lastPage -> {
             // Không cần làm gì thêm — scroll listener tự check isLastPage()
-            Toast.makeText(this, "Đã đến trang cuối !!",Toast.LENGTH_SHORT).show();
+            if(lastPage){
+                Toast.makeText(this, "Đã đến trang cuối !!",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        flightViewModel.getFilterStateLive().observe(this, state -> {
+            if (state != null && adapter != null) {
+                // Bạn cần truyền biến showFullPrice vào adapter của bạn
+                adapter.setShowFullPrice(state.showFullPrice);
+            }
+        });
+
+        //lắng nghe sự kiện từ bộ lọc gửi sang
+        filterViewModel.getApplyFilterEvent().observe(this, finalState -> {
+            if (finalState != null) {
+                flightViewModel.applyFilterState(finalState);
+
+            }
         });
 
         // ── Chỉ gọi khi ds chuyến bay nạp lên lần đầu (currentPage == 0)
@@ -261,14 +284,10 @@ public class SearchFlightActivity extends AppCompatActivity
         btnSearchOtherDate.setOnClickListener(v -> finish());
 
         fabFilter.setOnClickListener(v -> {
-            if (fullFlightList.isEmpty()) return;
-            FlightFilterBottomSheet sheet = FlightFilterBottomSheet.newInstance(fullFlightList);
-            sheet.setOnFilterApplied(filtered -> {
-                // FIX: Dùng ViewModel.applyFilter() thay vì gọi adapter trực tiếp
-                // → trạng thái filter sống sót qua xoay màn hình
-                flightViewModel.applyFilter(filtered);
-                layoutEmptyState.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
-            });
+            // nếu ds tìm kiếm chuyến bay rỗng thì không hiển thị
+            if (flightViewModel.getAllFlights().isEmpty()) return;
+
+            FlightFilterBottomSheet sheet = new FlightFilterBottomSheet();
             sheet.show(getSupportFragmentManager(), "filter");
         });
     }
@@ -321,7 +340,7 @@ public class SearchFlightActivity extends AppCompatActivity
                 !isReturnFlight,
                 isRoundTrip
         );
-        sheet.show(getSupportFragmentManager(), "flight_detail");
+            sheet.show(getSupportFragmentManager(), "flight_detail");
     }
 
     // ══════════════════════════════════════════════════════════════════════
