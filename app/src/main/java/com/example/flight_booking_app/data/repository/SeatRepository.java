@@ -2,6 +2,7 @@ package com.example.flight_booking_app.data.repository;
 
 import androidx.annotation.NonNull;
 import com.example.flight_booking_app.data.model.Seat;
+import com.example.flight_booking_app.data.model.SeatMapMetadata;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,7 +20,7 @@ public class SeatRepository {
     private final DatabaseReference dbFlightSeats;
 
     public interface OnSeatsLoadedListener {
-        void onLoaded(List<Seat> seats);
+        void onLoaded(List<Seat> seats, SeatMapMetadata metadata);
         void onError(String error);
     }
 
@@ -38,7 +39,11 @@ public class SeatRepository {
             @Override
             public void onDataChange(@NonNull DataSnapshot templateSnapshot) {
                 List<Seat> templateSeats = new ArrayList<>();
+                SeatMapMetadata tempMetadata = null;
                 for (DataSnapshot ds : templateSnapshot.getChildren()) {
+                    if (ds.getKey().equals("metadata")) {
+                        tempMetadata = ds.getValue(SeatMapMetadata.class);
+                    }
                     // Kiểm tra xem key có phải là "seats" hoặc bỏ qua các thuộc tính như "modelName"
                     if (ds.getKey().equals("modelName")) continue;
 
@@ -57,6 +62,9 @@ public class SeatRepository {
                         }
                     }
                 }
+
+                //
+                final SeatMapMetadata finalMetadata = tempMetadata;
 
                 // Lấy trạng thái đặt chỗ thực tế của chuyến bay
                 dbFlightSeats.child(flightId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -84,7 +92,7 @@ public class SeatRepository {
                         }
 
                         // Trả kết quả đã trộn hoàn chỉnh về cho ViewModel
-                        listener.onLoaded(templateSeats);
+                        listener.onLoaded(templateSeats, finalMetadata);
                     }
 
                     @Override

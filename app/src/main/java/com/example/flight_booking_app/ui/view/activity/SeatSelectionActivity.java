@@ -171,6 +171,13 @@ public class SeatSelectionActivity extends AppCompatActivity {
     }
 
     private void setupViewModel() {
+        // Quan sát số lượng cột trong ghế máy bay
+        seatViewModel.getGridSpanCountLive().observe(this, spanCount -> {
+            if (spanCount != null) {
+                // Cấu hình lại LayoutManager cho RecyclerView với số cột (spanCount) tương ứng
+                rvSeatMap.setLayoutManager(new GridLayoutManager(this, spanCount));
+            }
+        });
         // Quan sát lưới ghế
 
         seatViewModel.getSeatMapData().observe(this, uiSeats -> {

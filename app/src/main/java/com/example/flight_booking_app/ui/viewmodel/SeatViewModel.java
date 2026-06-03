@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.flight_booking_app.data.model.AuthResult;
 import com.example.flight_booking_app.data.model.Seat;
+import com.example.flight_booking_app.data.model.SeatMapMetadata;
 import com.example.flight_booking_app.data.repository.SeatRepository;
 
 import java.util.ArrayList;
@@ -48,6 +49,13 @@ public class SeatViewModel extends ViewModel {
      * Khi đã đủ ghế, Activity dùng updateBottomBar() thay vì LiveData này.
      */
     private final MutableLiveData<Seat> currentlyViewingSeatLive = new MutableLiveData<>();
+
+    // XỬ LÝ SỐ CỘT ĐỘNG (SPAN COUNT)
+    private final MutableLiveData<Integer> gridSpanCountLive = new MutableLiveData<>();
+
+    public LiveData<Integer> getGridSpanCountLive() {
+        return gridSpanCountLive;
+    }
 
     /**
      * Map seatId → Seat của những ghế ĐANG chọn trong tab hiện tại.
@@ -187,9 +195,9 @@ public class SeatViewModel extends ViewModel {
 
         repository.fetchSeatsForFlight(templateId, flightId, new SeatRepository.OnSeatsLoadedListener() {
             @Override
-            public void onLoaded(List<Seat> seats) {
+            public void onLoaded(List<Seat> seats, SeatMapMetadata metadata) {
 
-                List<Seat> grid = buildGridFromSeats(seats);
+                List<Seat> grid = buildGridFromSeats(seats, metadata);
                 restoreSelectionState(grid);
                 seatMapData.setValue(grid);
                 loadState.setValue(AuthResult.success());
@@ -235,31 +243,35 @@ public class SeatViewModel extends ViewModel {
      * Biến danh sách ghế thành mảng 2 chiều với  lưới UI 7 cột.
      * Layout mỗi hàng: A | B | C | [số hàng - lối đi] | D | E | F
      */
-    private List<Seat> buildGridFromSeats(List<Seat> rawSeats) {
+    private List<Seat> buildGridFromSeats(List<Seat> rawSeats, SeatMapMetadata metadata) {
         Map<String, Seat> seatMap = new HashMap<>();
         int maxRow = 0;
 
-        // gán chỉ mục
         for (Seat s : rawSeats) {
-            seatMap.put(s.getRow() + s.getColumn(), s); // VD: "1" + "A" = "1A"
+            seatMap.put(s.getRow() + s.getColumn(), s);
             if (s.getRow() > maxRow) maxRow = s.getRow();
         }
 
-        List<Seat> grid = new ArrayList<>(maxRow * 7);
+        // postValue(): Có thể gọi ở bất kỳ luồng nào
+        gridSpanCountLive.postValue(metadata.spanCount); // Báo cho Activity biết số cột
+
+        List<Seat> grid = new ArrayList<>(maxRow * metadata.spanCount);
 
         for (int row = 1; row <= maxRow; row++) {
             int colIndex = 0;
-            for (int i = 0; i < 7; i++) {
-                if (i == AISLE_INDEX) {
+            for (int i = 0; i < metadata.spanCount; i++) {
+
+                if (metadata.aisles != null && metadata.aisles.contains(i)) {
                     Seat aisle = new Seat();
                     aisle.setType("AISLE");
                     aisle.setSeatNumber(String.valueOf(row));
                     grid.add(aisle);
                 } else {
-                    String key = row + COLUMNS[colIndex];
+                    String columnLetter = metadata.columns.get(colIndex);
+                    String key = row + columnLetter;
                     Seat firebaseSeat = seatMap.get(key);
-                    if (firebaseSeat == null
-                            || "BLOCKED".equalsIgnoreCase(firebaseSeat.getStatus())) {
+
+                    if (firebaseSeat == null || "BLOCKED".equalsIgnoreCase(firebaseSeat.getStatus())) {
                         Seat hidden = new Seat();
                         hidden.setType("HIDDEN");
                         grid.add(hidden);
@@ -270,7 +282,6 @@ public class SeatViewModel extends ViewModel {
                 }
             }
         }
-
         return grid;
     }
 }
