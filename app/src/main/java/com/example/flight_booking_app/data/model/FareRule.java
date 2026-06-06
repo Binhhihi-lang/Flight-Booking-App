@@ -1,6 +1,11 @@
 package com.example.flight_booking_app.data.model;
 
-public class FareRule {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+// truyền object qua Intent
+public class FareRule implements Serializable {
     private String fareRuleId;
     private String airlineId;      // Thuộc về hãng nào (VJ, VNA...)
     private String fareClassName;  // Tên hạng: Eco, Deluxe, SkyBoss, Business...
@@ -15,6 +20,8 @@ public class FareRule {
     private boolean hasLoungeAccess;  // Có phòng chờ VIP không?
     private boolean hasPriority;      // Có ưu tiên check-in/lên tàu không?
     private boolean hasMeal;          // Có bao gồm suất ăn không?
+
+    private List<String> freeIncludedSeatTypes =  new ArrayList<>(); // Miễn phí ghế cho loại hạng vé nào
 
     public FareRule() {}
 
@@ -73,4 +80,13 @@ public class FareRule {
 
     public boolean isHasMeal() { return hasMeal; }
     public void setHasMeal(boolean hasMeal) { this.hasMeal = hasMeal; }
+
+    public List<String> getFreeIncludedSeatTypes() {
+        return freeIncludedSeatTypes;
+    }
+
+    public void setFreeIncludedSeatTypes(List<String> freeIncludedSeatTypes) {
+        this.freeIncludedSeatTypes = freeIncludedSeatTypes;
+    }
+
 }

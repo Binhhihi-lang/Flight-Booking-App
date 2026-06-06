@@ -1,5 +1,7 @@
 package com.example.flight_booking_app.data.model;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -244,12 +246,14 @@ public class Flight {
         fareOptions = v;
     }
 
+    @Exclude
     public String getFareRuleId() {
         return fareRuleId;
     }
 
-    public void setFareRuleId(String v) {
-        fareRuleId = v;
+    @Exclude
+    public void setFareRuleId(String fareRuleId) {
+        this.fareRuleId = fareRuleId;
     }
 
     // Transient nơi chứa tạm thời các dữ liệu đầy đủ đó sau khi thực hiện thuật toán JOIN (Kết hợp) ở tầng Repository.

@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.flight_booking_app.data.model.AuthResult;
+import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.City;
 import com.example.flight_booking_app.data.model.Searchquerystate;
 import com.example.flight_booking_app.ui.view.activity.SearchFlightActivity;
@@ -17,14 +17,14 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<Searchquerystate> searchState =
             new MutableLiveData<>(Searchquerystate.defaultState());
 
-    private final MutableLiveData<AuthResult> validationError = new MutableLiveData<>();
+    private final MutableLiveData<UiState> validationError = new MutableLiveData<>();
 
 
     public LiveData<Searchquerystate> getSearchState() {
         return searchState;
     }
 
-    public LiveData<AuthResult> getValidationError() {
+    public LiveData<UiState> getValidationError() {
         return validationError;
     }
 
@@ -98,7 +98,7 @@ public class HomeViewModel extends ViewModel {
 
     }
     private void error(String msg) {
-        validationError.setValue(AuthResult.error(msg));
+        validationError.setValue(UiState.error(msg));
     }
 
     /**

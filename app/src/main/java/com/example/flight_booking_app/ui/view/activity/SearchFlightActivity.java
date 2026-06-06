@@ -17,9 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.flight_booking_app.R;
-import com.example.flight_booking_app.data.model.AuthResult;
+import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.Flight;
-import com.example.flight_booking_app.data.model.FlightFilterState;
 import com.example.flight_booking_app.ui.view.adapter.FlightAdapter;
 import com.example.flight_booking_app.ui.viewmodel.FlightFilterViewModel;
 import com.example.flight_booking_app.ui.viewmodel.FlightViewModel;
@@ -222,8 +221,8 @@ public class SearchFlightActivity extends AppCompatActivity
         // ── Observer 2: Trạng thái load lần đầu (search mới / chuyển tab) ──
         flightViewModel.getLoadState().observe(this, state -> {
             progressBarMain.setVisibility(
-                    state.getStatus() == AuthResult.Status.LOADING ? View.VISIBLE : View.GONE);
-            if (state.getStatus() == AuthResult.Status.ERROR) {
+                    state.getStatus() == UiState.Status.LOADING ? View.VISIBLE : View.GONE);
+            if (state.getStatus() == UiState.Status.ERROR) {
                 Toast.makeText(this, state.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -376,6 +375,7 @@ public class SearchFlightActivity extends AppCompatActivity
 
         intent.putExtra(BookingInfoActivity.EXTRA_OUT_FLIGHT_ID,      outbound.getFlightId());
         intent.putExtra(BookingInfoActivity.EXTRA_OUT_FLIGHT_NUMBER,   outbound.getFlightNumber());
+        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FARE_RULE_ID, outbound.getFareRuleId());
         intent.putExtra(BookingInfoActivity.EXTRA_OUT_AIRLINE_LOGO,    outbound.getAirlineLogo());
         intent.putExtra(BookingInfoActivity.EXTRA_OUT_FROM_CITY,       outbound.getFrom());
         intent.putExtra(BookingInfoActivity.EXTRA_OUT_FROM_IATA,       outbound.getFromIata());
@@ -395,6 +395,7 @@ public class SearchFlightActivity extends AppCompatActivity
         if (isRoundTrip && returnFlight != null) {
             intent.putExtra(BookingInfoActivity.EXTRA_RET_FLIGHT_ID,     returnFlight.getFlightId());
             intent.putExtra(BookingInfoActivity.EXTRA_RET_FLIGHT_NUMBER, returnFlight.getFlightNumber());
+            intent.putExtra(BookingInfoActivity.EXTRA_RET_FARE_RULE_ID,returnFlight.getFareRuleId());
             intent.putExtra(BookingInfoActivity.EXTRA_RET_AIRLINE_LOGO,  returnFlight.getAirlineLogo());
             intent.putExtra(BookingInfoActivity.EXTRA_RET_FROM_CITY,     returnFlight.getFrom());
             intent.putExtra(BookingInfoActivity.EXTRA_RET_FROM_IATA,     returnFlight.getFromIata());

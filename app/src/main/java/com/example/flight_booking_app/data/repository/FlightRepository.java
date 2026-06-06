@@ -268,6 +268,7 @@
                             if (fareClass != null) {
                                 flightCard.setFareClassName(fareClass.getTitle()); // VD: "Economy Flex" hoặc "Premium Economy"
                                 flightCard.setSeatType(fareClass.getSeatType());
+                                flightCard.setFareRuleId(fareClass.getFareRuleId());
                             }
 
                             if (flightCard.getAircraftId() != null) {

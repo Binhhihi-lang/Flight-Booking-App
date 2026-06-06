@@ -22,7 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.R;
-import com.example.flight_booking_app.data.model.AuthResult;
+import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.City;
 import com.example.flight_booking_app.data.model.Searchquerystate;
 import com.example.flight_booking_app.ui.view.activity.SearchCityActivity;
@@ -146,7 +146,7 @@ public class HomeFragment extends Fragment {
 
         // Lỗi validate hành khách
         homeViewModel.getValidationError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null && error.getStatus() == AuthResult.Status.ERROR) {
+            if (error != null && error.getStatus() == UiState.Status.ERROR) {
                 Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

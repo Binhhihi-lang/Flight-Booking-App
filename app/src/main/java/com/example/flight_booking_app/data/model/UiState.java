@@ -3,7 +3,7 @@ package com.example.flight_booking_app.data.model;
 /**
  * Wrapper class để truyền trạng thái từ Repository ViewModel View.
  */
-public class AuthResult {
+public class UiState {
 
     public enum Status {
         LOADING, SUCCESS, ERROR
@@ -12,21 +12,21 @@ public class AuthResult {
     private final Status status;
     private final String message;
 
-    private AuthResult(Status status, String message) {
+    private UiState(Status status, String message) {
         this.status = status;
         this.message = message;
     }
 
-    public static AuthResult loading() {
-        return new AuthResult(Status.LOADING, null);
+    public static UiState loading() {
+        return new UiState(Status.LOADING, null);
     }
 
-    public static AuthResult success() {
-        return new AuthResult(Status.SUCCESS, null);
+    public static UiState success() {
+        return new UiState(Status.SUCCESS, null);
     }
 
-    public static AuthResult error(String message) {
-        return new AuthResult(Status.ERROR, message);
+    public static UiState error(String message) {
+        return new UiState(Status.ERROR, message);
     }
 
     public Status getStatus() {

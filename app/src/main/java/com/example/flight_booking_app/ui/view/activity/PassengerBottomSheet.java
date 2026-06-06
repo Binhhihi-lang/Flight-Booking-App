@@ -1,6 +1,6 @@
 package com.example.flight_booking_app.ui.view.activity;
 
-import static com.example.flight_booking_app.data.model.AuthResult.Status.ERROR;
+import static com.example.flight_booking_app.data.model.UiState.Status.ERROR;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

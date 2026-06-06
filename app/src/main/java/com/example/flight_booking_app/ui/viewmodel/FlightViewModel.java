@@ -7,15 +7,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.flight_booking_app.data.model.AuthResult;
-import com.example.flight_booking_app.data.model.FareClass;
-import com.example.flight_booking_app.data.model.FareOption;
+import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.Flight;
 import com.example.flight_booking_app.data.model.FlightFilterState;
 import com.example.flight_booking_app.data.repository.FlightRepository;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -32,7 +29,7 @@ public class FlightViewModel extends ViewModel {
      * Danh sách đang hiển thị trên RecyclerView (tăng dần theo trang).
      */
     private final MutableLiveData<List<Flight>> pagedFlightsLive = new MutableLiveData<>();
-    private final MutableLiveData<AuthResult> loadState = new MutableLiveData<>();
+    private final MutableLiveData<UiState> loadState = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loadingMoreLive = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> isLastPageLive = new MutableLiveData<>(false);
 
@@ -60,7 +57,7 @@ public class FlightViewModel extends ViewModel {
 
     // ─── Getters ─────────────────────────────────────────────────────────
     public LiveData<List<Flight>> getPagedFlightsLive() { return pagedFlightsLive; }
-    public LiveData<AuthResult> getLoadState() { return loadState; }
+    public LiveData<UiState> getLoadState() { return loadState; }
     public LiveData<Boolean> getLoadingMoreLive() { return loadingMoreLive; }
     public LiveData<Boolean> getIsLastPageLive() { return isLastPageLive; }
 
@@ -85,7 +82,7 @@ public class FlightViewModel extends ViewModel {
     public void searchFlights(String fromCityId, String toCityId, String departureDate,
                               int adultCount, int childCount, int babyCount) {
         resetPaginationState();
-        loadState.setValue(AuthResult.loading());
+        loadState.setValue(UiState.loading());
 
         int totalPassengers = adultCount + childCount + babyCount;
 
@@ -103,12 +100,12 @@ public class FlightViewModel extends ViewModel {
 
                         // Lần đầu tải về, chưa có bộ lọc nào được áp dụng
                         applyFilterState(FlightFilterState.defaultState());
-                        loadState.setValue(AuthResult.success());
+                        loadState.setValue(UiState.success());
                     }
 
                     @Override
                     public void onError(String error) {
-                        loadState.setValue(AuthResult.error(error));
+                        loadState.setValue(UiState.error(error));
                     }
                 });
     }

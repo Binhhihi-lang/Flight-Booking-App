@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.flight_booking_app.data.model.AuthResult;
+import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.User;
 import com.example.flight_booking_app.data.repository.AuthRepository;
 import com.example.flight_booking_app.data.repository.UserRepository;
@@ -23,7 +23,7 @@ public class UserViewModel extends ViewModel {
     private final MutableLiveData<User> currentUser = new MutableLiveData<>();
 
     // Trạng thái update profile (loading/success/error)
-    private final MutableLiveData<AuthResult> updateState = new MutableLiveData<>();
+    private final MutableLiveData<UiState> updateState = new MutableLiveData<>();
 
     // Trạng thái logout  Fragment observe để chuyển màn hình
     private final MutableLiveData<Boolean> logoutState = new MutableLiveData<>();
@@ -35,7 +35,7 @@ public class UserViewModel extends ViewModel {
     }
 
     public LiveData<User> getCurrentUser() { return currentUser; }
-    public LiveData<AuthResult> getUpdateState() { return updateState; }
+    public LiveData<UiState> getUpdateState() { return updateState; }
     public LiveData<Boolean> getLogoutState() { return logoutState; }
 
     // Lắng nghe sự kiện thay đổi
@@ -45,7 +45,7 @@ public class UserViewModel extends ViewModel {
                 currentUser.setValue(user);  // cập nhật LiveData đến Fragment tự vẽ lại
             }
             @Override public void onError(String errorMessage) {
-                updateState.setValue(AuthResult.error(errorMessage));
+                updateState.setValue(UiState.error(errorMessage));
             }
         });
     }
@@ -58,12 +58,12 @@ public class UserViewModel extends ViewModel {
     }
 
     public void updateProfile(Uri newPhotoUri, HashMap<String,Object> updates, String fullName) {
-        updateState.setValue(AuthResult.loading());
+        updateState.setValue(UiState.loading());
         repository.updateProfile(newPhotoUri, updates, fullName, new UserRepository.UpdateUserCallback() {
             @Override
-            public void onSuccess() { updateState.setValue(AuthResult.success()); }
+            public void onSuccess() { updateState.setValue(UiState.success()); }
             @Override
-            public void onError(String msg) { updateState.setValue(AuthResult.error(msg)); }
+            public void onError(String msg) { updateState.setValue(UiState.error(msg)); }
         });
     }
 
@@ -83,7 +83,7 @@ public class UserViewModel extends ViewModel {
             }
             @Override
             public void onError(String msg) {
-                updateState.setValue(AuthResult.error(msg));
+                updateState.setValue(UiState.error(msg));
             }
         });
     }

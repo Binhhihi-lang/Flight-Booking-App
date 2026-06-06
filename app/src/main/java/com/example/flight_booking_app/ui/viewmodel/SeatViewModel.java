@@ -1,12 +1,10 @@
 package com.example.flight_booking_app.ui.viewmodel;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.flight_booking_app.data.model.AuthResult;
+import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.Seat;
 import com.example.flight_booking_app.data.model.SeatMapMetadata;
 import com.example.flight_booking_app.data.repository.SeatRepository;
@@ -40,7 +38,7 @@ public class SeatViewModel extends ViewModel {
     private final SeatRepository repository;
 
     private final MutableLiveData<List<Seat>> seatMapData = new MutableLiveData<>();
-    private final MutableLiveData<AuthResult> loadState = new MutableLiveData<>();
+    private final MutableLiveData<UiState> loadState = new MutableLiveData<>();
 
     /**
      * Ghế vừa được click — Activity observe để cập nhật label realtime.
@@ -88,7 +86,7 @@ public class SeatViewModel extends ViewModel {
     }
 
     // trạng thái loading
-    public LiveData<AuthResult> getIsLoading() {
+    public LiveData<UiState> getIsLoading() {
         return loadState;
     }
 
@@ -191,7 +189,7 @@ public class SeatViewModel extends ViewModel {
     public void loadSeatMap(String templateId, String flightId) {
         if (templateId == null || templateId.isEmpty() || flightId == null || flightId.isEmpty()) return;
 
-        loadState.setValue(AuthResult.loading());
+        loadState.setValue(UiState.loading());
 
         repository.fetchSeatsForFlight(templateId, flightId, new SeatRepository.OnSeatsLoadedListener() {
             @Override
@@ -200,12 +198,12 @@ public class SeatViewModel extends ViewModel {
                 List<Seat> grid = buildGridFromSeats(seats, metadata);
                 restoreSelectionState(grid);
                 seatMapData.setValue(grid);
-                loadState.setValue(AuthResult.success());
+                loadState.setValue(UiState.success());
             }
 
             @Override
             public void onError(String error) {
-                loadState.setValue(AuthResult.error(error));
+                loadState.setValue(UiState.error(error));
             }
         });
     }

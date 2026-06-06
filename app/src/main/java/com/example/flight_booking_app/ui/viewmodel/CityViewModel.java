@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.flight_booking_app.data.model.AuthResult;
+import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.City;
 import com.example.flight_booking_app.data.repository.CityRepository;
 
@@ -14,7 +14,7 @@ import java.util.List;
 public class CityViewModel extends ViewModel {
     private final CityRepository repository ;
     private final MutableLiveData<List<City>> cityList = new MutableLiveData<>();
-    private final MutableLiveData<AuthResult> cityState = new MutableLiveData<>();
+    private final MutableLiveData<UiState> cityState = new MutableLiveData<>();
     private List<City> originalList = new ArrayList<>(); // Cache dữ liệu gốc
 
     public CityViewModel() {
@@ -38,7 +38,7 @@ public class CityViewModel extends ViewModel {
 
             @Override
             public void onError(String errorMessage) {
-                cityState.setValue(AuthResult.error(errorMessage));
+                cityState.setValue(UiState.error(errorMessage));
 
             }
         });

@@ -1,13 +1,10 @@
 package com.example.flight_booking_app.data.repository;
 
-import android.widget.Toast;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.flight_booking_app.data.model.AuthResult;
+import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.User;
-import com.example.flight_booking_app.ui.view.activity.ForgotPasswordActivity;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,13 +32,13 @@ public class AuthRepository {
 
     private final FirebaseAuth mAuth;
     private final DatabaseReference mDatabase;
-    private final MutableLiveData<AuthResult> resetState = new MutableLiveData<>();
+    private final MutableLiveData<UiState> resetState = new MutableLiveData<>();
 
     public AuthRepository() {
         mAuth    = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
     }
-    public LiveData<AuthResult> getResetState() {
+    public LiveData<UiState> getResetState() {
         return resetState;
     }
 
