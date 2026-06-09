@@ -33,7 +33,7 @@ public class Seat {
 
 
     // ─── Transient fields – KHÔNG lưu Firebase ───────────────────────────
-    private transient boolean isSelected  = false;
+    private transient boolean   isSelected  = false;
     private transient boolean isSelecting = false;
 
     public Seat() {}

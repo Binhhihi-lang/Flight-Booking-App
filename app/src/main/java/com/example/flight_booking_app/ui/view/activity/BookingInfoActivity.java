@@ -2,6 +2,7 @@ package com.example.flight_booking_app.ui.view.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.R;
+import com.example.flight_booking_app.data.model.FareClass;
+import com.example.flight_booking_app.data.model.Flight;
 import com.example.flight_booking_app.data.model.Passenger;
 import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.ui.viewmodel.BookingInfoViewModel;
@@ -48,14 +51,11 @@ import java.util.Locale;
  */
 public class BookingInfoActivity extends AppCompatActivity {
 
-    // ══════════════════════════════════════════════════════════════════════
-    // INTENT KEYS
-    // Quy tắc đặt tên: EXTRA_{TRIP}_{FIELD}
-    //   TRIP  = OUT (chuyến đi) | RET (chuyến về)
-    //   FIELD = tên trường dữ liệu
-    // ══════════════════════════════════════════════════════════════════════
-
     // ── Chuyến đi ─────────────────────────────────────────────────────────
+    private Flight outboundFlight;
+    private Flight returnFlight;
+    private FareClass outboundFare;
+    private FareClass returnFare;
     public static final String EXTRA_OUT_FLIGHT_ID    = "out_flight_id";
     public static final String EXTRA_OUT_FLIGHT_NUMBER= "out_flight_number";
     public static final String EXTRA_OUT_FARE_RULE_ID = "out_fare_rule_id";   // ← ID-Driven (đã fix)
@@ -73,6 +73,7 @@ public class BookingInfoActivity extends AppCompatActivity {
     public static final String EXTRA_OUT_DATE         = "out_date";
     public static final String EXTRA_OUT_BASE_PRICE   = "out_base_price";
     public static final String EXTRA_OUT_FARE_CLASS   = "out_fare_class";
+    public static final String EXTRA_OUT_FARE_CLASS_ID   = "out_fare_class_id";
     public static final String EXTRA_OUT_CHECKED_BAGGAGE = "out_checked_baggage";
     public static final String EXTRA_OUT_TAX_FEE      = "out_tax_fee";
 
@@ -95,6 +96,7 @@ public class BookingInfoActivity extends AppCompatActivity {
     public static final String EXTRA_RET_BASE_PRICE   = "ret_base_price";
     public static final String EXTRA_RET_TAX_FEE      = "ret_tax_fee";
     public static final String EXTRA_RET_FARE_CLASS   = "ret_fare_class";
+    public static final String EXTRA_RET_FARE_CLASS_ID   = "ret_fare_class_id";
     public static final String EXTRA_RET_CHECKED_BAGGAGE = "ret_checked_baggage";
 
     // ── Hành khách ────────────────────────────────────────────────────────
@@ -146,21 +148,41 @@ public class BookingInfoActivity extends AppCompatActivity {
     private String outboundFlightId, outSeatMapId, outAircraftName, outAirlineName, outFromIata, outToIata;
     private String returnFlightId,   retSeatMapId, retAircraftName, retAirlineName, retFromIata, retToIata;
 
-    private final ArrayList<Passenger> passengerList = new ArrayList<>();
-    private ArrayList<String> departSeatCodes = new ArrayList<>();
-    private ArrayList<String> returnSeatCodes = new ArrayList<>();
+    private ArrayList<String> depSeats;
 
-    // registerForActivityResult PHẢI được khai báo ở field (trước onCreate)
+    private ArrayList<String> retSeats;
+
+    //
+    private static final int ICON_ADULT = R.drawable.ic_nav_profile;
+    private static final int ICON_CHILD = R.drawable.ic_child;
+    private static final int ICON_BABY = R.drawable.ic_baby;
+    private static final int ICON_CHECKED = R.drawable.ic_checked;
+
+    private static final int COLOR_COMPLETE = Color.parseColor("#0175F3");
+
     private final ActivityResultLauncher<Intent> seatSelectionLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     Intent data = result.getData();
-                    ArrayList<String> dep = data.getStringArrayListExtra("selected_seats_depart");
-                    ArrayList<String> ret = data.getStringArrayListExtra("selected_seats_return");
-                    departSeatCodes = dep != null ? dep : new ArrayList<>();
-                    returnSeatCodes = ret != null ? ret : new ArrayList<>();
-                    mapSeatsToPassengers();
+                    depSeats = data.getStringArrayListExtra("selected_seats_depart");
+                    retSeats = data.getStringArrayListExtra("selected_seats_return");
+
+                    // cho ViewModel
+                    viewModel.updateSeats(depSeats, retSeats, isRoundTrip);
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<Intent> passengerInputLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Passenger updatedPassenger = (Passenger) result.getData().getSerializableExtra("updated_passenger");
+                    if (updatedPassenger != null) {
+                        // ViewModel cập nhật
+                        viewModel.updatePassenger(updatedPassenger);
+                    }
                 }
             }
     );
@@ -182,7 +204,6 @@ public class BookingInfoActivity extends AppCompatActivity {
 
         bindViews();
         renderFlightInfo();         // đọc Intent → gán field + render UI
-        generatePassengerForms();
         calculatePrice();
         setupViewModel();
         setupClickListeners();
@@ -228,63 +249,84 @@ public class BookingInfoActivity extends AppCompatActivity {
 
 
     private void renderFlightInfo() {
-        Intent i = getIntent();
+        Intent intent = getIntent();
 
-        isRoundTrip  = i.getBooleanExtra(EXTRA_IS_ROUND_TRIP, false);
-        adultCount   = i.getIntExtra(EXTRA_ADULT_COUNT, 1);
-        childCount   = i.getIntExtra(EXTRA_CHILD_COUNT, 0);
-        babyCount    = i.getIntExtra(EXTRA_BABY_COUNT,  0);
-        outBasePrice = i.getDoubleExtra(EXTRA_OUT_BASE_PRICE, 0);
-        outTaxFee    = i.getDoubleExtra(EXTRA_OUT_TAX_FEE, 0);
+        // 1. NHẬN CÁC OBJECT NGUYÊN KHỐI VÀ ĐẾM SỐ LƯỢNG KHÁCH
+        isRoundTrip  = intent.getBooleanExtra("is_round_trip", false);
+        adultCount   = intent.getIntExtra("adult_count", 1);
+        childCount   = intent.getIntExtra("child_count", 0);
+        babyCount    = intent.getIntExtra("baby_count",  0);
 
-        // ── ID-Driven: chỉ lưu ID, KHÔNG lưu Object ──────────────────────
-        outFareRuleId = i.getStringExtra(EXTRA_OUT_FARE_RULE_ID);
-        retFareRuleId = i.getStringExtra(EXTRA_RET_FARE_RULE_ID); // null nếu 1 chiều
+        outboundFlight = (Flight) intent.getSerializableExtra("selected_outbound_flight");
+        outboundFare   = (FareClass) intent.getSerializableExtra("selected_outbound_fare");
 
-        // ── Dữ liệu truyền tiếp sang SeatSelectionActivity ───────────────
-        outboundFlightId = i.getStringExtra(EXTRA_OUT_FLIGHT_ID);
-        outSeatMapId     = i.getStringExtra(EXTRA_OUT_SEAT_MAP_ID);
-        outAircraftName  = i.getStringExtra(EXTRA_OUT_AIRCRAFT_NAME);
-        outAirlineName   = i.getStringExtra(EXTRA_OUT_AIRLINE_NAME);
-        outFromIata      = i.getStringExtra(EXTRA_OUT_FROM_IATA);
-        outToIata        = i.getStringExtra(EXTRA_OUT_TO_IATA);
-
-        // ── Render UI: chuyến đi ──────────────────────────────────────────
-        tvOutRoute.setText(i.getStringExtra(EXTRA_OUT_FROM_CITY) + " → " + i.getStringExtra(EXTRA_OUT_TO_CITY));
-        tvOutDate.setText(i.getStringExtra(EXTRA_OUT_DATE));
-        tvOutDepartTime.setText(i.getStringExtra(EXTRA_OUT_DEPART_TIME));
-        tvOutFromIata.setText(outFromIata);
-        tvOutDuration.setText(i.getStringExtra(EXTRA_OUT_DURATION));
-        tvOutArrivalTime.setText(i.getStringExtra(EXTRA_OUT_ARRIVAL_TIME));
-        tvOutToIata.setText(outToIata);
-        tvOutFlightNumber.setText(i.getStringExtra(EXTRA_OUT_FLIGHT_NUMBER));
-        tvOutFareClass.setText(i.getStringExtra(EXTRA_OUT_FARE_CLASS));
-        Glide.with(this).load(i.getStringExtra(EXTRA_OUT_AIRLINE_LOGO))
-                .placeholder(R.drawable.ic_airline).into(imgOutLogo);
-
-        // ── Render UI: chuyến về (chỉ khi khứ hồi) ───────────────────────
         if (isRoundTrip) {
-            retBasePrice     = i.getDoubleExtra(EXTRA_RET_BASE_PRICE, 0);
-            retTaxFee        = i.getDoubleExtra(EXTRA_RET_TAX_FEE, 0);
-            returnFlightId   = i.getStringExtra(EXTRA_RET_FLIGHT_ID);
-            retSeatMapId     = i.getStringExtra(EXTRA_RET_SEAT_MAP_ID);
-            retAircraftName  = i.getStringExtra(EXTRA_RET_AIRCRAFT_NAME);
-            retAirlineName   = i.getStringExtra(EXTRA_RET_AIRLINE_NAME);
-            retFromIata      = i.getStringExtra(EXTRA_RET_FROM_IATA);
-            retToIata        = i.getStringExtra(EXTRA_RET_TO_IATA);
+            returnFlight = (Flight) intent.getSerializableExtra("selected_return_flight");
+            returnFare   = (FareClass) intent.getSerializableExtra("selected_return_fare");
+        }
 
+        // Kiểm tra an toàn dữ liệu trước khi render
+        if (outboundFlight == null || outboundFare == null) return;
+
+        // 2. GÁN CÁC BIẾN GLOBAL PHỤC VỤ TRUYỀN SANG SEAT_SELECTION & TÍNH TIỀN
+        outBasePrice     = outboundFare.getBasePrice(); // Lấy giá từ Hạng vé
+        outTaxFee        = outboundFlight.getTaxFee(); // Thuế phí từ Chuyến bay
+
+        outFareRuleId    = outboundFare.getFareRuleId();
+        outboundFlightId = outboundFlight.getFlightId();
+        outSeatMapId     = outboundFlight.getSeatMapId();
+        outAircraftName  = outboundFlight.getAirCraftName();
+        outAirlineName   = outboundFlight.getAirlineName();
+        outFromIata      = outboundFlight.getFromIata();
+        outToIata        = outboundFlight.getToIata();
+
+        // 3. RENDER UI: CHUYẾN ĐI
+        tvOutRoute.setText(outboundFlight.getFrom() + " → " + outboundFlight.getTo());
+        tvOutDate.setText(outboundFlight.getDepartureDate());
+        tvOutDepartTime.setText(outboundFlight.getDepartureTime());
+        tvOutFromIata.setText(outFromIata);
+        tvOutDuration.setText(outboundFlight.getDuration());
+        tvOutArrivalTime.setText(outboundFlight.getArrivalTime());
+        tvOutToIata.setText(outToIata);
+        tvOutFlightNumber.setText(outboundFlight.getFlightNumber());
+        tvOutFareClass.setText(outboundFare.getTitle()); // Tên hạng vé
+
+        Glide.with(this)
+                .load(outboundFlight.getAirlineLogo())
+                .placeholder(R.drawable.ic_airline)
+                .into(imgOutLogo);
+
+        // 4. RENDER UI: CHUYẾN VỀ (Chỉ khi khứ hồi)
+        if (isRoundTrip && returnFlight != null && returnFare != null) {
             cardReturnFlight.setVisibility(View.VISIBLE);
-            tvRetRoute.setText(i.getStringExtra(EXTRA_RET_FROM_CITY) + " → " + i.getStringExtra(EXTRA_RET_TO_CITY));
-            tvRetDate.setText(i.getStringExtra(EXTRA_RET_DATE));
-            tvRetDepartTime.setText(i.getStringExtra(EXTRA_RET_DEPART_TIME));
+
+            // Gán biến Global chuyến về
+            retBasePrice     = returnFare.getBasePrice();
+            retTaxFee        = returnFlight.getTaxFee();
+
+            retFareRuleId    = returnFare.getFareRuleId();
+            returnFlightId   = returnFlight.getFlightId();
+            retSeatMapId     = returnFlight.getSeatMapId();
+            retAircraftName  = returnFlight.getAirCraftName();
+            retAirlineName   = returnFlight.getAirlineName();
+            retFromIata      = returnFlight.getFromIata();
+            retToIata        = returnFlight.getToIata();
+
+            // Render UI
+            tvRetRoute.setText(returnFlight.getFrom() + " → " + returnFlight.getTo());
+            tvRetDate.setText(returnFlight.getDepartureDate());
+            tvRetDepartTime.setText(returnFlight.getDepartureTime());
             tvRetFromIata.setText(retFromIata);
-            tvRetDuration.setText(i.getStringExtra(EXTRA_RET_DURATION));
-            tvRetArrivalTime.setText(i.getStringExtra(EXTRA_RET_ARRIVAL_TIME));
+            tvRetDuration.setText(returnFlight.getDuration());
+            tvRetArrivalTime.setText(returnFlight.getArrivalTime());
             tvRetToIata.setText(retToIata);
-            tvRetFlightNumber.setText(i.getStringExtra(EXTRA_RET_FLIGHT_NUMBER));
-            tvRetFareClass.setText(i.getStringExtra(EXTRA_RET_FARE_CLASS));
-            Glide.with(this).load(i.getStringExtra(EXTRA_RET_AIRLINE_LOGO))
-                    .placeholder(R.drawable.ic_airline).into(imgRetLogo);
+            tvRetFlightNumber.setText(returnFlight.getFlightNumber());
+            tvRetFareClass.setText(returnFare.getTitle());
+
+            Glide.with(this)
+                    .load(returnFlight.getAirlineLogo())
+                    .placeholder(R.drawable.ic_airline)
+                    .into(imgRetLogo);
         } else {
             cardReturnFlight.setVisibility(View.GONE);
         }
@@ -303,20 +345,12 @@ public class BookingInfoActivity extends AppCompatActivity {
         viewModel.getLoadingLive().observe(this, state -> {
             if (state == null) return;
 
-            // Xử lý thanh Progress Bar (Ví dụ bạn có một view là progressBar)
-            // progressBar.setVisibility(state.getStatus() == AuthResult.Status.LOADING ? View.VISIBLE : View.GONE);
-
             // Xử lý thông báo lỗi nếu có
             if (state.getStatus() == UiState.Status.ERROR) {
                 Toast.makeText(this,
                         "Lỗi tải quy định vé: " + state.getMessage(),
                         Toast.LENGTH_LONG).show();
             }
-
-            // Nếu SUCCESS, bạn có thể mở khóa nút "Chọn ghế" ở đây nếu trước đó bạn khóa lại để đợi data
-            // if (state.getStatus() == AuthResult.Status.SUCCESS) {
-            //     btnSelectSeat.setEnabled(true);
-            // }
         });
 
         // ------------------------------------------------------------------
@@ -338,48 +372,75 @@ public class BookingInfoActivity extends AppCompatActivity {
             });
         }
 
-        // Truyền ID lượt đi, và ID lượt về (nếu có) để ViewModel bắt đầu fetch data
+        // Truyền ID lượt đi, và ID lượt về (nếu có) để ViewModel bắt đầu fetch data FareRule
         viewModel.loadFareRules(outFareRuleId, isRoundTrip ? retFareRuleId : null);
-    }
 
-    // ══════════════════════════════════════════════════════════════════════
-    // Passenger forms
-    // ══════════════════════════════════════════════════════════════════════
+        // khởi tạo lần đầu danh sách hành khách động (trống thông tin)
+        viewModel.initPassengersIfNeeded(adultCount, childCount, babyCount);
 
-    private void generatePassengerForms() {
-        layoutPassengerList.removeAllViews();
-        passengerList.clear();
-        LayoutInflater inflater = LayoutInflater.from(this);
+        // quan sát thông tin hành khách
+        viewModel.getPassengerListLive().observe(this, list -> {
+            if (list != null) {
+                layoutPassengerList.removeAllViews();
+                LayoutInflater inflater = LayoutInflater.from(this);
 
-        for (int idx = 0; idx < adultCount; idx++) {
-            Passenger p = new Passenger("ADULT", idx, "Người lớn " + (idx + 1));
-            passengerList.add(p);
-            addPassengerRow(inflater, p, R.drawable.ic_nav_profile);
-        }
-        for (int idx = 0; idx < childCount; idx++) {
-            Passenger p = new Passenger("CHILD", idx, "Trẻ em " + (idx + 1));
-            passengerList.add(p);
-            addPassengerRow(inflater, p, R.drawable.ic_child);
-        }
-        for (int idx = 0; idx < babyCount; idx++) {
-            Passenger p = new Passenger("BABY", idx, "Em bé " + (idx + 1));
-            passengerList.add(p);
-            addPassengerRow(inflater, p, R.drawable.ic_baby);
-        }
-    }
+                for (Passenger p : list) {
+                    View row = inflater.inflate(R.layout.item_passenger_input, layoutPassengerList, false);
 
-    private void addPassengerRow(LayoutInflater inflater, Passenger passenger, int iconRes) {
-        View row = inflater.inflate(R.layout.item_passenger_input, layoutPassengerList, false);
-        ((ImageView) row.findViewById(R.id.img_passenger_icon)).setImageResource(iconRes);
-        ((TextView)  row.findViewById(R.id.tv_passenger_label)).setText(passenger.getLabel());
-        row.setOnClickListener(v -> openPassengerInput(passenger));
-        layoutPassengerList.addView(row);
+                    // Xác định icon đại diện theo loại khách
+                    ImageView imgIcon = row.findViewById(R.id.img_passenger_icon);
+                    int iconRes = p.getType().equals("ADULT") ? ICON_ADULT :
+                            p.getType().equals("CHILD") ? ICON_CHILD : ICON_BABY;
+                    imgIcon.setImageResource(iconRes);
+
+                    // 2. Xử lý Trạng thái Check hoàn thành nhập liệu
+                    TextView tvMandatory = row.findViewById(R.id.tv_passenger_mandatory);
+                    ImageView imgCheck = row.findViewById(R.id.img_passenger_check);
+
+                    if (p.isComplete()) {
+                        // Nếu đã nhập đầy đủ (Họ tên, Ngày sinh, Danh xưng)
+                        imgCheck.setImageResource(ICON_CHECKED);
+
+                        imgCheck.setColorFilter(COLOR_COMPLETE, PorterDuff.Mode.SRC_IN);
+
+                        tvMandatory.setVisibility(View.GONE);
+                        // Đảm bảo icon được hiển thị
+                        imgCheck.setVisibility(View.VISIBLE);
+                    }
+
+                    // Hiển thị Nhãn và Tên
+                    TextView tvLabel = row.findViewById(R.id.tv_passenger_label);
+                    if (p.getFullName() != null && !p.getFullName().trim().isEmpty()) {
+                        // set Tên
+                        tvLabel.setText(p.getTitle() + ": " + p.getFullName().toUpperCase());
+
+                    } else {
+                        tvLabel.setText(p.getLabel());
+                    }
+
+                    // Hiển thị Ghế
+                    TextView tvSeat = row.findViewById(R.id.tv_passenger_seat);
+                    if (p.getSeatNumber() != null && !p.getSeatNumber().isEmpty()) {
+                        tvSeat.setText(p.getSeatNumber());
+                        tvSeat.setTextColor(p.getType().equals("BABY") ? Color.GRAY : Color.parseColor("#1565C0"));
+                    }
+                    // Gắn sự kiện click mở màn hình nhập liệu
+                    row.setOnClickListener(v -> openPassengerInput(p));
+                    layoutPassengerList.addView(row);
+                }
+            }
+        });
+
+        // quan sát ghế ngồi đã chọn
+        viewModel.getDepartSeatCodesLive().observe(this,seats ->{
+
+        });
     }
 
     private void openPassengerInput(Passenger passenger) {
         Intent intent = new Intent(this, PassengerInputActivity.class);
         intent.putExtra("passenger", passenger);
-        startActivity(intent);
+        passengerInputLauncher.launch(intent);
     }
 
     // ══════════════════════════════════════════════════════════════════════
@@ -398,10 +459,6 @@ public class BookingInfoActivity extends AppCompatActivity {
         tvGrandTotalPrice.setText(formatPrice(grandTotal));
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    // Click listeners
-    // ══════════════════════════════════════════════════════════════════════
-
     private void setupClickListeners() {
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
@@ -409,6 +466,7 @@ public class BookingInfoActivity extends AppCompatActivity {
         btnSelectSeat.setOnClickListener(v -> openSeatSelection());
 
         btnBookNow.setOnClickListener(v -> {
+            ArrayList<Passenger> passengerList = viewModel.getPassengerListLive().getValue();
             for (Passenger p : passengerList) {
                 if (!p.isComplete()) {
                     Toast.makeText(this,
@@ -420,9 +478,8 @@ public class BookingInfoActivity extends AppCompatActivity {
         });
     }
 
-    // ══════════════════════════════════════════════════════════════════════
+
     // Seat selection
-    // ══════════════════════════════════════════════════════════════════════
 
     private void openSeatSelection() {
         int seatsNeeded = adultCount + childCount;
@@ -431,12 +488,13 @@ public class BookingInfoActivity extends AppCompatActivity {
         intent.putExtra(SeatSelectionActivity.EXTRA_MAX_PASSENGERS, seatsNeeded);
         intent.putExtra(SeatSelectionActivity.EXTRA_IS_ROUND_TRIP,  isRoundTrip);
 
-        // để nhét thẳng vào Intent truyền sang màn hình Chọn ghế.
+        // gọi ViewModel truyền dữ liệu FareRule sang SeatSelection
         if (viewModel != null) {
             viewModel.buildSeatSelectionIntent(intent, isRoundTrip);
         }
 
         // ── Chuyến đi ─────────────────────────────────────────────────────
+        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEATS_SELECTED, depSeats);
         intent.putExtra(SeatSelectionActivity.EXTRA_OUT_FLIGHT_ID,    outboundFlightId);
         intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEAT_MAP_ID,  outSeatMapId);
         intent.putExtra(SeatSelectionActivity.EXTRA_OUT_AIRCRAFT_NAME,outAircraftName);
@@ -447,6 +505,7 @@ public class BookingInfoActivity extends AppCompatActivity {
 
         // ── Chuyến về (chỉ khi khứ hồi) ──────────────────────────────────
         if (isRoundTrip) {
+            intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEATS_SELECTED, retSeats);
             intent.putExtra(SeatSelectionActivity.EXTRA_RET_FLIGHT_ID,     returnFlightId);
             intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEAT_MAP_ID,   retSeatMapId);
             intent.putExtra(SeatSelectionActivity.EXTRA_RET_AIRCRAFT_NAME, retAircraftName);
@@ -458,59 +517,6 @@ public class BookingInfoActivity extends AppCompatActivity {
         seatSelectionLauncher.launch(intent);
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    // Seat → Passenger mapping
-    // ══════════════════════════════════════════════════════════════════════
-
-    /**
-     * Ánh xạ ghế đã chọn vào từng hành khách (ADULT → CHILD → bỏ qua BABY).
-     */
-    private void mapSeatsToPassengers() {
-        int departIndex = 0;
-        int returnIndex = 0;
-
-        for (int i = 0; i < layoutPassengerList.getChildCount(); i++) {
-            View row = layoutPassengerList.getChildAt(i);
-            TextView tvSeat = row.findViewById(R.id.tv_passenger_seat);
-
-            Passenger p = passengerList.get(i);
-
-            if ("BABY".equals(p.getType())) {
-                tvSeat.setText("Ngồi cùng ng.lớn");
-                tvSeat.setTextColor(Color.GRAY);
-                continue;
-            }
-
-            StringBuilder seatDisplayBuilder = new StringBuilder();
-
-            if (isRoundTrip) {
-                if (departSeatCodes != null && departIndex < departSeatCodes.size()) {
-                    seatDisplayBuilder.append("Đi: ").append(departSeatCodes.get(departIndex));
-                    p.setSeatNumber(departSeatCodes.get(departIndex));
-                    departIndex++;
-                } else {
-                    seatDisplayBuilder.append("Đi: --");
-                }
-                if (returnSeatCodes != null && returnIndex < returnSeatCodes.size()) {
-                    seatDisplayBuilder.append(" | Về: ").append(returnSeatCodes.get(returnIndex));
-                    returnIndex++;
-                } else {
-                    seatDisplayBuilder.append(" | Về: --");
-                }
-            } else {
-                if (departSeatCodes != null && departIndex < departSeatCodes.size()) {
-                    seatDisplayBuilder.append(departSeatCodes.get(departIndex));
-                    p.setSeatNumber(departSeatCodes.get(departIndex));
-                    departIndex++;
-                } else {
-                    seatDisplayBuilder.append("--");
-                }
-            }
-
-            tvSeat.setText(seatDisplayBuilder.toString());
-            tvSeat.setTextColor(Color.parseColor("#1565C0"));
-        }
-    }
 
     // ══════════════════════════════════════════════════════════════════════
     // Helpers

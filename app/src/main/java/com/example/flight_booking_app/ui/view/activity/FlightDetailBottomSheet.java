@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,9 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.R;
+import com.example.flight_booking_app.data.model.FareClass;
+import com.example.flight_booking_app.data.model.FareRule;
+import com.example.flight_booking_app.data.model.Flight;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 
@@ -28,28 +32,6 @@ import java.util.Locale;
  * onBookingConfirmed()  → 1 chiều hoặc lượt về: tiến đến đặt vé
  */
 public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
-
-    // ── Bundle keys
-    public static final String KEY_FLIGHT_NUMBER = "flight_number";
-    public static final String KEY_AIRLINE_NAME = "airline_name";
-    public static final String KEY_AIRLINE_LOGO = "airline_logo";
-    public static final String KEY_FROM_CITY = "from_city";
-    public static final String KEY_FROM_IATA = "from_iata";
-    public static final String KEY_TO_CITY = "to_city";
-    public static final String KEY_TO_IATA = "to_iata";
-    public static final String KEY_DEPART_TIME = "departure_time";
-    public static final String KEY_ARRIVAL_TIME = "arrival_time";
-    public static final String KEY_DURATION = "duration";
-    public static final String KEY_DEPART_DATE = "departure_date";
-    public static final String KEY_BASE_PRICE = "display_price";
-    public static final String KEY_TAX_FEE = "tax_fee";
-    public static final String KEY_FARE_CLASS_NAME = "fare_class_name";
-    public static final String KEY_BAGGAGE = "checked_baggage";
-    public static final String KEY_ADULT_COUNT = "adult_count";
-    public static final String KEY_CHILD_COUNT = "child_count";
-    public static final String KEY_BABY_COUNT = "baby_count";
-    public static final String KEY_IS_DEPART = "is_depart";
-    public static final String KEY_IS_ROUND_TRIP = "is_round_trip";
 
     // ── Callback interface
 
@@ -75,8 +57,10 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
     private TextView tvDate, tvDepartTime, tvFromIata;
     private TextView tvDuration, tvArrivalTime, tvToIata;
     private TextView tvFlightNumber, tvFlightType;
-    private TextView tvBasePrice, tvTaxFee, tvFareClass, tvTotalPrice;
-    private TextView tvBaggage, tvRefundPolicy;
+    private TextView tvBasePrice, tvTaxFee, tvFareClass, tvPassengerQuantity, tvTotalPrice;
+
+    private LinearLayout rowCheckedBaggage, rowCarryBaggage, rowRefundPolicy, rowMealPolicy ,rowLounge, rowPriority;
+    private TextView tvCabinBaggage, tvCheckedBaggage, tvRefund, tvMeal, tvLounge, tvPriority;
     private TextView tvFooterTotalPrice;
     private TextView tvFooterRouteSummary, tvFooterSubPrice;
     private MaterialButton btnBack, btnSelect;
@@ -84,35 +68,23 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
     // ── Factory method — tạo instance với Bundle
 
     public static FlightDetailBottomSheet newInstance(
-            String flightNumber, String airlineName, String airlineLogo,
-            String fromCity, String fromIata, String toCity, String toIata,
-            String departTime, String arrivalTime, String duration, String departDate,
-            double basePrice, double taxFee,
-            String fareClassName, int baggage,
+            Flight flight,
+            FareClass fareClass,
+            String travelDate,
             int adultCount, int childCount, int babyCount,
             boolean isDepart, boolean isRoundTrip) {
 
         Bundle args = new Bundle();
-        args.putString(KEY_FLIGHT_NUMBER, flightNumber);
-        args.putString(KEY_AIRLINE_NAME, airlineName);
-        args.putString(KEY_AIRLINE_LOGO, airlineLogo);
-        args.putString(KEY_FROM_CITY, fromCity);
-        args.putString(KEY_FROM_IATA, fromIata);
-        args.putString(KEY_TO_CITY, toCity);
-        args.putString(KEY_TO_IATA, toIata);
-        args.putString(KEY_DEPART_TIME, departTime);
-        args.putString(KEY_ARRIVAL_TIME, arrivalTime);
-        args.putString(KEY_DURATION, duration);
-        args.putString(KEY_DEPART_DATE, departDate);
-        args.putDouble(KEY_BASE_PRICE, basePrice);
-        args.putDouble(KEY_TAX_FEE, taxFee);
-        args.putString(KEY_FARE_CLASS_NAME, fareClassName);
-        args.putInt(KEY_BAGGAGE, baggage);
-        args.putInt(KEY_ADULT_COUNT, adultCount);
-        args.putInt(KEY_CHILD_COUNT, childCount);
-        args.putInt(KEY_BABY_COUNT, babyCount);
-        args.putBoolean(KEY_IS_DEPART, isDepart);
-        args.putBoolean(KEY_IS_ROUND_TRIP, isRoundTrip);
+
+        // TRUYỀN NGUYÊN OBJECT QUA BUNDLE
+        args.putSerializable("selected_flight", flight);
+        args.putSerializable("selected_fare_class", fareClass);
+        args.putString("travel_date", travelDate);
+        args.putInt("adult_count", adultCount);
+        args.putInt("child_count", childCount);
+        args.putInt("baby_count", babyCount);
+        args.putBoolean("is_depart", isDepart);
+        args.putBoolean("is_round_trip", isRoundTrip);
 
         FlightDetailBottomSheet sheet = new FlightDetailBottomSheet();
         sheet.setArguments(args);
@@ -154,9 +126,28 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
         tvBasePrice = view.findViewById(R.id.tv_detail_base_price);
         tvTaxFee = view.findViewById(R.id.tv_detail_tax_fee);
         tvFareClass = view.findViewById(R.id.tv_detail_fare_class);
+        tvPassengerQuantity = view.findViewById(R.id.tv_footer_lbl_price_per_person);
         tvTotalPrice = view.findViewById(R.id.tv_detail_total_price);
-        tvBaggage = view.findViewById(R.id.tv_detail_baggage);
-        tvRefundPolicy = view.findViewById(R.id.tv_detail_refund_policy);
+
+        // Các Layout quy định dịch vụ
+        rowCheckedBaggage = view.findViewById(R.id.row_carry_baggage);
+        rowCarryBaggage = view.findViewById(R.id.row_carry_bag);
+        rowRefundPolicy = view.findViewById(R.id.row_refund_policy);
+        rowMealPolicy = view.findViewById(R.id.row_meal_policy);
+
+         rowLounge = view.findViewById(R.id.row_lounge_policy);
+         rowPriority = view.findViewById(R.id.row_priority_policy);
+         
+
+        // Các TextView hiển thị text dịch vụ
+        tvCabinBaggage = view.findViewById(R.id.tv_detail_cabinBaggage);
+        tvCheckedBaggage = view.findViewById(R.id.tv_detail_checkedBaggage); // Thêm dòng này để findViewById
+        tvRefund = view.findViewById(R.id.tv_detail_refund_policy);
+        tvMeal = view.findViewById(R.id.tv_detail_meal_policy);
+        tvLounge = view.findViewById(R.id.tv_detail_lounge_policy);
+        tvPriority = view.findViewById(R.id.tv_detail_priority_policy);
+
+        // Footer
         tvFooterTotalPrice = view.findViewById(R.id.tv_footer_total_price);
         tvFooterRouteSummary = view.findViewById(R.id.tv_footer_route_summary);
         tvFooterSubPrice = view.findViewById(R.id.tv_footer_sub_price);
@@ -168,73 +159,114 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
         Bundle args = getArguments();
         if (args == null) return;
 
-        // Đọc từ Bundle
-        String flightNumber = args.getString(KEY_FLIGHT_NUMBER, "");
-        String airlineLogo = args.getString(KEY_AIRLINE_LOGO, "");
-        String fromCity = args.getString(KEY_FROM_CITY, "");
-        String fromIata = args.getString(KEY_FROM_IATA, "");
-        String toCity = args.getString(KEY_TO_CITY, "");
-        String toIata = args.getString(KEY_TO_IATA, "");
-        String departTime = args.getString(KEY_DEPART_TIME, "");
-        String arrivalTime = args.getString(KEY_ARRIVAL_TIME, "");
-        String duration = args.getString(KEY_DURATION, "");
-        String departDate = args.getString(KEY_DEPART_DATE, "");
-        double basePrice = args.getDouble(KEY_BASE_PRICE, 0);
-        double taxFee = args.getDouble(KEY_TAX_FEE, 0);
-        String fareClassName = args.getString(KEY_FARE_CLASS_NAME, "");
-        int baggage = args.getInt(KEY_BAGGAGE, 0);
-        int adult = args.getInt(KEY_ADULT_COUNT, 1);
-        int child = args.getInt(KEY_CHILD_COUNT, 0);
-        int baby = args.getInt(KEY_BABY_COUNT, 0);
-        boolean isRoundTrip = args.getBoolean(KEY_IS_ROUND_TRIP, false);
-        boolean isDepart = args.getBoolean(KEY_IS_DEPART, true);
+        // ── 1. MÓC DỮ LIỆU TỪ BUNDLE VÀ OBJECT ──
+        Flight flight = (Flight) args.getSerializable("selected_flight");
+        FareClass fareClass = (FareClass) args.getSerializable("selected_fare_class");
 
-        // Tính tổng tiền = (basePrice + taxFee) * adult + 75% * child + 10% * baby
+        if (flight == null || fareClass == null) return;
+
+        String travelDate = args.getString("travel_date", "");
+        int adult = args.getInt("adult_count", 1);
+        int child = args.getInt("child_count", 0);
+        int baby = args.getInt("baby_count", 0);
+        boolean isRoundTrip = args.getBoolean("is_round_trip", false);
+        boolean isDepart = args.getBoolean("is_depart", true);
+
+        // ── 2. XỬ LÝ PHẦN DỊCH VỤ (TỪ FARE RULE) ──
+        if (fareClass.getFareRule() != null) {
+            FareRule rule = fareClass.getFareRule();
+
+            // Hành lý xách tay
+            if (rowCarryBaggage != null && tvCabinBaggage != null) {
+                rowCarryBaggage.setVisibility(View.VISIBLE);
+                tvCabinBaggage.setText("Hành lý xách tay " + rule.getCabinBaggage() + "kg");
+            }
+
+            // Hành lý ký gửi
+            if (rowCheckedBaggage != null) {
+                if (tvCheckedBaggage != null) {
+                    if (rule.getCheckedBaggage() > 0) {
+                        rowCheckedBaggage.setVisibility(View.VISIBLE);
+                        tvCheckedBaggage.setText("Hành lý ký gửi " + rule.getCheckedBaggage() + "kg");
+                    } else {
+                        tvCheckedBaggage.setText("Không bao gồm hành lý ký gửi");
+                        // Bác có thể set màu chữ xám tại đây nếu muốn
+                    }
+                }
+            }
+
+            // Đổi vé
+            if (rowRefundPolicy != null && tvRefund != null) {
+                rowRefundPolicy.setVisibility(rule.isChangeable() ? View.VISIBLE : View.GONE);
+                tvRefund.setText("Được phép đổi vé");
+            }
+
+            // Suất ăn
+            if (rowMealPolicy != null) {
+                if (tvMeal != null) {
+                    rowMealPolicy.setVisibility(rule.isHasMeal() ? View.VISIBLE : View.GONE);
+                    tvMeal.setText("Bao gồm suất ăn trên máy bay");
+                }
+            }
+
+            // Nếu có UI cho Phòng chờ VIP / Ưu tiên
+
+            if (rowLounge != null) {
+                rowLounge.setVisibility(rule.isHasLoungeAccess() ? View.VISIBLE : View.GONE);
+                tvLounge.setText("Quyền vào phòng chờ VIP");
+            }
+            if (rowPriority != null) {
+                rowPriority.setVisibility(rule.isHasPriority() ? View.VISIBLE : View.GONE);
+                tvPriority.setText("Ưu tiên làm thủ tục & lên máy bay");
+            }
+
+        }
+
+        // ── 3. TÍNH TOÁN GIÁ TIỀN CHUẨN ──
+        int totalPassenger = adult + child + baby;
+        double basePrice = fareClass.getBasePrice(); // Giá lấy từ hạng vé
+        double taxFee = flight.getTaxFee();          // Thuế lấy từ chuyến bay
+
+        // Công thức: N.Lớn(100%) + Trẻ Em(75%) + Em Bé(10%)
         double total = (basePrice + taxFee) * adult
                 + (basePrice + taxFee) * 0.75 * child
                 + (basePrice + taxFee) * 0.10 * baby;
 
-        // Hiển thị thông tin chuyến bay
+        // ── 4. HIỂN THỊ THÔNG TIN CHUYẾN BAY (TỪ OBJECT FLIGHT) ──
+        tvDate.setText(travelDate);
+        tvDepartTime.setText(flight.getDepartureTime());
+        tvFromIata.setText(flight.getFromIata());
+        tvDuration.setText(flight.getDuration());
+        tvArrivalTime.setText(flight.getArrivalTime());
+        tvToIata.setText(flight.getToIata());
+        tvFlightNumber.setText(flight.getFlightNumber());
+        tvFareClass.setText(fareClass.getTitle()); // Tên hạng vé (Ví dụ: Eco Save)
 
-        tvDate.setText(departDate);
-        tvDepartTime.setText(departTime);
-        tvFromIata.setText(fromIata);
-        tvDuration.setText(duration);
-        tvArrivalTime.setText(arrivalTime);
-        tvToIata.setText(toIata);
-        tvFlightNumber.setText(flightNumber);
-        tvFareClass.setText(fareClassName);
+        // Nếu bác có biến lưu loại máy bay thì gán vào đây
+        // tvFlightType.setText(flight.getAirCraftName());
 
-        //  Giá
-
+        // ── 5. HIỂN THỊ CHI TIẾT GIÁ ──
         tvBasePrice.setText(formatPrice(basePrice));
         tvTaxFee.setText(formatPrice(taxFee));
-        tvTotalPrice.setText(formatPrice(basePrice + taxFee));
-
-        // Hành lý
-
-        if (baggage > 0) {
-            tvBaggage.setText("Hành lý ký gửi " + baggage + "kg");
-        } else {
-            tvBaggage.setText("Không bao gồm hành lý ký gửi");
-        }
-
+        tvTotalPrice.setText(formatPrice(basePrice + taxFee)); // Giá 1 người lớn
 
         Glide.with(requireContext())
-                .load(airlineLogo)
+                .load(flight.getAirlineLogo())
                 .placeholder(R.drawable.ic_airline)
                 .error(R.drawable.ic_airline)
                 .into(imgAirlineLogo);
 
-
+        // ── 6. HIỂN THỊ FOOTER TỔNG KẾT ──
+        tvPassengerQuantity.setText("Tổng số tiền " + totalPassenger + " người");
         tvFooterTotalPrice.setText(formatPrice(total));
-        tvFooterRouteSummary.setText(fromCity + " -> " + toCity + "  " + departTime + "  " + departDate);
+
+        // Chuỗi: "Hà Nội -> TP.HCM  10:30  20/11/2026"
+        String routeSummary = flight.getFrom() + " -> " + flight.getTo() + "  " + flight.getDepartureTime() + "  " + travelDate;
+        tvFooterRouteSummary.setText(routeSummary);
+
         tvFooterSubPrice.setText(formatPrice(total));
 
-        //   Khứ hồi + đang ở lượt đi → "CHỌN LƯỢT ĐI"
-        //   Khứ hồi + đang ở lượt về → "XÁC NHẬN CHUYẾN VỀ"
-        //   1 chiều                   → "CHỌN"
-
+        // ── 7. LOGIC NÚT BẤM (Đã chuẩn) ──
         if (isRoundTrip && isDepart) {
             btnSelect.setText("CHỌN LƯỢT ĐI");
         } else if (isRoundTrip) {
@@ -255,8 +287,8 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
             Bundle args = getArguments();
             if (args == null) return;
 
-            boolean isRoundTrip = args.getBoolean(KEY_IS_ROUND_TRIP, false);
-            boolean isDepart = args.getBoolean(KEY_IS_DEPART, true);
+            boolean isRoundTrip = args.getBoolean("is_round_trip", false);
+            boolean isDepart = args.getBoolean("is_depart", true);
 
             if (isRoundTrip && isDepart) {
                 // Khứ hồi + lượt đi báo Activity chuyển sang tab về

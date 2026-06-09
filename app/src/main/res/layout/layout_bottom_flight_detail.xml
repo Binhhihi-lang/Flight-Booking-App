@@ -396,41 +396,78 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingBottom="10dp"
+                    >
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal"
+                        android:orientation="vertical"
                         android:paddingHorizontal="16dp"
-                        android:paddingVertical="12dp">
+                        android:paddingTop="12dp">
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="5dp"
-                            android:src="@drawable/ic_luggage"
-                            app:tint="@color/primary_blue">
 
-                        </ImageView>
-
-                        <TextView
-                            android:id="@+id/tv_detail_baggage"
+                        <LinearLayout
+                            android:id="@+id/row_carry_bag"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="#333333"
-                            tools:text="Hành lý xách tay 7kg" />
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+
+                            >
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="5dp"
+                                android:src="@drawable/ic_bag"
+                                app:tint="@color/primary_blue"/>
+
+                            <TextView
+                                android:id="@+id/tv_detail_cabinBaggage"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="#333333"
+                                tools:text="Hành lý xách tay 7kg" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/row_carry_baggage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            >
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="5dp"
+                                android:src="@drawable/ic_luggage"
+                                app:tint="@color/primary_blue"/>
+
+                            <TextView
+                                android:id="@+id/tv_detail_checkedBaggage"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="#333333"
+                                tools:text="Hành lý ký gửi 7kg" />
+                        </LinearLayout>
+
 
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/row_refund_policy"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingHorizontal="16dp"
-                        android:paddingVertical="12dp">
+
+                        >
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -446,6 +483,90 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Được phép đổi vé"
+                            android:textColor="#333333"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/row_meal_policy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+
+                        >
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:src="@drawable/ic_check_box"
+                            >
+
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/tv_detail_meal_policy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Bao gồm suất ăn trên máy bay"
+                            android:textColor="#333333"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/row_lounge_policy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+
+                        >
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:src="@drawable/ic_check_box"
+                            >
+
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/tv_detail_lounge_policy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Bao gồm suất ăn trên máy bay"
+                            android:textColor="#333333"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/row_priority_policy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="16dp"
+
+                        >
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:src="@drawable/ic_check_box"
+                            >
+
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/tv_detail_priority_policy"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Bao gồm suất ăn trên máy bay"
                             android:textColor="#333333"/>
 
                     </LinearLayout>

@@ -5,8 +5,6 @@ public class Aircraft {
     private String airlineId;
     private String modelName;  // boeing 737, ...
     private int totalSeats;
-    private String seatMapId;  // mã ghế
-
     public Aircraft() {}
 
     public String getAirCraftId() {
@@ -23,6 +21,4 @@ public class Aircraft {
     public void setModelName(String modelName) { this.modelName = modelName; }
     public int getTotalSeats() { return totalSeats; }
     public void setTotalSeats(int totalSeats) { this.totalSeats = totalSeats; }
-    public String getSeatMapId() { return seatMapId; }
-    public void setSeatMapId(String seatMapId) { this.seatMapId = seatMapId; }
 }

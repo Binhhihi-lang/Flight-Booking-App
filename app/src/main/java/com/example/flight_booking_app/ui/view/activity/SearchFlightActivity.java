@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.flight_booking_app.R;
+import com.example.flight_booking_app.data.model.FareClass;
 import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.Flight;
 import com.example.flight_booking_app.ui.view.adapter.FlightAdapter;
@@ -316,40 +317,36 @@ public class SearchFlightActivity extends AppCompatActivity
     // ══════════════════════════════════════════════════════════════════════
 
     private void onFlightSelected(Flight flight) {
+        // Lưu vào trong ViewModel
         flightViewModel.setCurrentlyViewingFlight(flight);
+
+        // Lấy thẳng FareClass được nhồi sẵn bên trong Flight ra
+        FareClass fareClass = flight.getSelectedFareClass();
+
         boolean isReturnFlight = flightViewModel.isSelectingReturn();
 
         FlightDetailBottomSheet sheet = FlightDetailBottomSheet.newInstance(
-                flight.getFlightNumber(),
-                flight.getAirlineName(),
-                flight.getAirlineLogo(),
-                flight.getFrom(),
-                flight.getFromIata(),
-                flight.getTo(),
-                flight.getToIata(),
-                flight.getDepartureTime(),
-                flight.getArrivalTime(),
-                flight.getDuration(),
+                flight,
+                fareClass,
                 isReturnFlight ? returnDate : departDate,
-                flight.getDisplayPrice(),
-                flight.getTaxFee(),
-                flight.getFareClassName(),
-                flight.getCheckedBaggage(),
                 adultCount, childCount, babyCount,
-                !isReturnFlight,
-                isRoundTrip
+                !isReturnFlight, isRoundTrip
         );
-            sheet.show(getSupportFragmentManager(), "flight_detail");
+        sheet.show(getSupportFragmentManager(), "flight_detail");
     }
 
-    // ══════════════════════════════════════════════════════════════════════
-    // OnFlightActionListener callbacks
-    // ══════════════════════════════════════════════════════════════════════
+    // call back trả về chọn lượt về
 
     @Override
     public void onOutboundConfirmed() {
+        // Lấy Chuyến bay và Hạng vé đang xem tạm ra
         Flight currentFlight = flightViewModel.getCurrentlyViewingFlight();
+        FareClass currentFare = flightViewModel.getCurrentlyViewingFare();
+
+        // Chốt đơn Lượt đi
         flightViewModel.setSelectedOutboundFlight(currentFlight);
+        flightViewModel.setSelectedOutboundFare(currentFare);
+
         flightViewModel.setSelectingReturn(true);
         switchToReturnTab();
         Snackbar.make(rvFlights,
@@ -362,59 +359,41 @@ public class SearchFlightActivity extends AppCompatActivity
     @Override
     public void onBookingConfirmed() {
         Flight currentFlight = flightViewModel.getCurrentlyViewingFlight();
-        if (isRoundTrip) {
+        FareClass currentFare = flightViewModel.getCurrentlyViewingFare();
+
+        // Kiểm tra xem đang chốt lượt về hay 1 chiều
+        if (isRoundTrip && flightViewModel.isSelectingReturn()) {
             flightViewModel.setSelectedReturnFlight(currentFlight);
+            flightViewModel.setSelectedReturnFare(currentFare);
         } else {
             flightViewModel.setSelectedOutboundFlight(currentFlight);
+            flightViewModel.setSelectedOutboundFare(currentFare);
         }
 
-        Flight outbound      = flightViewModel.getSelectedOutboundFlight();
-        Flight returnFlight  = flightViewModel.getSelectedReturnFlight();
+        // --- LẤY TẤT CẢ DỮ LIỆU ĐÃ CHỐT ĐỂ CHUYỂN MÀN HÌNH ---
+        Flight outbound = flightViewModel.getSelectedOutboundFlight();
+        FareClass outboundFare = flightViewModel.getSelectedOutboundFare();
+
+        Flight returnFlight = flightViewModel.getSelectedReturnFlight();
+        FareClass returnFare = flightViewModel.getSelectedReturnFare();
 
         Intent intent = new Intent(this, BookingInfoActivity.class);
 
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FLIGHT_ID,      outbound.getFlightId());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FLIGHT_NUMBER,   outbound.getFlightNumber());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FARE_RULE_ID, outbound.getFareRuleId());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_AIRLINE_LOGO,    outbound.getAirlineLogo());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FROM_CITY,       outbound.getFrom());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FROM_IATA,       outbound.getFromIata());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_TO_CITY,         outbound.getTo());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_TO_IATA,         outbound.getToIata());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_DEPART_TIME,     outbound.getDepartureTime());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_ARRIVAL_TIME,    outbound.getArrivalTime());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_DURATION,        outbound.getDuration());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_DATE,            departDate);
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_BASE_PRICE,      outbound.getDisplayPrice());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_FARE_CLASS,      outbound.getFareClassName());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_SEAT_MAP_ID,     outbound.getSeatMapId());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_AIRCRAFT_NAME,   outbound.getAirCraftName());
-        intent.putExtra(BookingInfoActivity.EXTRA_OUT_AIRLINE_NAME,    outbound.getAirlineName());
+        // Truyền Object Lượt đi
+        intent.putExtra("selected_outbound_flight", outbound);
+        intent.putExtra("selected_outbound_fare", outboundFare);
 
         intent.putExtra(BookingInfoActivity.EXTRA_IS_ROUND_TRIP, isRoundTrip);
+
+        // Truyền Object Lượt về (nếu có)
         if (isRoundTrip && returnFlight != null) {
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_FLIGHT_ID,     returnFlight.getFlightId());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_FLIGHT_NUMBER, returnFlight.getFlightNumber());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_FARE_RULE_ID,returnFlight.getFareRuleId());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_AIRLINE_LOGO,  returnFlight.getAirlineLogo());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_FROM_CITY,     returnFlight.getFrom());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_FROM_IATA,     returnFlight.getFromIata());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_TO_CITY,       returnFlight.getTo());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_TO_IATA,       returnFlight.getToIata());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_DEPART_TIME,   returnFlight.getDepartureTime());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_ARRIVAL_TIME,  returnFlight.getArrivalTime());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_DURATION,      returnFlight.getDuration());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_DATE,          returnDate);
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_BASE_PRICE,    returnFlight.getDisplayPrice());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_FARE_CLASS,    returnFlight.getFareClassName());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_SEAT_MAP_ID,   returnFlight.getSeatMapId());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_AIRCRAFT_NAME, returnFlight.getAirCraftName());
-            intent.putExtra(BookingInfoActivity.EXTRA_RET_AIRLINE_NAME,  returnFlight.getAirlineName());
+            intent.putExtra("selected_return_flight", returnFlight);
+            intent.putExtra("selected_return_fare", returnFare);
         }
 
-        intent.putExtra(BookingInfoActivity.EXTRA_ADULT_COUNT, adultCount);
-        intent.putExtra(BookingInfoActivity.EXTRA_CHILD_COUNT, childCount);
-        intent.putExtra(BookingInfoActivity.EXTRA_BABY_COUNT,  babyCount);
+        intent.putExtra(BookingInfoActivity. EXTRA_ADULT_COUNT, adultCount);
+        intent.putExtra(BookingInfoActivity. EXTRA_CHILD_COUNT, childCount);
+        intent.putExtra(BookingInfoActivity. EXTRA_BABY_COUNT,  babyCount);
 
         startActivity(intent);
     }

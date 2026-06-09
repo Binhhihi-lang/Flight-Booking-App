@@ -13,19 +13,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.R;
+import com.example.flight_booking_app.data.model.FareClass;
 import com.example.flight_booking_app.data.model.Flight;
 
 import java.util.Locale;
 
 public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewHolder> {
 
+    // Interface lúc này CHỈ CẦN truyền Flight là đủ (vì FareClass đã nằm gọn bên trong Flight)
     public interface OnFlightClickListener {
         void onFlightClick(Flight flight);
     }
 
     private final OnFlightClickListener listener;
-
-    // 1. MỚI THÊM: Biến lưu trạng thái hiển thị giá (Mặc định là Giá đầy đủ = true)
     private boolean showFullPrice = true;
 
     public FlightAdapter(OnFlightClickListener listener) {
@@ -33,11 +33,10 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
         this.listener = listener;
     }
 
-    // 2. MỚI THÊM: Hàm để Activity/Fragment gọi vào khi người dùng đổi bộ lọc
     public void setShowFullPrice(boolean showFullPrice) {
         if (this.showFullPrice != showFullPrice) {
             this.showFullPrice = showFullPrice;
-            notifyDataSetChanged(); // Yêu cầu Adapter vẽ lại toàn bộ danh sách đang hiển thị để cập nhật giá
+            notifyDataSetChanged();
         }
     }
 
@@ -51,6 +50,7 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
 
                 @Override
                 public boolean areContentsTheSame(@NonNull Flight a, @NonNull Flight b) {
+                    // Cập nhật so sánh giá displayPrice trực tiếp từ flightCard
                     return a.getDisplayPrice() == b.getDisplayPrice()
                             && a.getDepartureTime() != null
                             && a.getDepartureTime().equals(b.getDepartureTime());
@@ -67,7 +67,7 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
 
     @Override
     public void onBindViewHolder(@NonNull FlightViewHolder holder, int position) {
-        // 3. MỚI THÊM: Truyền biến showFullPrice vào cho ViewHolder để nó biết đường tính toán
+        // KHÔNG truyền biến fareClass dùng chung của adapter nữa, tí nữa sẽ lấy từ trong từng item Flight ra
         holder.bind(getItem(position), listener, showFullPrice);
     }
 
@@ -93,8 +93,10 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
             tvPrice = itemView.findViewById(R.id.tv_price);
         }
 
-        // 4. MỚI THÊM: Nhận thêm biến boolean showFullPrice
+        // Bỏ tham số FareClass truyền từ ngoài vào
         void bind(Flight flight, OnFlightClickListener listener, boolean showFullPrice) {
+            // ── LẤY FARECLASS RIÊNG ĐƯỢC NHỒI TRONG TỪNG CHUYẾN BAY ──
+            FareClass currentFareClass = flight.getSelectedFareClass();
             tvFlightNumber.setText(flight.getFlightNumber());
             tvFlightAirline.setText(flight.getAirlineName());
             tvDuration.setText(flight.getDuration());
@@ -104,17 +106,17 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
 
             tvDepartureLocation.setText(flight.getFromIata());
             tvArrivalLocation.setText(flight.getToIata());
-            tvFareClass.setText(flight.getFareClassName());
+            tvFareClass.setText(currentFareClass.getTitle());
 
-            // 5. MỚI THÊM: Logic tính toán giá dựa theo lựa chọn của người dùng
-            double finalPriceToDisplay;
-            if (showFullPrice) {
-                finalPriceToDisplay = flight.getDisplayPrice() + flight.getTaxFee(); // Giá + Thuế
-            } else {
-                finalPriceToDisplay = flight.getDisplayPrice(); // Chỉ giá NET
+            double finalPriceToDisplay = 0;
+            if (currentFareClass != null) {
+                if (showFullPrice) {
+                    finalPriceToDisplay = currentFareClass.getBasePrice() + flight.getTaxFee(); // Giá gói + Thuế
+                } else {
+                    finalPriceToDisplay = currentFareClass.getBasePrice(); // Chỉ giá NET của gói
+                }
             }
 
-            // Dùng %,.0f để format số double tránh lỗi thay vì ép kiểu (long)
             tvPrice.setText(String.format(Locale.getDefault(), "%,.0f đ", finalPriceToDisplay));
 
             Glide.with(itemView.getContext())

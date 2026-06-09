@@ -38,16 +38,18 @@ public class SeatSelectionActivity extends AppCompatActivity {
     public static final String EXTRA_OUT_FREE_SEATS = "out_free_seats";
 
     // Chuyến đi
-    public static final String EXTRA_OUT_FLIGHT_ID = "out_flight_id";
-    public static final String EXTRA_OUT_SEAT_MAP_ID = "out_seat_map_id";
-    public static final String EXTRA_OUT_AIRCRAFT_NAME = "out_aircraft_name";
-    public static final String EXTRA_OUT_AIRLINE_NAME = "out_airline_name";
-    public static final String EXTRA_OUT_SEAT_FROM_IATA = "out_seat_from_iata";
-    public static final String EXTRA_OUT_SEAT_TO_IATA = "out_seat_to_iata";
+    public static final String EXTRA_OUT_FLIGHT_ID       = "out_flight_id";
+    public static final String EXTRA_OUT_SEATS_SELECTED  = "out_seats_selected"; // FIX: was "out_flight_id"
+    public static final String EXTRA_OUT_SEAT_MAP_ID     = "out_seat_map_id";
+    public static final String EXTRA_OUT_AIRCRAFT_NAME   = "out_aircraft_name";
+    public static final String EXTRA_OUT_AIRLINE_NAME    = "out_airline_name";
+    public static final String EXTRA_OUT_SEAT_FROM_IATA  = "out_seat_from_iata";
+    public static final String EXTRA_OUT_SEAT_TO_IATA    = "out_seat_to_iata";
 
     // Chuyến về
-    public static final String EXTRA_RET_FLIGHT_ID = "ret_flight_id";
-    public static final String EXTRA_RET_SEAT_MAP_ID = "ret_seat_map_id";
+    public static final String EXTRA_RET_SEATS_SELECTED  = "ret_seats_selected"; // FIX: was "out_flight_id"
+    public static final String EXTRA_RET_FLIGHT_ID       = "ret_flight_id";
+    public static final String EXTRA_RET_SEAT_MAP_ID     = "ret_seat_map_id";
 
     // ĐÃ SỬA: Đổi giá trị hằng số thành KEY chuẩn
     public static final String EXTRA_RET_CABIN_CLASS = "ret_cabin_class";
@@ -80,6 +82,9 @@ public class SeatSelectionActivity extends AppCompatActivity {
     private String outCabinClass, retCabinClass;
     private ArrayList<String> outFreeSeatTypes, retFreeSeatTypes;
     private String returnFlightId, retSeatMapId, retAircraftName, retAirlineName, retFromIata, retToIata;
+
+    private ArrayList<String> preSelectedOutSeats;
+    private ArrayList<String> preSelectedRetSeats;
 
     private SeatViewModel seatViewModel;
 
@@ -118,6 +123,17 @@ public class SeatSelectionActivity extends AppCompatActivity {
         outCabinClass = i.getStringExtra(EXTRA_OUT_CABIN_CLASS);
         outFreeSeatTypes = i.getStringArrayListExtra(EXTRA_OUT_FREE_SEATS);
 
+        // lấy dữ liệu ghế đã chọn từ BookingInfo
+        preSelectedOutSeats = getIntent().getStringArrayListExtra(EXTRA_OUT_SEATS_SELECTED);
+        if (preSelectedOutSeats == null) {
+            preSelectedOutSeats = new ArrayList<>(); // không bị NullPointerException
+        }
+
+        preSelectedRetSeats = getIntent().getStringArrayListExtra(EXTRA_RET_SEATS_SELECTED);
+        if (preSelectedRetSeats == null) {
+            preSelectedRetSeats = new ArrayList<>();
+        }
+
         if (isRoundTrip) {
             returnFlightId = i.getStringExtra(EXTRA_RET_FLIGHT_ID);
             retSeatMapId = i.getStringExtra(EXTRA_RET_SEAT_MAP_ID);
@@ -152,7 +168,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         setSupportActionBar(toolbarSeat);
-        toolbarSeat.setNavigationOnClickListener(v -> finish());
+        toolbarSeat.setNavigationOnClickListener(v -> saveSeatsAndFinish());
         updateInfoPanel(outAircraftName, outAirlineName, outFromIata, outToIata);
 
         if (!isRoundTrip) {
@@ -175,15 +191,21 @@ public class SeatSelectionActivity extends AppCompatActivity {
     private void setupViewModel() {
         seatViewModel = new ViewModelProvider(this).get(SeatViewModel.class);
 
+        // lấy dữ liệu ghế đã chọn truyền sang và set lại trong map ghế
+        seatViewModel.setPreSelectedSeats(preSelectedOutSeats, preSelectedRetSeats);
+
+        //
         seatViewModel.getGridSpanCountLive().observe(this, spanCount -> {
             if (spanCount != null) {
                 rvSeatMap.setLayoutManager(new GridLayoutManager(this, spanCount));
             }
         });
 
+        //
         seatViewModel.getSeatMapData().observe(this, uiSeats -> {
             if (uiSeats != null) {
                 seatAdapter.setSeats(uiSeats);
+                // FIX: updateBottomBar() sau khi setSeats để hiển thị đúng ghế pre-selected
                 updateBottomBar();
             }
         });
@@ -222,21 +244,30 @@ public class SeatSelectionActivity extends AppCompatActivity {
         });
 
         tabReturn.setOnClickListener(v -> {
+            int selectedCount = seatViewModel.getSelectedSeats().size();
+
+            if (selectedCount == 0) {
+                Toast.makeText(this, "Vui lòng chọn ít nhất 1 ghế!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (selectedCount < maxPassengers) {
+                Toast.makeText(this,
+                        "Vui lòng chọn đủ " + maxPassengers + " ghế cho hành khách!",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             if (!seatViewModel.isSelectingReturn()) {
-                if (seatViewModel.getSelectedOutboundSeats().isEmpty()) {
-                    Snackbar.make(rvSeatMap, "Vui lòng hoàn thành chọn ghế lượt đi trước",
-                            Snackbar.LENGTH_SHORT).show();
-                } else {
-                    switchToReturnTab();
-                }
+                switchToReturnTab();
             }
         });
 
+        //  btnSeatBack khi thoát cũng lưu ghế về BookingInfo
         btnSeatBack.setOnClickListener(v -> {
             if (isRoundTrip && seatViewModel.isSelectingReturn()) {
                 switchToOutboundTab();
             } else {
-                finish();
+                saveSeatsAndFinish();
             }
         });
 
@@ -255,35 +286,42 @@ public class SeatSelectionActivity extends AppCompatActivity {
             }
 
             if (isRoundTrip && !seatViewModel.isSelectingReturn()) {
-                seatViewModel.setSelectedOutboundSeats(seatViewModel.getSelectedSeats());
-                seatViewModel.clearCurrentSelections();
+                // Chốt ghế lượt đi rồi chuyển sang tab lượt về
+                // switchToReturnTab() sẽ tự gọi setSelectedOutboundSeats() + clearCurrentSelections()
+                Snackbar.make(findViewById(android.R.id.content),
+                        "Đã lưu ghế lượt đi. Vui lòng chọn ghế lượt về.",
+                        Snackbar.LENGTH_SHORT).show();
                 switchToReturnTab();
-                Snackbar.make(rvSeatMap, "Đã lưu ghế lượt đi. Vui lòng chọn ghế lượt về.", Snackbar.LENGTH_SHORT).show();
-
             } else {
-                ArrayList<String> departCodes = new ArrayList<>();
-                ArrayList<String> returnCodes = new ArrayList<>();
-
-                if (isRoundTrip) {
-                    for (Seat s : seatViewModel.getSelectedOutboundSeats()) {
-                        departCodes.add(s.getSeatNumber());
-                    }
-                    for (Seat s : seatViewModel.getSelectedSeats()) {
-                        returnCodes.add(s.getSeatNumber());
-                    }
-                } else {
-                    for (Seat s : seatViewModel.getSelectedSeats()) {
-                        departCodes.add(s.getSeatNumber());
-                    }
-                }
-
-                Intent result = new Intent();
-                result.putStringArrayListExtra("selected_seats_depart", departCodes);
-                result.putStringArrayListExtra("selected_seats_return", returnCodes);
-                setResult(RESULT_OK, result);
-                finish();
+                // Hoàn tất: trả kết quả về BookingInfo
+                saveSeatsAndFinish();
             }
         });
+    }
+
+    /** Chốt ghế tab hiện tại rồi trả kết quả về BookingInfo trước khi finish. */
+    private void saveSeatsAndFinish() {
+        // Chốt ghế tab đang mở
+        if (seatViewModel.isSelectingReturn()) {
+            seatViewModel.setSelectedReturnSeats(seatViewModel.getSelectedSeats());
+        } else {
+            seatViewModel.setSelectedOutboundSeats(seatViewModel.getSelectedSeats());
+        }
+
+        ArrayList<String> departCodes = new ArrayList<>();
+        for (Seat s : seatViewModel.getSelectedOutboundSeats()) {
+            departCodes.add(s.getSeatNumber());
+        }
+        ArrayList<String> returnCodes = new ArrayList<>();
+        for (Seat s : seatViewModel.getSelectedReturnSeats()) {
+            returnCodes.add(s.getSeatNumber());
+        }
+
+        Intent result = new Intent();
+        result.putStringArrayListExtra("selected_seats_depart", departCodes);
+        result.putStringArrayListExtra("selected_seats_return", returnCodes);
+        setResult(RESULT_OK, result);
+        finish();
     }
 
     private void handleSeatClick(Seat seat, int position) {
@@ -329,7 +367,12 @@ public class SeatSelectionActivity extends AppCompatActivity {
     // ══════════════════════════════════════════════════════════════════════
 
     private void updateBottomBar() {
+        // FIX: Đọc đúng list theo tab đang hiển thị
+        // - Tab lượt đi  → selectedSeats (đang chọn)
+        // - Tab lượt về  → selectedSeats (đang chọn, đã clear ghế lượt đi khi switch tab)
+        // selectedOutboundSeats chỉ dùng khi trả kết quả về BookingInfo, không dùng ở đây
         List<Seat> seats = seatViewModel.getSelectedSeats();
+
         if (seats.isEmpty()) {
             tvSelectedSeatLabel.setText("Vui lòng chọn");
             tvSelectedSeatPrice.setText("");
@@ -340,8 +383,8 @@ public class SeatSelectionActivity extends AppCompatActivity {
         double totalSeatSurcharge = 0;
         boolean hasSurcharge = false;
 
-        // Lấy danh sách miễn phí dựa trên việc khách đang chọn chiều đi hay về
-        List<String> freeSeatTypes = seatViewModel.isSelectingReturn() ? retFreeSeatTypes : outFreeSeatTypes;
+        List<String> freeSeatTypes = seatViewModel.isSelectingReturn()
+                ? retFreeSeatTypes : outFreeSeatTypes;
 
         for (int i = 0; i < seats.size(); i++) {
             Seat s = seats.get(i);
@@ -349,7 +392,6 @@ public class SeatSelectionActivity extends AppCompatActivity {
             sb.append(s.getSeatNumber());
 
             String seatType = s.getType() != null ? s.getType().toUpperCase() : "";
-
             if (freeSeatTypes == null || !freeSeatTypes.contains(seatType)) {
                 totalSeatSurcharge += s.getPrice();
                 hasSurcharge = true;
@@ -361,11 +403,9 @@ public class SeatSelectionActivity extends AppCompatActivity {
         if (!hasSurcharge) {
             tvSelectedSeatPrice.setText("Miễn phí (Bao gồm trong gói vé)");
         } else {
-            if (totalSeatSurcharge == 0) {
-                tvSelectedSeatPrice.setText("Đã bao gồm VAT");
-            } else {
-                tvSelectedSeatPrice.setText(String.format("+%,.0fđ (Phụ thu nâng cấp ghế)", totalSeatSurcharge));
-            }
+            tvSelectedSeatPrice.setText(totalSeatSurcharge == 0
+                    ? "Đã bao gồm VAT"
+                    : String.format("+%,.0fđ (Phụ thu nâng cấp ghế)", totalSeatSurcharge));
         }
     }
 
@@ -377,26 +417,44 @@ public class SeatSelectionActivity extends AppCompatActivity {
     }
 
     private void switchToOutboundTab() {
+        // 1. Chốt ghế lượt VỀ hiện tại trước khi rời tab
+        if (!seatViewModel.getSelectedSeats().isEmpty()) {
+            seatViewModel.setSelectedReturnSeats(seatViewModel.getSelectedSeats());
+        }
+
         seatViewModel.setSelectingReturn(false);
         selectTab(false);
         updateInfoPanel(outAircraftName, outAirlineName, outFromIata, outToIata);
 
-        // Cập nhật lại Adapter để áp dụng luật hạng vé của Chiều Đi
+        // 2. Restore selectedSeats = selectedOutboundSeats để grid đánh dấu lại màu
+        seatViewModel.clearCurrentSelections();
+        for (Seat s : seatViewModel.getSelectedOutboundSeats()) {
+            seatViewModel.selectSeat(s);
+        }
+
         seatAdapter = new SeatAdapter(outCabinClass, this::handleSeatClick);
         rvSeatMap.setAdapter(seatAdapter);
-
         seatViewModel.loadSeatMap(outSeatMapId, outboundFlightId);
     }
 
     private void switchToReturnTab() {
+        // 1. Chốt ghế lượt ĐI hiện tại trước khi rời tab
+        if (!seatViewModel.getSelectedSeats().isEmpty()) {
+            seatViewModel.setSelectedOutboundSeats(seatViewModel.getSelectedSeats());
+        }
+
         seatViewModel.setSelectingReturn(true);
         selectTab(true);
         updateInfoPanel(retAircraftName, retAirlineName, retFromIata, retToIata);
 
-        // Cập nhật lại Adapter để áp dụng luật hạng vé của Chiều Về
+        // 2. Restore selectedSeats = selectedReturnSeats để grid đánh dấu lại màu
+        seatViewModel.clearCurrentSelections();
+        for (Seat s : seatViewModel.getSelectedReturnSeats()) {
+            seatViewModel.selectSeat(s);
+        }
+
         seatAdapter = new SeatAdapter(retCabinClass, this::handleSeatClick);
         rvSeatMap.setAdapter(seatAdapter);
-
         seatViewModel.loadSeatMap(retSeatMapId, returnFlightId);
     }
 

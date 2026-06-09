@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.flight_booking_app.data.model.FareClass;
 import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.Flight;
 import com.example.flight_booking_app.data.model.FlightFilterState;
@@ -36,10 +37,41 @@ public class FlightViewModel extends ViewModel {
     // QUẢN LÝ TRẠNG THÁI BỘ LỌC
     private final MutableLiveData<FlightFilterState> filterStateLive = new MutableLiveData<>(FlightFilterState.defaultState());
 
-    // ─── NGUỒN DỮ LIỆU (Source of Truth) ──────────────────────────────────
+    // ─── NGUỒN DỮ LIỆU
     private List<Flight> allFlights = new ArrayList<>();         // Dữ liệu gốc từ Firebase
     private List<Flight> currentPoolFlights = new ArrayList<>(); // Dữ liệu đã lọc, dùng để cắt trang
     private List<Flight> pagedFlights = new ArrayList<>();       // Dữ liệu tích lũy đang hiển thị trên RecyclerView
+
+    // Biến tạm lưu Hạng vé người dùng đang xem ở BottomSheet
+    private FareClass currentlyViewingFare;
+
+    // Biến lưu chính thức Hạng vé đã chốt
+    private FareClass selectedOutboundFare;
+    private FareClass selectedReturnFare;
+
+    public void setCurrentlyViewingFare(FareClass fareClass) {
+        this.currentlyViewingFare = fareClass;
+    }
+
+    public FareClass getCurrentlyViewingFare() {
+        return currentlyViewingFare;
+    }
+
+    public void setSelectedOutboundFare(FareClass fareClass) {
+        this.selectedOutboundFare = fareClass;
+    }
+
+    public FareClass getSelectedOutboundFare() {
+        return selectedOutboundFare;
+    }
+
+    public void setSelectedReturnFare(FareClass fareClass) {
+        this.selectedReturnFare = fareClass;
+    }
+
+    public FareClass getSelectedReturnFare() {
+        return selectedReturnFare;
+    }
 
     private int currentPage = 0;
     private boolean isLoading = false;

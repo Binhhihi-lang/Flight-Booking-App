@@ -6,6 +6,7 @@
     import com.example.flight_booking_app.data.model.Airline;
     import com.example.flight_booking_app.data.model.City;
     import com.example.flight_booking_app.data.model.FareClass;
+    import com.example.flight_booking_app.data.model.FareRule;
     import com.example.flight_booking_app.data.model.Flight;
     import com.example.flight_booking_app.data.model.FareOption;
     import com.google.firebase.database.DataSnapshot;
@@ -43,11 +44,13 @@
         private final DatabaseReference dbAirlines;
         private final DatabaseReference dbAircrafts;
         private final DatabaseReference dbFareClasses;
+        private final DatabaseReference dbFareRules;
 
         // Cache
         private Map<String, City> citiesMap = new HashMap<>();
         private Map<String, Airline> airlinesMap = new HashMap<>();
         private Map<String, FareClass> fareClassesMap = new HashMap<>();
+        private Map<String, FareRule> fareRulesMap = new HashMap<>();
 
         private Map<String, Aircraft> aircraftsMap = new HashMap<>();
 
@@ -57,6 +60,7 @@
             dbCities      = db.getReference("Cities");
             dbAirlines    = db.getReference("Airlines");
             dbFareClasses = db.getReference("FareClasses");
+            dbFareRules = db.getReference("FareRules");
             dbAircrafts   = db.getReference("Aircrafts");
         }
 
@@ -69,6 +73,10 @@
         public void searchFlights(String fromCityId, String toCityId, String departureDate,
                                   int totalPassengers, OnFlightsLoaded callback) {
 
+            if (fareRulesMap != null) fareRulesMap.clear();
+            if (airlinesMap != null) airlinesMap.clear();
+            if (citiesMap != null) citiesMap.clear();
+            if (aircraftsMap != null) aircraftsMap.clear();
             // Load cache trước
             loadAllCaches(() -> {
                 // Query Flights từ Firebase
@@ -82,21 +90,32 @@
          */
         private void loadAllCaches(Runnable onComplete) {
 
-            // Bước 4: Load Aircrafts xong thì chạy onComplete (Bắt đầu Query chuyến bay)
+            // Bước 5: Load Aircrafts xong thì chạy onComplete (Bắt đầu Query chuyến bay)
             Runnable loadAircraftsStep = () -> {
                 if (aircraftsMap.isEmpty()) {
                     loadAircraftsCache(onComplete);
                 } else {
+                    // bắt đầu chạy hàm tìm chuyến bay queryAndFilterFlights
                     onComplete.run();
+                }
+            };
+            //
+            Runnable loadFareRulesStep = () -> {
+                if (fareRulesMap.isEmpty()) {
+                    loadFareRulesCache(loadAircraftsStep);
+                } else {
+                    loadAircraftsStep.run();
                 }
             };
 
             // Bước 3: Load FareClasses xong thì gọi Bước 4
             Runnable loadFareClassesStep = () -> {
                 if (fareClassesMap.isEmpty()) {
-                    loadFareClassesCache(loadAircraftsStep);
-                } else {
-                    loadAircraftsStep.run();
+                    loadFareClassesCache(loadFareRulesStep);
+                }
+                // nếu tải xong hoặc có dữ liệu thì sang bước tiếp
+                else {
+                    loadFareRulesStep.run();
                 }
             };
 
@@ -115,26 +134,6 @@
             } else {
                 loadAirlinesStep.run();
             }
-        }
-
-        private void loadAircraftsCache(Runnable onComplete) {
-            dbAircrafts.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    aircraftsMap.clear();
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        Aircraft aircraft = child.getValue(Aircraft.class);
-                        if (aircraft != null && aircraft.getAirCraftId() != null) {
-                            aircraftsMap.put(aircraft.getAirCraftId(), aircraft);
-                        }
-                    }
-                    onComplete.run();
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    onComplete.run();
-                }
-            });
         }
 
         private void loadCitiesCache(Runnable onComplete) {
@@ -193,6 +192,47 @@
                     onComplete.run();
                 }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    onComplete.run();
+                }
+            });
+        }
+
+        private void loadFareRulesCache(Runnable onComplete) {
+            dbFareRules.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    fareRulesMap.clear();
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        FareRule fr = child.getValue(FareRule.class);
+                        if (fr != null && fr.getFareRuleId() != null) {
+                            fareRulesMap.put(fr.getFareRuleId(), fr);
+                        }
+                    }
+                    onComplete.run();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    onComplete.run();
+                }
+            });
+        }
+
+        private void loadAircraftsCache(Runnable onComplete) {
+            dbAircrafts.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    aircraftsMap.clear();
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Aircraft aircraft = child.getValue(Aircraft.class);
+                        if (aircraft != null && aircraft.getAirCraftId() != null) {
+                            aircraftsMap.put(aircraft.getAirCraftId(), aircraft);
+                        }
+                    }
+                    onComplete.run();
+                }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     onComplete.run();
@@ -260,22 +300,27 @@
                             }
 
 
-                            // --- GẮN GIÁ VÀ TÊN HẠNG VÉ RIÊNG BIỆT CHO THẺ NÀY ---
-                            flightCard.setDisplayPrice(option.getBasePrice());
-
                             // lấy hạng vé và hạng ghế để lọc
                             FareClass fareClass = fareClassesMap.get(option.getFareClassId());
                             if (fareClass != null) {
-                                flightCard.setFareClassName(fareClass.getTitle()); // VD: "Economy Flex" hoặc "Premium Economy"
                                 flightCard.setSeatType(fareClass.getSeatType());
-                                flightCard.setFareRuleId(fareClass.getFareRuleId());
+                                // --- GẮN GIÁ VÀ TÊN HẠNG VÉ RIÊNG BIỆT CHO THẺ NÀY ---
+                                flightCard.setDisplayPrice(fareClass.getBasePrice());
+
+                                // lấy ra FareRuleId trong FareClass để lấy ra object FareRule
+                                String ruleId = fareClass.getFareRuleId();
+
+                                if (fareRulesMap.containsKey(ruleId)) {
+                                    // Nhồi luật vào đây trước khi trả về cho UI
+                                    fareClass.setFareRule(fareRulesMap.get(ruleId));
+                                }
+                                flightCard.setSelectedFareClass(fareClass);
                             }
 
                             if (flightCard.getAircraftId() != null) {
                                 Aircraft aircraft = aircraftsMap.get(flightCard.getAircraftId());
                                 if (aircraft != null) {
                                     flightCard.setAirCraftName(aircraft.getModelName());
-                                    flightCard.setSeatMapId(aircraft.getSeatMapId());
                                 }
                             }
 
@@ -284,9 +329,6 @@
                             result.add(flightCard);
                         }
                     }
-
-                    // sắp xết giá rẻ nhất
-                    result.sort(Comparator.comparingDouble(Flight::getDisplayPrice));
 
                     callback.onLoaded(result);
                 }

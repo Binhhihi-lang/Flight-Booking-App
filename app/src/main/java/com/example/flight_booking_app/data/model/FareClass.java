@@ -1,6 +1,8 @@
 package com.example.flight_booking_app.data.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FareClass implements Serializable {
     private String fareClassId; // Mã định danh thống nhất: ECO_SAVE, ECO_STANDARD, ECO_FLEX, BIZ_STANDARD, BIZ_FLEX
@@ -8,8 +10,14 @@ public class FareClass implements Serializable {
     private String title;        // Tên hiển thị: Thương gia linh hoạt, Phổ thông Tiết kiệm
     private String seatType;     // Loại ghế vật lý: BUSINESS, ECONOMY, PREMIUM_ECONOMY
 
-    // Liên kết với điều kiện (FareRule)
-    private String fareRuleId;
+    private double basePrice;   // Giá vé gốc áp dụng riêng cho gói này trên chuyến bay này
+
+    // ── KIẾN TRÚC HYBRID ──
+    private String fareRuleId; // Lưu ID để làm việc với DB/Web Admin/Booking
+    private FareRule fareRule; // Object được "nhồi" vào để UI hiển thị (Bỏ qua khi lưu lên DB)
+
+    private List<BaggageOption> baggageOptions = new ArrayList<>();
+
 
     public FareClass() {
     }
@@ -54,11 +62,23 @@ public class FareClass implements Serializable {
         this.seatType = seatType;
     }
 
+    public double getBasePrice() { return basePrice; }
+    public void setBasePrice(double basePrice) { this.basePrice = basePrice; }
+
     public String getFareRuleId() {
         return fareRuleId;
     }
-
     public void setFareRuleId(String fareRuleId) {
         this.fareRuleId = fareRuleId;
     }
+
+    public List<BaggageOption> getBaggageOptions() {
+        return baggageOptions;
+    }
+
+    public void setBaggageOptions(List<BaggageOption> baggageOptions) {
+        this.baggageOptions = baggageOptions;
+    }
+    public FareRule getFareRule() { return fareRule; }
+    public void setFareRule(FareRule fareRule) { this.fareRule = fareRule; }
 }

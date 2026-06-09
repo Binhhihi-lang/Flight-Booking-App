@@ -87,7 +87,7 @@ public class SeatAdapter extends RecyclerView.Adapter<SeatAdapter.SeatViewHolder
                     if (safeCabinClass.contains("BUSINESS")) {
                         // Chỉ cần tên vé chứa chữ "BUSINESS" (VD: BUSINESS STANDARD, BUSINESS FLEX)
                         // thì khách được quyền chọn khu ghế PREMIUM
-                        isAllowedClass = "PREMIUM".equals(seatType); // nếu giống thì gán bằng true để sang ghế hợp lệ
+                        isAllowedClass = "PREMIUM".equals(seatType); // nếu giống thì gán isAllowedClass = true để sang ghế hợp lệ
                     }
                     else if (safeCabinClass.contains("PREMIUM")) {
                         // Tên vé chứa chữ "PREMIUM" (VD: PREMIUM ECONOMY) thì được chọn hàng FRONT_ROW

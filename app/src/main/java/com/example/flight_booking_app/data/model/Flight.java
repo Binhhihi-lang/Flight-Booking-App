@@ -1,7 +1,9 @@
 package com.example.flight_booking_app.data.model;
 
+
 import com.google.firebase.database.Exclude;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,7 @@ import java.util.List;
  * <p>
  * Transient field KHÔNG lưu lên Firebase (Firebase bỏ qua transient).
  */
-public class Flight {
+public class Flight implements Serializable {
     private String flightId;
     private String flightNumber;
     private String airlineId;    // FK → Airlines
@@ -33,48 +35,48 @@ public class Flight {
 
     private String selectedSeatClass;
     private int checkedBaggage; // (Số kg hành lý ký gửi
-    private double seatSelectionFee = 0;
     private double taxFee;
     private double totalPrice;
 
     private List<FareOption> fareOptions = new ArrayList<>();
-    private String fareRuleId;
+    private String seatMapId;
 
     private String status;
 
     // Transient display fields (KHÔNG lưu Firebase, điền sau JOIN)
     // Repository sẽ set các field này sau khi JOIN City + Airline
-    private transient String from;         // tên thành phố đi   "Hà Nội"
-    private transient String fromIata;     // mã IATA điểm đi    "HAN"
-    private transient String fromAirport;  // tên sân bay đi     "Nội Bài"
-    private transient String to;           // tên thành phố đến
-    private transient String toIata;       // mã IATA điểm đến
-    private transient String toAirport;    // tên sân bay đến
-    private transient String airlineName;  // tên hãng            "Vietnam Airlines"
-    private transient String airCraftName;
-    private transient String seatMapId;
+    // Đổi 'transient' thành '@Exclude' của Firebase để Intent không bị mất dữ liệu khi truyền Intent
+    // Không lưu trong csdl
 
-    private transient String airlineLogo;  // URL logo hãng
+    @Exclude
+    private String from;         // tên thành phố đi   "Hà Nội"
+    @Exclude
+    private String fromIata;     // mã IATA điểm đi    "HAN"
+    @Exclude
+    private String to;           // tên thành phố đến
+    @Exclude
+    private String toIata;       // mã IATA điểm đến
+    @Exclude
+    private String airlineName;  // tên hãng            "Vietnam Airlines"
+    @Exclude
+    private String airCraftName;
+    @Exclude
+    private String airlineLogo;  // URL logo hãng
+    @Exclude
+    private String seatType;     // loại hạng ghế để lọc
 
-    private transient String fareClassName; //  hạng vé
-    private transient String seatType; // loại hạng ghế để lọc
+    @Exclude
+    private FareClass selectedFareClass; // Dùng để lưu cấu hình hạng vé phục vụ UI
 
+    public FareClass getSelectedFareClass() { return selectedFareClass; }
+    public void setSelectedFareClass(FareClass selectedFareClass) { this.selectedFareClass = selectedFareClass; }
+    private transient double displayPrice;
     public String getSeatType() {
         return seatType;
     }
 
     public void setSeatType(String seatType) {
         this.seatType = seatType;
-    }
-
-    private transient double displayPrice;
-
-    public String getFareClassName() {
-        return fareClassName;
-    }
-
-    public void setFareClassName(String fareClassName) {
-        this.fareClassName = fareClassName;
     }
 
     /**
@@ -222,14 +224,6 @@ public class Flight {
         taxFee = v;
     }
 
-    public double getSeatSelectionFee() {
-        return seatSelectionFee;
-    }
-
-    public void setSeatSelectionFee(double v) {
-        seatSelectionFee = v;
-    }
-
     public double getTotalPrice() {
         return totalPrice;
     }
@@ -246,15 +240,6 @@ public class Flight {
         fareOptions = v;
     }
 
-    @Exclude
-    public String getFareRuleId() {
-        return fareRuleId;
-    }
-
-    @Exclude
-    public void setFareRuleId(String fareRuleId) {
-        this.fareRuleId = fareRuleId;
-    }
 
     // Transient nơi chứa tạm thời các dữ liệu đầy đủ đó sau khi thực hiện thuật toán JOIN (Kết hợp) ở tầng Repository.
 
@@ -274,14 +259,6 @@ public class Flight {
         fromIata = v;
     }
 
-    public String getFromAirport() {
-        return fromAirport;
-    }
-
-    public void setFromAirport(String v) {
-        fromAirport = v;
-    }
-
     public String getTo() {
         return to;
     }
@@ -296,14 +273,6 @@ public class Flight {
 
     public void setToIata(String v) {
         toIata = v;
-    }
-
-    public String getToAirport() {
-        return toAirport;
-    }
-
-    public void setToAirport(String v) {
-        toAirport = v;
     }
 
     public String getAirlineName() {

@@ -1,9 +1,10 @@
 package com.example.flight_booking_app.data.model;
 
 
-public class BaggageOption {
+import java.io.Serializable;
+
+public class BaggageOption implements Serializable {
     private String baggageId;
-    private String airlineId;
     private int weight;
     private double price;
 
@@ -12,9 +13,8 @@ public class BaggageOption {
 
     public BaggageOption() {}
 
-    public BaggageOption(String baggageId, String airlineId, int weight, double price) {
+    public BaggageOption(String baggageId, int weight, double price) {
         this.baggageId = baggageId;
-        this.airlineId = airlineId;
         this.weight = weight;
         this.price = price;
     }
@@ -22,10 +22,6 @@ public class BaggageOption {
     // Getters and Setters
     public String getBaggageId() { return baggageId; }
     public void setBaggageId(String baggageId) { this.baggageId = baggageId; }
-
-    public String getAirlineId() { return airlineId; }
-    public void setAirlineId(String airlineId) { this.airlineId = airlineId; }
-
     public int getWeight() { return weight; }
     public void setWeight(int weight) { this.weight = weight; }
 

@@ -14,150 +14,147 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * <p>
- * Trách nhiệm:
- * 1. Tải danh sách ghế thô từ Firebase qua SeatRepository.
- * 2. Biến đổi thô → lưới UI (thêm AISLE, ẩn BLOCKED/HIDDEN).
- * 3. Giữ toàn bộ trạng thái chọn ghế QUA CẢ XOAY MÀN HÌNH:
- * - selectedSeats         : ghế đang chọn trong tab hiện tại (tạm thời)
- * - selectedOutboundSeats : danh sách ghế đã chốt lượt đi (khứ hồi)
- * - isSelectingReturn     : đang chọn tab nào
- * 4. currentlyViewingSeatLive CHỈ phát khi số ghế chưa đủ maxPassengers.
- * Khi đã đủ ghế, label bottom bar hiển thị cố định từ selectedSeats.
- * 5. Khi grid được rebuild (loadSeatMap), khôi phục isSelected trên các
- * đối tượng Seat mới để UI hiển thị đúng màu.
- * <p>
- * Lưới A320/A321: 7 cột/hàng = A B C | aisle | D E F
- */
 public class SeatViewModel extends ViewModel {
-
-    private static final String[] COLUMNS = {"A", "B", "C", "D", "E", "F"};
-    private static final int AISLE_INDEX = 3;
 
     private final SeatRepository repository;
 
     private final MutableLiveData<List<Seat>> seatMapData = new MutableLiveData<>();
+
     private final MutableLiveData<UiState> loadState = new MutableLiveData<>();
 
-    /**
-     * Ghế vừa được click — Activity observe để cập nhật label realtime.
-     * CHỈ phát giá trị khi số ghế đang chọn CHƯA đủ maxPassengers,
-     * hoặc khi bỏ chọn một ghế đang được chọn.
-     * Khi đã đủ ghế, Activity dùng updateBottomBar() thay vì LiveData này.
-     */
+    // trạng thái ghế lúc chọn
     private final MutableLiveData<Seat> currentlyViewingSeatLive = new MutableLiveData<>();
 
-    // XỬ LÝ SỐ CỘT ĐỘNG (SPAN COUNT)
+    // trạng thái số cột hiện thị lưới ghế
     private final MutableLiveData<Integer> gridSpanCountLive = new MutableLiveData<>();
 
-    public LiveData<Integer> getGridSpanCountLive() {
-        return gridSpanCountLive;
-    }
-
-    /**
-     * Map seatId → Seat của những ghế ĐANG chọn trong tab hiện tại.
-     * Dùng để khôi phục isSelected khi grid được rebuild từ Firebase.
-     */
+    // ─── Trạng thái chọn ghế ──────────────────────────────────────────────
+    //  khôi phục màu ghế sau khi xoay màn hình
     private final Map<String, Seat> selectedSeatById = new HashMap<>();
-
     /**
-     * Ghế đang chọn trong tab hiện tại (tạm thời, xoá khi chuyển tab).
+     * Ghế đang chọn tab hiện tại (tạm thời).
      */
     private final List<Seat> selectedSeats = new ArrayList<>();
-
     /**
-     * Ghế đã chốt lượt ĐI (chỉ dùng cho khứ hồi).
-     * Được set bởi Activity khi bấm TIẾP TỤC ở lượt đi trước khi chuyển tab.
-     * Không bị xoá bởi clearCurrentSelections().
+     * Ghế đã chốt lượt đi (khứ hồi). Không bị xóa bởi clearCurrentSelections().
      */
     private List<Seat> selectedOutboundSeats = new ArrayList<>();
+    private List<Seat> selectedReturnSeats = new ArrayList<>();
+
 
     private boolean isSelectingReturn = false;
+
+    // ─── Pre-selected seats từ BookingInfo ───────────────────────────────
+    /**
+     * SeatNumber đã chọn ở lần trước, truyền từ BookingInfoActivity qua Intent.
+     * Lưu dạng seatNumber ("12A") vì lúc nhận Intent chưa có Seat object từ Firebase.
+     * Được dùng trong buildGridFromSeats() để tự động đánh dấu isSelected + thêm vào
+     * selectedSeats khi grid load xong, giúp UI hiển thị lại đúng ghế đã chọn.
+     */
+    private List<String> preSelectedOutSeatNumbers = new ArrayList<>();
+    private List<String> preSelectedRetSeatNumbers = new ArrayList<>();
 
     public SeatViewModel() {
         this.repository = new SeatRepository();
     }
 
-    // quan sát lưới ghế
+    // ─── LiveData getters ─────────────────────────────────────────────────
 
     public LiveData<List<Seat>> getSeatMapData() {
         return seatMapData;
     }
 
-    // trạng thái loading
     public LiveData<UiState> getIsLoading() {
         return loadState;
     }
 
-
-    // quan sát ds trạng thái ghế đã chọn
     public LiveData<Seat> getCurrentlyViewingSeatLive() {
         return currentlyViewingSeatLive;
     }
 
-    // Lưu danh sách các ghế đang chọn hiện tại để tính toán (đã đủ số lượng chưa).
+    public LiveData<Integer> getGridSpanCountLive() {
+        return gridSpanCountLive;
+    }
+
+    // ─── State getters / setters ──────────────────────────────────────────
+
     public List<Seat> getSelectedSeats() {
         return selectedSeats;
     }
 
-    /**
-     * Lấy danh sách ghế đã chốt lượt đi.
-     * Trả về list rỗng (không null) nếu chưa set.
-     */
     public List<Seat> getSelectedOutboundSeats() {
         return selectedOutboundSeats;
     }
 
-    /**
-     * Lưu toàn bộ danh sách ghế lượt đi sau khi người dùng bấm TIẾP TỤC.
-     * Activity truyền vào snapshot của selectedSeats hiện tại.
-     */
-    public void setSelectedOutboundSeats(List<Seat> seats) {
-        this.selectedOutboundSeats = new ArrayList<>(seats);
+    public void setSelectedOutboundSeats(List<Seat> s) {
+        selectedOutboundSeats = new ArrayList<>(s);
     }
 
-    // trạng thái đã chọn sang tab lượt về chưa
+    public List<Seat> getSelectedReturnSeats() {
+        return selectedReturnSeats;
+    }
+
+    public void setSelectedReturnSeats(List<Seat> s) {
+        selectedReturnSeats = new ArrayList<>(s);
+    }
+
     public boolean isSelectingReturn() {
         return isSelectingReturn;
     }
 
     public void setSelectingReturn(boolean v) {
-        this.isSelectingReturn = v;
+        isSelectingReturn = v;
     }
 
+    // ─── Pre-selected: nhận danh sách seatNumber từ Activity ─────────────
+
     /**
-     * Phát sự kiện ghế đang xem — CHỈ khi chưa đủ ghế hoặc đang bỏ chọn.
+     * Gọi 1 lần trong setupViewModel() của Activity, TRƯỚC loadSeatMap().
+     * Lưu seatNumber đã chọn ở lần trước để buildGridFromSeats() có thể
+     * khôi phục highlight khi Firebase trả về grid mới.
      * <p>
-     * Logic:
-     * - Đang bỏ chọn (seat.isSelected() == true) → luôn phát để label cập nhật
-     * - Chưa đủ ghế (selectedSeats.size() < max)  → phát để hiển thị ghế đang hover
-     * - Đã đủ ghế và click ghế MỚI               → KHÔNG phát, tránh label nhảy
+     * Tại sao dùng seatNumber thay vì seatId:
+     * - Activity chỉ có seatNumber (vd "12A") được truyền qua Intent
+     * - seatId chỉ biết khi đọc được Seat object từ Firebase
+     * → Khớp theo seatNumber trong buildGridFromSeats() là đủ và chính xác
      *
-     * @param seat          ghế vừa click
-     * @param maxPassengers số ghế tối đa cần chọn (từ Activity)
+     * @param outSeats list seatNumber lượt đi (null-safe)
+     * @param retSeats list seatNumber lượt về (null-safe)
      */
+    public void setPreSelectedSeats(List<String> outSeats, List<String> retSeats) {
+        preSelectedOutSeatNumbers = outSeats != null ? new ArrayList<>(outSeats) : new ArrayList<>();
+        preSelectedRetSeatNumbers = retSeats != null ? new ArrayList<>(retSeats) : new ArrayList<>();
+    }
+
+    // ─── Currently viewing ────────────────────────────────────────────────
+
     public void setCurrentlyViewingSeat(Seat seat, int maxPassengers) {
         if (seat.isSelected() || selectedSeats.size() < maxPassengers) {
             currentlyViewingSeatLive.setValue(seat);
         }
     }
 
-    // ─── Seat selection helpers (gọi từ Activity) ─────────────────────────
-
     /**
-     * Thêm ghế vào danh sách đang chọn và đánh dấu isSelected.
-     * Đồng thời lưu vào selectedSeatById để khôi phục sau xoay màn hình.
+     * Phát lại ghế cuối cùng trong selectedSeats vào currentlyViewingSeatLive.
+     * Gọi sau khi buildGridFromSeats() restore pre-selected xong
+     * tvSeatName hiển thị đúng ghế đã chọn lần trước khi quay từ BookingInfo về.
+     * Nếu chưa chọn ghế nào thì phát null → "Vui lòng chọn".
      */
+    public void postCurrentlyViewingSeat() {
+        if (selectedSeats.isEmpty()) {
+            currentlyViewingSeatLive.postValue(null);
+        } else {
+            currentlyViewingSeatLive.postValue(selectedSeats.get(selectedSeats.size() - 1));
+        }
+    }
+
+    // ─── Select / Deselect ────────────────────────────────────────────────
+
     public void selectSeat(Seat seat) {
         seat.setSelected(true);
         selectedSeats.add(seat);
         selectedSeatById.put(seat.getSeatId(), seat);
     }
-
-    /**
-     * Bỏ chọn ghế và xoá khỏi các collections liên quan.
-     */
 
     public void deselectSeat(Seat seat) {
         seat.setSelected(false);
@@ -166,35 +163,28 @@ public class SeatViewModel extends ViewModel {
     }
 
     /**
-     * Xoá toàn bộ ghế đang chọn trong tab hiện tại.
-     * Gọi khi chuyển từ tab lượt đi → lượt về để bắt đầu chọn sạch.
-     * KHÔNG xoá selectedOutboundSeats (đã chốt, không được xoá).
+     * Xóa toàn bộ ghế đang chọn tab hiện tại.
+     * Gọi khi chuyển tab đi → về.
+     * KHÔNG xóa selectedOutboundSeats.
      */
     public void clearCurrentSelections() {
-        for (Seat s : selectedSeats) {
-            s.setSelected(false);
-        }
+        for (Seat s : selectedSeats) s.setSelected(false);
         selectedSeats.clear();
         selectedSeatById.clear();
-        // Reset LiveData về null → observer ở Activity nhận null → hiển thị "Chưa chọn ghế"
         currentlyViewingSeatLive.setValue(null);
     }
 
-    /**
-     * Tải sơ đồ ghế từ Firebase.
-     * Có thể gọi nhiều lần (khi chuyển tab Đi ↔ Về).
-     * Sau khi grid xây xong, khôi phục trạng thái isSelected từ selectedSeatById.
-     */
+    // ─── Load seat map ────────────────────────────────────────────────────
 
     public void loadSeatMap(String templateId, String flightId) {
-        if (templateId == null || templateId.isEmpty() || flightId == null || flightId.isEmpty()) return;
+        if (templateId == null || templateId.isEmpty()
+                || flightId == null || flightId.isEmpty()) return;
 
         loadState.setValue(UiState.loading());
 
         repository.fetchSeatsForFlight(templateId, flightId, new SeatRepository.OnSeatsLoadedListener() {
             @Override
             public void onLoaded(List<Seat> seats, SeatMapMetadata metadata) {
-
                 List<Seat> grid = buildGridFromSeats(seats, metadata);
                 restoreSelectionState(grid);
                 seatMapData.setValue(grid);
@@ -211,18 +201,16 @@ public class SeatViewModel extends ViewModel {
     // ─── Private helpers ──────────────────────────────────────────────────
 
     /**
-     * Sau khi grid được rebuild từ Firebase, đánh dấu lại isSelected
-     * cho những ghế nằm trong selectedSeatById.
-     * <p>
-     * Lý do cần: Firebase tạo đối tượng Seat mới (reference mới) mỗi lần đọc,
-     * nên isSelected = false theo mặc định. Map này khớp theo seatId.
+     * Khôi phục isSelected cho ghế đang trong selectedSeatById (sau xoay màn hình).
+     * Cập nhật tham chiếu object trong selectedSeats sang object mới từ Firebase.
      */
     private void restoreSelectionState(List<Seat> grid) {
         if (selectedSeatById.isEmpty()) return;
         for (Seat seat : grid) {
-            if (seat.getSeatId() != null && selectedSeatById.containsKey(seat.getSeatId())) {
+            if (seat.getSeatId() == null) continue;
+            // Đánh dấu lại màu ghế khi đã được chọn
+            if (selectedSeatById.containsKey(seat.getSeatId())) {
                 seat.setSelected(true);
-
                 int idx = findSelectedSeatIndex(seat.getSeatId());
                 if (idx >= 0) selectedSeats.set(idx, seat);
                 selectedSeatById.put(seat.getSeatId(), seat);
@@ -238,8 +226,11 @@ public class SeatViewModel extends ViewModel {
     }
 
     /**
-     * Biến danh sách ghế thành mảng 2 chiều với  lưới UI 7 cột.
-     * Layout mỗi hàng: A | B | C | [số hàng - lối đi] | D | E | F
+     * Build lưới UI từ rawSeats + metadata.
+     * FIX: Sau khi tạo grid, duyệt qua để khôi phục ghế pre-selected từ BookingInfo.
+     * Dùng seatNumber để khớp (không cần seatId).
+     * Ghế khớp sẽ được: đánh dấu isSelected=true + thêm vào selectedSeats + selectedSeatById
+     * → updateBottomBar() và UI grid đều hiển thị đúng ngay khi grid load xong.
      */
     private List<Seat> buildGridFromSeats(List<Seat> rawSeats, SeatMapMetadata metadata) {
         Map<String, Seat> seatMap = new HashMap<>();
@@ -250,10 +241,14 @@ public class SeatViewModel extends ViewModel {
             if (s.getRow() > maxRow) maxRow = s.getRow();
         }
 
-        // postValue(): Có thể gọi ở bất kỳ luồng nào
-        gridSpanCountLive.postValue(metadata.spanCount); // Báo cho Activity biết số cột
+        gridSpanCountLive.postValue(metadata.spanCount);
 
         List<Seat> grid = new ArrayList<>(maxRow * metadata.spanCount);
+
+        // Chọn đúng list preSelected theo tab đang load
+        List<String> preSelectedNumbers = isSelectingReturn
+                ? preSelectedRetSeatNumbers
+                : preSelectedOutSeatNumbers;
 
         for (int row = 1; row <= maxRow; row++) {
             int colIndex = 0;
@@ -269,17 +264,32 @@ public class SeatViewModel extends ViewModel {
                     String key = row + columnLetter;
                     Seat firebaseSeat = seatMap.get(key);
 
-                    if (firebaseSeat == null || "BLOCKED".equalsIgnoreCase(firebaseSeat.getStatus())) {
+                    if (firebaseSeat == null
+                            || "BLOCKED".equalsIgnoreCase(firebaseSeat.getStatus())) {
                         Seat hidden = new Seat();
                         hidden.setType("HIDDEN");
                         grid.add(hidden);
                     } else {
+                        // Khôi phục pre-selected từ BookingInfo
+                        if (!preSelectedNumbers.isEmpty()
+                                && preSelectedNumbers.contains(firebaseSeat.getSeatNumber())) {
+                            firebaseSeat.setSelected(true);
+                            // Chỉ thêm vào selectedSeats nếu chưa có (tránh duplicate khi reload)
+                            if (!selectedSeatById.containsKey(firebaseSeat.getSeatId())) {
+                                selectedSeats.add(firebaseSeat);
+                                selectedSeatById.put(firebaseSeat.getSeatId(), firebaseSeat);
+                            }
+                        }
                         grid.add(firebaseSeat);
                     }
                     colIndex++;
                 }
             }
         }
+
+        // Sau khi restore pre-selected xong → phát ghế cuối để tvSeatName hiển thị đúng
+        postCurrentlyViewingSeat();
+
         return grid;
     }
 }
