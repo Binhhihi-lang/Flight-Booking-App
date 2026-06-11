@@ -15,69 +15,99 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:gravity="center_vertical"
-    android:background="@color/text_gray"
-    android:paddingHorizontal="12dp"
-    android:paddingVertical="10dp"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="8dp"
+    >
 
-    <!-- Icon theo loại hành khách (adult / child / baby) -->
-    <ImageView
-        android:id="@+id/img_passenger_icon"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:src="@drawable/ic_nav_profile"
-        android:layout_marginEnd="10dp"
-        app:tint="@color/primary_blue"
-        tools:src="@drawable/ic_nav_profile" />
-
-    <!-- Tên loại hành khách: Người lớn 0, Trẻ em 2, Em bé 3 -->
-    <TextView
-        android:id="@+id/tv_passenger_label"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/row_passenger_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Người lớn 0"
-        android:textColor="#333333"
-        android:textSize="14sp"
-        tools:text="Người lớn 0" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/text_gray"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="10dp"
+        >
+        <!-- Icon theo loại hành khách (adult / child / baby) -->
+        <ImageView
+            android:id="@+id/img_passenger_icon"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_nav_profile"
+            android:layout_marginEnd="10dp"
+            app:tint="@color/primary_blue"
+            tools:src="@drawable/ic_nav_profile" />
 
-    <TextView
-        android:id="@+id/tv_passenger_seat"
-        android:layout_width="wrap_content"
+        <!-- Tên loại hành khách: Người lớn 0, Trẻ em 2, Em bé 3 -->
+        <TextView
+            android:id="@+id/tv_passenger_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Người lớn 0"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            tools:text="Người lớn 0" />
+
+        <TextView
+            android:id="@+id/tv_passenger_seat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="E5"
+            android:layout_marginEnd="6dp"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_passenger_mandatory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="3dp"
+            android:text="*"
+            android:textSize="22dp"
+            android:textColor="@color/primary_red"
+
+            />
+
+
+        <ImageView
+            android:id="@+id/img_passenger_check"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:src="@drawable/ic_checked"
+            app:tint="@color/primary_blue"
+
+            >
+
+        </ImageView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_baggage_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="E5"
-        android:layout_marginEnd="6dp"
-        android:textColor="#333333"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/tv_passenger_mandatory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="3dp"
-        android:text="*"
-        android:textSize="22dp"
-        android:textColor="@color/primary_red"
-
-        />
-
-
-    <ImageView
-        android:id="@+id/img_passenger_check"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_gravity="center"
+        android:background="#E5EFF9"
         android:visibility="gone"
-        android:src="@drawable/ic_checked"
-        app:tint="@color/primary_blue"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="12dp"
 
         >
+        <TextView
+            android:id="@+id/tv_baggage_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="- Hành lý lượt đi 20kg lượt về 20kg"
+            android:textColor="#6F7780"
+            android:layout_marginStart="5dp"
+            >
 
-    </ImageView>
-
-
+        </TextView>
+    </LinearLayout>
 
 </LinearLayout>
+

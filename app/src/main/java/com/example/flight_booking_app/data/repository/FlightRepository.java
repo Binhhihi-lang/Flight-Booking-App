@@ -72,12 +72,13 @@
         // tìm kiếm chuyến bay theo trang HOME
         public void searchFlights(String fromCityId, String toCityId, String departureDate,
                                   int totalPassengers, OnFlightsLoaded callback) {
-
-            if (fareRulesMap != null) fareRulesMap.clear();
-            if (airlinesMap != null) airlinesMap.clear();
+            // Clear cache trước
             if (citiesMap != null) citiesMap.clear();
+            if (airlinesMap != null) airlinesMap.clear();
+            if (fareClassesMap != null) fareClassesMap.clear();
+            if (fareRulesMap != null) fareRulesMap.clear();
             if (aircraftsMap != null) aircraftsMap.clear();
-            // Load cache trước
+            // Load cache
             loadAllCaches(() -> {
                 // Query Flights từ Firebase
                 queryAndFilterFlights(fromCityId, toCityId, departureDate, totalPassengers, callback);

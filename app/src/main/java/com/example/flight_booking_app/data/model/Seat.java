@@ -34,7 +34,6 @@ public class Seat {
 
     // ─── Transient fields – KHÔNG lưu Firebase ───────────────────────────
     private transient boolean   isSelected  = false;
-    private transient boolean isSelecting = false;
 
     public Seat() {}
 
@@ -93,6 +92,4 @@ public class Seat {
     public boolean isSelected()                { return isSelected; }
     public void    setSelected(boolean v)      { this.isSelected = v; }
 
-    public boolean isSelecting()               { return isSelecting; }
-    public void    setSelecting(boolean v)     { this.isSelecting = v; }
 }

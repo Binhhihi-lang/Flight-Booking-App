@@ -171,7 +171,6 @@
                         android:nestedScrollingEnabled="false"
                         android:orientation="horizontal"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-
                         tools:listitem="@layout/item_baggage"
                         tools:orientation="horizontal" />
 
@@ -245,7 +244,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:backgroundTint="#0175F3"
-            android:text="TIẾP TỤC"
+            android:text="LƯU"
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textStyle="bold"

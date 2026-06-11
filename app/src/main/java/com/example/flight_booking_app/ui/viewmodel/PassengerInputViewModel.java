@@ -4,13 +4,19 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.flight_booking_app.data.model.BaggageOption;
 import com.example.flight_booking_app.data.model.Passenger;
+
+import java.util.List;
 
 public class PassengerInputViewModel extends ViewModel {
 
     private final MutableLiveData<Passenger> passengerLive = new MutableLiveData<>();
     private final MutableLiveData<String> validationError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> saveSuccess = new MutableLiveData<>();
+
+    private final MutableLiveData<List<BaggageOption>> outboundBaggageLive = new MutableLiveData<>();
+    private final MutableLiveData<List<BaggageOption>> returnBaggageLive   = new MutableLiveData<>();
 
     // Nhận dữ liệu ban đầu từ Intent
     public void initPassenger(Passenger passenger) {
@@ -19,9 +25,20 @@ public class PassengerInputViewModel extends ViewModel {
         }
     }
 
+    public void initBaggageOptions(List<BaggageOption> outbound, List<BaggageOption> returnOptions) {
+        if (outboundBaggageLive.getValue() == null && outbound != null) {
+            outboundBaggageLive.setValue(outbound);
+        }
+        if (returnBaggageLive.getValue() == null && returnOptions != null) {
+            returnBaggageLive.setValue(returnOptions);
+        }
+    }
+
     public LiveData<Passenger> getPassengerLive() { return passengerLive; }
     public LiveData<String> getValidationError() { return validationError; }
     public LiveData<Boolean> getSaveSuccess() { return saveSuccess; }
+    public LiveData<List<BaggageOption>> getOutboundBaggageLive() { return outboundBaggageLive; }
+    public LiveData<List<BaggageOption>> getReturnBaggageLive()   { return returnBaggageLive; }
 
     // Cập nhật từng trường khi người dùng nhập
     public void updateFullName(String name) {
@@ -37,6 +54,25 @@ public class PassengerInputViewModel extends ViewModel {
     public void updateDob(String dob) {
         Passenger p = passengerLive.getValue();
         if (p != null) p.setDateOfBirth(dob);
+    }
+
+    public void updateOutboundBaggage(BaggageOption selected) {
+        Passenger p = passengerLive.getValue();
+        if (p == null || selected == null) return;
+        p.setOutboundBaggageId(selected.getBaggageId());
+        p.setOutboundBaggagePrice(selected.isFree() ? 0 : selected.getPriceVnd());
+        p.setOutboundBaggageWeight(selected.getWeightKg());
+    }
+
+    /**
+     * Được gọi từ BaggageAdapter callback khi người dùng chọn gói lượt về.
+     */
+    public void updateReturnBaggage(BaggageOption selected) {
+        Passenger p = passengerLive.getValue();
+        if (p == null || selected == null) return;
+        p.setReturnBaggageId(selected.getBaggageId());
+        p.setReturnBaggagePrice(selected.isFree() ? 0 : selected.getPriceVnd());
+        p.setReturnBaggageWeight(selected.getWeightKg());
     }
 
     // Nút bấm "Tiếp tục" gọi hàm này

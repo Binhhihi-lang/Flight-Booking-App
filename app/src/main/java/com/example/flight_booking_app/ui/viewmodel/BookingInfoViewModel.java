@@ -20,7 +20,10 @@ public class BookingInfoViewModel extends ViewModel {
 
     private final MutableLiveData<FareRule> outboundFareRuleLive = new MutableLiveData<>();
     private final MutableLiveData<FareRule> returnFareRuleLive = new MutableLiveData<>();
-    
+    private final MutableLiveData<Double> totalPriceLive = new MutableLiveData<>();
+    private final MutableLiveData<Double> farePriceLive = new MutableLiveData<>();
+    private final MutableLiveData<Double> subTotalPriceLive = new MutableLiveData<>();
+
     private final MutableLiveData<UiState> loadState = new MutableLiveData<>();
 
     // lưu trạng thái trả về cho BookingInfo
@@ -29,8 +32,6 @@ public class BookingInfoViewModel extends ViewModel {
     private final MutableLiveData<ArrayList<String>> returnSeatCodesLive = new MutableLiveData<>(new ArrayList<>());
 
     public LiveData<ArrayList<Passenger>> getPassengerListLive() { return passengerListLive; }
-    public LiveData<ArrayList<String>> getDepartSeatCodesLive() { return departSeatCodesLive; }
-    public LiveData<ArrayList<String>> getReturnSeatCodesLive() { return returnSeatCodesLive; }
 
     public BookingInfoViewModel() {
         this.repository = new BookingInfoRepository();
@@ -39,6 +40,9 @@ public class BookingInfoViewModel extends ViewModel {
     public LiveData<FareRule> getOutboundFareRuleLive() { return outboundFareRuleLive; }
     public LiveData<FareRule> getReturnFareRuleLive() { return returnFareRuleLive; }
     public LiveData<UiState> getLoadingLive() { return loadState; }
+    public LiveData<Double> getTotalPriceLive() { return totalPriceLive; }
+    public LiveData<Double> getFarePriceLive() { return farePriceLive; }
+    public LiveData<Double> getSubTotalPriceLive() { return subTotalPriceLive; }
 
     /**
      * Tải nối tiếp: Lượt đi -> Lượt về -> Tắt Loading
@@ -86,7 +90,7 @@ public class BookingInfoViewModel extends ViewModel {
         // 1. Nhét dữ liệu lượt đi
         FareRule outRule = outboundFareRuleLive.getValue();
         if (outRule != null) {
-            intent.putExtra(SeatSelectionActivity.EXTRA_OUT_CABIN_CLASS, outRule.getFareClassName());
+            intent.putExtra(SeatSelectionActivity.EXTRA_OUT_FARE_CLASS, outRule.getFareClassName());
             if (outRule.getFreeIncludedSeatTypes() != null) {
                 intent.putStringArrayListExtra(SeatSelectionActivity.EXTRA_OUT_FREE_SEATS, new ArrayList<>(outRule.getFreeIncludedSeatTypes()));
             }
@@ -96,7 +100,7 @@ public class BookingInfoViewModel extends ViewModel {
         if (isRoundTrip) {
             FareRule retRule = returnFareRuleLive.getValue();
             if (retRule != null) {
-                intent.putExtra(SeatSelectionActivity.EXTRA_RET_CABIN_CLASS, retRule.getFareClassName());
+                intent.putExtra(SeatSelectionActivity.EXTRA_RET_FARE_CLASS, retRule.getFareClassName());
                 if (retRule.getFreeIncludedSeatTypes() != null) {
                     intent.putStringArrayListExtra(SeatSelectionActivity.EXTRA_RET_FREE_SEATS, new ArrayList<>(retRule.getFreeIncludedSeatTypes()));
                 }
@@ -139,17 +143,19 @@ public class BookingInfoViewModel extends ViewModel {
             }
             // Kích hoạt báo cho UI vẽ lại
             passengerListLive.setValue(currentList);
+            updateSubTotalPrice();
         }
     }
 
     /**
      * Lưu ghế vừa chọn và tiến hành gán luôn ghế cho từng hành khách trong ViewModel
      */
-    public void updateSeats(ArrayList<String> departSeats, ArrayList<String> returnSeats, boolean isRoundTrip) {
-        departSeatCodesLive.setValue(departSeats != null ? departSeats : new ArrayList<>());
-        returnSeatCodesLive.setValue(returnSeats != null ? returnSeats : new ArrayList<>());
+    // Trong BookingInfoViewModel.java
 
-        // Tiến hành ghép ghế (Mapping) ngay trong ViewModel để lưu vào Object Passenger
+    public void updateSeats(ArrayList<String> departSeats, ArrayList<Double> departPrices,
+                            ArrayList<String> returnSeats, ArrayList<Double> returnPrices,
+                            boolean isRoundTrip) {
+
         ArrayList<Passenger> currentList = passengerListLive.getValue();
         if (currentList != null) {
             int departIndex = 0;
@@ -157,33 +163,49 @@ public class BookingInfoViewModel extends ViewModel {
 
             for (Passenger p : currentList) {
                 if ("BABY".equals(p.getType())) {
-                    p.setSeatNumber("Ngồi cùng ng.lớn"); // Em bé không có ghế
+                    p.setSeatNumber("Ngồi cùng ng.lớn");
+                    p.setSeatPrice(0); // Em bé không tốn tiền ghế
                     continue;
                 }
 
+                double seatTotalPrice = 0;
                 StringBuilder seatDisplay = new StringBuilder();
-                if (isRoundTrip) {
-                    if (departSeats != null && departIndex < departSeats.size()) {
-                        seatDisplay.append("Đi: ").append(departSeats.get(departIndex));
-                        departIndex++;
-                    } else seatDisplay.append("Đi: --");
 
-                    if (returnSeats != null && returnIndex < returnSeats.size()) {
-                        seatDisplay.append(" | Về: ").append(returnSeats.get(returnIndex));
-                        returnIndex++;
-                    } else seatDisplay.append(" | Về: --");
-                } else {
-                    if (departSeats != null && departIndex < departSeats.size()) {
-                        seatDisplay.append(departSeats.get(departIndex));
-                        departIndex++;
-                    } else seatDisplay.append("--");
+                // Tính giá và hiển thị cho lượt đi
+                if (departSeats != null && departIndex < departSeats.size()) {
+                    seatDisplay.append(isRoundTrip ? "Đi: " : "").append(departSeats.get(departIndex));
+                    if (departPrices != null) seatTotalPrice += departPrices.get(departIndex);
+                    departIndex++;
                 }
 
-                // Lưu thẳng chuỗi ghế vào Object
+                // Tính giá và hiển thị cho lượt về
+                if (isRoundTrip) {
+                    if (returnSeats != null && returnIndex < returnSeats.size()) {
+                        seatDisplay.append(" | Về: ").append(returnSeats.get(returnIndex));
+                        if (returnPrices != null) seatTotalPrice += returnPrices.get(returnIndex);
+                        returnIndex++;
+                    }
+                }
+
                 p.setSeatNumber(seatDisplay.toString());
+                p.setSeatPrice(seatTotalPrice);
             }
-            // Kích hoạt UI vẽ lại danh sách hành khách (lúc này đã có chữ ghế ngồi đi kèm)
+
             passengerListLive.setValue(currentList);
+            updateSubTotalPrice();
+        }
+    }
+    public void updateSubTotalPrice(){
+        ArrayList<Passenger> currentList = passengerListLive.getValue();
+
+        double totalPrice=0 ;
+        if (currentList != null) {
+            for (Passenger p : currentList) {
+                // ghế, hành lý , món ăn
+                totalPrice += p.getSeatPrice() + p.getOutboundBaggagePrice() + p.getReturnBaggagePrice();
+
+            }
+            subTotalPriceLive.setValue(totalPrice);
         }
     }
 }

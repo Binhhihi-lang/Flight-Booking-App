@@ -65,8 +65,7 @@ public class Flight implements Serializable {
     @Exclude
     private String seatType;     // loại hạng ghế để lọc
 
-    @Exclude
-    private FareClass selectedFareClass; // Dùng để lưu cấu hình hạng vé phục vụ UI
+    private transient FareClass selectedFareClass; // Dùng để lưu cấu hình hạng vé phục vụ UI
 
     public FareClass getSelectedFareClass() { return selectedFareClass; }
     public void setSelectedFareClass(FareClass selectedFareClass) { this.selectedFareClass = selectedFareClass; }

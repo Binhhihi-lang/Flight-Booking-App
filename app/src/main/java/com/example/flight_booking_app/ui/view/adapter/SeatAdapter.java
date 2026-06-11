@@ -1,7 +1,6 @@
 package com.example.flight_booking_app.ui.view.adapter;
 
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,12 +28,12 @@ public class SeatAdapter extends RecyclerView.Adapter<SeatAdapter.SeatViewHolder
     private List<Seat> seatList = new ArrayList<>();
     private final OnSeatClickListener listener;
 
-    // BIẾN MỚI: Lưu trữ hạng vé của khách đang thực hiện đặt chỗ
-    private final String passengerCabinClass;
+    //Lưu trữ hạng vé của khách đang thực hiện đặt chỗ
+    private final String passengerFareClass;
 
-    // CẬP NHẬT CONSTRUCTOR: Nhận thêm hạng vé (BUSINESS, PREMIUM_ECONOMY, ECONOMY)
-    public SeatAdapter(String passengerCabinClass, OnSeatClickListener listener) {
-        this.passengerCabinClass = passengerCabinClass;
+    // Nhận thêm hạng vé (BUSINESS, PREMIUM_ECONOMY, ECONOMY)
+    public SeatAdapter(String passengerFareClass, OnSeatClickListener listener) {
+        this.passengerFareClass = passengerFareClass;
         this.listener = listener;
         setHasStableIds(false);
     }
@@ -52,80 +51,76 @@ public class SeatAdapter extends RecyclerView.Adapter<SeatAdapter.SeatViewHolder
         return new SeatViewHolder(view);
     }
 
-        @Override
-        public void onBindViewHolder(@NonNull SeatViewHolder holder, int position) {
-            Seat seat = seatList.get(position);
-            String seatType = seat.getType() == null ? "" : seat.getType().toUpperCase();
+    @Override
+    public void onBindViewHolder(@NonNull SeatViewHolder holder, int position) {
+        Seat seat = seatList.get(position);
+        String seatType = seat.getType() == null ? "" : seat.getType().toUpperCase();
 
-            switch (seatType) {
-                case "AISLE":
-                    // ── Ô lối đi: hiện số hàng, không click ──────────────────
-                    holder.tvSeatLabel.setVisibility(View.VISIBLE);
-                    holder.tvSeatLabel.setText(seat.getSeatNumber());
-                    holder.tvSeatLabel.setBackgroundColor(Color.TRANSPARENT);
-                    holder.tvSeatLabel.setTextColor(Color.parseColor("#888888"));
+        switch (seatType) {
+            case "AISLE":
+                // ── Ô lối đi: hiện số hàng, không click
+                holder.tvSeatLabel.setVisibility(View.VISIBLE);
+                holder.tvSeatLabel.setText(seat.getSeatNumber());
+                holder.tvSeatLabel.setBackgroundColor(Color.TRANSPARENT);
+                holder.tvSeatLabel.setTextColor(Color.parseColor("#888888"));
+                holder.itemView.setOnClickListener(null);
+                holder.itemView.setClickable(false);
+                break;
+
+            case "HIDDEN":
+                // ẩn
+                holder.tvSeatLabel.setVisibility(View.INVISIBLE);
+                holder.itemView.setOnClickListener(null);
+                holder.itemView.setClickable(false);
+                break;
+
+            default:
+                // ── GHẾ NGỒI THỰC TẾ (PREMIUM, FRONT_ROW, STANDARD, EXTRA_LEGROOM) ──
+                holder.tvSeatLabel.setVisibility(View.VISIBLE);
+                holder.tvSeatLabel.setText(seat.getColumn());
+
+                // BƯỚC 1: KIỂM TRA QUYỀN HẠN HẠNG VÉ (MAPPING RULES)
+                boolean isAllowedClass ;
+                String safeFareClass = passengerFareClass != null ? passengerFareClass.toUpperCase() : "ECONOMY";
+
+                if (safeFareClass.contains("BUSINESS")) {
+                    // Chỉ cần tên vé chứa chữ "BUSINESS" (VD: BUSINESS STANDARD, BUSINESS FLEX)
+                    // thì khách được quyền chọn khu ghế PREMIUM
+                    isAllowedClass = "PREMIUM".equals(seatType); // nếu giống thì gán isAllowedClass = true để sang ghế hợp lệ
+                } else if (safeFareClass.contains("PREMIUM")) {
+
+                    isAllowedClass = "FRONT_ROW".equals(seatType);
+                } else {
+                    // Các trường hợp còn lại (ECONOMY STANDARD, ECONOMY LITE, ECONOMY FLEX...)
+                    isAllowedClass = "STANDARD".equals(seatType) || "EXTRA_LEGROOM".equals(seatType);
+                }
+
+                // BƯỚC 2: RẼ NHÁNH GIAO DIỆN VÀ CLICK EVENT DỰA TRÊN KẾT QUẢ KIỂM TRA
+                if (!isAllowedClass) {
+                    // TRƯỜNG HỢP A: Sai khoang hạng vé -> Khóa mờ, dùng background mới tạo
+                    holder.tvSeatLabel.setBackgroundResource(R.drawable.bg_seat_booked);
+                    holder.tvSeatLabel.setTextColor(Color.parseColor("#A0A0A0")); // Chữ xám nhạt mờ đi
                     holder.itemView.setOnClickListener(null);
                     holder.itemView.setClickable(false);
-                    break;
 
-                case "HIDDEN":
-                    // ── Ô ẩn: hoàn toàn tàng hình ────────────────────────────
-                    holder.tvSeatLabel.setVisibility(View.INVISIBLE);
+                } else if ("BOOKED".equalsIgnoreCase(seat.getStatus())) {
+                    // TRƯỜNG HỢP B: Đúng khoang hạng vé nhưng ghế này đã ĐƯỢC ĐẶT TRƯỚC
+                    holder.tvSeatLabel.setTextColor(Color.WHITE);
+                    holder.tvSeatLabel.setBackgroundResource(R.drawable.bg_seat_booked);
                     holder.itemView.setOnClickListener(null);
                     holder.itemView.setClickable(false);
-                    break;
+                } else {
+                    // TRƯỜNG HỢP C: Ghế hợp lệ, còn trống -> Cho phép click chọn bình thường
+                    holder.tvSeatLabel.setTextColor(Color.WHITE);
+                    holder.tvSeatLabel.setBackgroundResource(resolveSeatBackground(seat));
 
-                default:
-                    // ── GHẾ NGỒI THỰC TẾ (PREMIUM, FRONT_ROW, STANDARD, EXTRA_LEGROOM) ──
-                    holder.tvSeatLabel.setVisibility(View.VISIBLE);
-                    holder.tvSeatLabel.setText(seat.getColumn());
-
-                    // BƯỚC 1: KIỂM TRA QUYỀN HẠN HẠNG VÉ (MAPPING RULES)
-                    boolean isAllowedClass = false;
-                    String safeCabinClass = passengerCabinClass != null ? passengerCabinClass.toUpperCase() : "ECONOMY";
-
-                    if (safeCabinClass.contains("BUSINESS")) {
-                        // Chỉ cần tên vé chứa chữ "BUSINESS" (VD: BUSINESS STANDARD, BUSINESS FLEX)
-                        // thì khách được quyền chọn khu ghế PREMIUM
-                        isAllowedClass = "PREMIUM".equals(seatType); // nếu giống thì gán isAllowedClass = true để sang ghế hợp lệ
-                    }
-                    else if (safeCabinClass.contains("PREMIUM")) {
-                        // Tên vé chứa chữ "PREMIUM" (VD: PREMIUM ECONOMY) thì được chọn hàng FRONT_ROW
-                        isAllowedClass = "FRONT_ROW".equals(seatType);
-                    }
-                    else {
-                        // Các trường hợp còn lại (ECONOMY STANDARD, ECONOMY LITE, ECONOMY FLEX...)
-                        isAllowedClass = "STANDARD".equals(seatType) || "EXTRA_LEGROOM".equals(seatType);
-                    }
-
-                    // BƯỚC 2: RẼ NHÁNH GIAO DIỆN VÀ CLICK EVENT DỰA TRÊN KẾT QUẢ KIỂM TRA
-                    if (!isAllowedClass) {
-                        // TRƯỜNG HỢP A: Sai khoang hạng vé -> Khóa mờ, dùng background mới tạo
-                        holder.tvSeatLabel.setBackgroundResource(R.drawable.bg_seat_booked);
-                        holder.tvSeatLabel.setTextColor(Color.parseColor("#A0A0A0")); // Chữ xám nhạt mờ đi
-                        holder.itemView.setOnClickListener(null);
-                        holder.itemView.setClickable(false);
-                    }
-                    else if ("BOOKED".equalsIgnoreCase(seat.getStatus())) {
-                        // TRƯỜNG HỢP B: Đúng khoang hạng vé nhưng ghế này đã ĐƯỢC ĐẶT TRƯỚC
-                        holder.tvSeatLabel.setTextColor(Color.WHITE);
-                        holder.tvSeatLabel.setBackgroundResource(R.drawable.bg_seat_booked);
-                        holder.itemView.setOnClickListener(null);
-                        holder.itemView.setClickable(false);
-                    }
-                    else {
-                        // TRƯỜNG HỢP C: Ghế hợp lệ, còn trống -> Cho phép click chọn bình thường
-                        // Chữ trắng nền xanh đậm khi selected, chữ trắng nền màu loại ghế khi trống
-                        holder.tvSeatLabel.setTextColor(Color.WHITE);
-                        holder.tvSeatLabel.setBackgroundResource(resolveSeatBackground(seat));
-
-                        holder.itemView.setClickable(true);
-                        holder.itemView.setOnClickListener(v ->
-                                listener.onSeatClick(seat, holder.getAdapterPosition()));
-                    }
-                    break;
-            }
+                    holder.itemView.setClickable(true);
+                    holder.itemView.setOnClickListener(v ->
+                            listener.onSeatClick(seat, holder.getAdapterPosition()));
+                }
+                break;
         }
+    }
 
     @Override
     public int getItemCount() {

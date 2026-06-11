@@ -323,6 +323,8 @@ public class SearchFlightActivity extends AppCompatActivity
         // Lấy thẳng FareClass được nhồi sẵn bên trong Flight ra
         FareClass fareClass = flight.getSelectedFareClass();
 
+        flightViewModel.setCurrentlyViewingFare(fareClass);
+
         boolean isReturnFlight = flightViewModel.isSelectingReturn();
 
         FlightDetailBottomSheet sheet = FlightDetailBottomSheet.newInstance(
@@ -391,9 +393,9 @@ public class SearchFlightActivity extends AppCompatActivity
             intent.putExtra("selected_return_fare", returnFare);
         }
 
-        intent.putExtra(BookingInfoActivity. EXTRA_ADULT_COUNT, adultCount);
-        intent.putExtra(BookingInfoActivity. EXTRA_CHILD_COUNT, childCount);
-        intent.putExtra(BookingInfoActivity. EXTRA_BABY_COUNT,  babyCount);
+        intent.putExtra("adult_count", adultCount);
+        intent.putExtra("child_count", childCount);
+        intent.putExtra("baby_count",  babyCount);
 
         startActivity(intent);
     }

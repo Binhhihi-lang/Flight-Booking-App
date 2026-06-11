@@ -327,7 +327,6 @@
                             android:orientation="vertical"
                             >
 
-                            <!-- Giá người lớn -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -353,7 +352,7 @@
 
                             <!-- Giá người lớn -->
                             <LinearLayout
-                                android:id="@+id/layout_outbound_adult_price"
+                                android:id="@+id/row_outbound_adult_price"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
@@ -378,7 +377,7 @@
 
                             <!-- Giá trẻ em -->
                             <LinearLayout
-                                android:id="@+id/layout_outbound_child_price"
+                                android:id="@+id/row_outbound_child_price"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
@@ -402,7 +401,7 @@
 
                             <!-- Giá em bé -->
                             <LinearLayout
-                                android:id="@+id/layout_outbound_baby_price"
+                                android:id="@+id/row_outbound_baby_price"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
@@ -693,7 +692,6 @@
                                 android:orientation="vertical"
                                 >
 
-                                <!-- Giá người lớn -->
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -719,7 +717,7 @@
 
                                 <!-- Giá người lớn -->
                                 <LinearLayout
-                                    android:id="@+id/layout_return_adult_price"
+                                    android:id="@+id/row_return_adult_price"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
@@ -744,7 +742,7 @@
 
                                 <!-- Giá trẻ em -->
                                 <LinearLayout
-                                    android:id="@+id/layout_return_child_price"
+                                    android:id="@+id/row_return_child_price"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
@@ -768,7 +766,7 @@
 
                                 <!-- Giá em bé -->
                                 <LinearLayout
-                                    android:id="@+id/layout_return_baby_price"
+                                    android:id="@+id/row_return_baby_price"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
@@ -1136,7 +1134,7 @@
                             android:textSize="14sp" />
 
                         <TextView
-                            android:id="@+id/tv_subtotal_price"
+                            android:id="@+id/tv_fare_price_total"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="4.784.400đ"
@@ -1157,12 +1155,12 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Chọn ghế và bữa ăn:"
+                            android:text="Chọn ghế, hành lý ký gửi và bữa ăn:"
                             android:textColor="#555555"
                             android:textSize="14sp" />
 
                         <TextView
-                            android:id="@+id/tv_seat_price"
+                            android:id="@+id/tv_subtotal_price"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="đ"

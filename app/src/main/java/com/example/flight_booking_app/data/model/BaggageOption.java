@@ -5,29 +5,42 @@ import java.io.Serializable;
 
 public class BaggageOption implements Serializable {
     private String baggageId;
-    private int weight;
-    private double price;
-
-    // Thuộc tính (bấm vào thì đổi màu viền)
+    private int weightKg;        // 0, 20, 25, 30...
+    private boolean isFree;      // true nếu là lựa chọn mặc định/miễn phí, false nếu mua thêm
+    private double priceVnd;     // 0 hoặc số tiền phải trả thêm
     private transient boolean isSelected = false;
 
+    // Constructor mặc định cho Firebase
     public BaggageOption() {}
 
-    public BaggageOption(String baggageId, int weight, double price) {
-        this.baggageId = baggageId;
-        this.weight = weight;
-        this.price = price;
+    public BaggageOption(int weightKg, boolean isFree, double priceVnd) {
+        this.weightKg = weightKg;
+        this.isFree = isFree;
+        this.priceVnd = priceVnd;
     }
 
-    // Getters and Setters
-    public String getBaggageId() { return baggageId; }
-    public void setBaggageId(String baggageId) { this.baggageId = baggageId; }
-    public int getWeight() { return weight; }
-    public void setWeight(int weight) { this.weight = weight; }
+    public int getWeightKg() { return weightKg; }
+    public void setWeightKg(int weightKg) { this.weightKg = weightKg; }
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public boolean isFree() { return isFree; }
+    public void setFree(boolean free) { isFree = free; }
 
-    public boolean isSelected() { return isSelected; }
-    public void setSelected(boolean selected) { isSelected = selected; }
+    public double getPriceVnd() { return priceVnd; }
+    public void setPriceVnd(double priceVnd) { this.priceVnd = priceVnd; }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    public String getBaggageId() {
+        return baggageId;
+    }
+
+    public void setBaggageId(String baggageId) {
+        this.baggageId = baggageId;
+    }
 }

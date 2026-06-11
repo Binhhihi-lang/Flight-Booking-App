@@ -21,16 +21,6 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.Locale;
 
-/**
- * BottomSheet hiển thị chi tiết chuyến bay sau khi người dùng bấm chọn.
- * <p>
- * NHẬN dữ liệu qua Bundle (không phải Intent — Fragment không dùng Intent).
- * Dùng static factory newInstance() để tạo với Bundle đúng cách.
- * <p>
- * CALLBACK về SearchFlightActivity qua interface OnFlightActionListener:
- * onOutboundConfirmed() → khứ hồi, lượt đi: đóng sheet, chuyển tab về
- * onBookingConfirmed()  → 1 chiều hoặc lượt về: tiến đến đặt vé
- */
 public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
 
     // ── Callback interface
@@ -190,7 +180,6 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
                         tvCheckedBaggage.setText("Hành lý ký gửi " + rule.getCheckedBaggage() + "kg");
                     } else {
                         tvCheckedBaggage.setText("Không bao gồm hành lý ký gửi");
-                        // Bác có thể set màu chữ xám tại đây nếu muốn
                     }
                 }
             }
@@ -241,9 +230,6 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
         tvToIata.setText(flight.getToIata());
         tvFlightNumber.setText(flight.getFlightNumber());
         tvFareClass.setText(fareClass.getTitle()); // Tên hạng vé (Ví dụ: Eco Save)
-
-        // Nếu bác có biến lưu loại máy bay thì gán vào đây
-        // tvFlightType.setText(flight.getAirCraftName());
 
         // ── 5. HIỂN THỊ CHI TIẾT GIÁ ──
         tvBasePrice.setText(formatPrice(basePrice));

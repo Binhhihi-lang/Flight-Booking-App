@@ -1,5 +1,7 @@
 package com.example.flight_booking_app.data.model;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +16,11 @@ public class FareClass implements Serializable {
 
     // ── KIẾN TRÚC HYBRID ──
     private String fareRuleId; // Lưu ID để làm việc với DB/Web Admin/Booking
+
+    @Exclude
     private FareRule fareRule; // Object được "nhồi" vào để UI hiển thị (Bỏ qua khi lưu lên DB)
 
-    private List<BaggageOption> baggageOptions = new ArrayList<>();
+    private ArrayList<BaggageOption> baggageOptions = new ArrayList<>();
 
 
     public FareClass() {
@@ -72,11 +76,11 @@ public class FareClass implements Serializable {
         this.fareRuleId = fareRuleId;
     }
 
-    public List<BaggageOption> getBaggageOptions() {
+    public ArrayList<BaggageOption> getBaggageOptions() {
         return baggageOptions;
     }
 
-    public void setBaggageOptions(List<BaggageOption> baggageOptions) {
+    public void setBaggageOptions(ArrayList<BaggageOption> baggageOptions) {
         this.baggageOptions = baggageOptions;
     }
     public FareRule getFareRule() { return fareRule; }
