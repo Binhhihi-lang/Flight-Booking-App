@@ -21,10 +21,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.flight_booking_app.R;
 import com.example.flight_booking_app.data.model.BaggageOption;
-import com.example.flight_booking_app.data.model.FareClass;
 import com.example.flight_booking_app.data.model.Passenger;
 import com.example.flight_booking_app.ui.view.adapter.BaggageAdapter;
 import com.example.flight_booking_app.ui.viewmodel.PassengerInputViewModel;
+import com.example.flight_booking_app.utils.PriceFormatter;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -32,7 +32,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 public class PassengerInputActivity extends AppCompatActivity {
 
@@ -41,7 +40,7 @@ public class PassengerInputActivity extends AppCompatActivity {
     private AutoCompleteTextView actvTitle;
     private TextInputEditText etFullName, etDob, etIdentity;
     private MaterialToolbar toolbarPasssenger;
-    private MaterialButton btnSubmit;
+    private MaterialButton btnSave;
 
     private CardView cardBaggageOutbound;
     private CardView cardBaggageReturn;
@@ -75,9 +74,8 @@ public class PassengerInputActivity extends AppCompatActivity {
         etFullName = findViewById(R.id.et_personal_full_name);
         etDob = findViewById(R.id.et_personal_dob);
         etIdentity = findViewById(R.id.et_personal_identity);
-        btnSubmit = findViewById(R.id.btn_personal_submit);
+        btnSave = findViewById(R.id.btn_personal_submit);
 
-        // ── [MỚI] Bind RecyclerView hành lý ──────────────────────────────
         rvBaggageOutbound = findViewById(R.id.rv_baggage_outbound);
         rvBaggageReturn = findViewById(R.id.rv_baggage_return);
         cardBaggageOutbound = findViewById(R.id.card_baggage_outbound_container);
@@ -118,22 +116,24 @@ public class PassengerInputActivity extends AppCompatActivity {
         ArrayList<BaggageOption> returnOptions = (ArrayList<BaggageOption>) getIntent().getSerializableExtra("return_baggage_options");
         passengerViewModel.initBaggageOptions(outboundOptions, returnOptions);
 
-        // 1. Observer lỗi Validate
-        passengerViewModel.getValidationError().observe(this, error -> {
-            if (error != null) {
-                Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+
+        passengerViewModel.getUiState().observe(this, result -> {
+            if (result == null) return;
+            switch (result.getStatus()) {
+                case SUCCESS:
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("updated_passenger", passengerViewModel.getPassengerLive().getValue());
+                    setResult(RESULT_OK, resultIntent);
+                    finish();
+                    break;
+
+                case ERROR:
+                    btnSave.setEnabled(true);
+                    Toast.makeText(this, "Lỗi: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                    break;
             }
         });
 
-        // 2. Observer khi lưu thành công -> Đóng Activity và trả kết quả về BookingInfo
-        passengerViewModel.getSaveSuccess().observe(this, isSuccess -> {
-            if (isSuccess != null && isSuccess) {
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("updated_passenger", passengerViewModel.getPassengerLive().getValue());
-                setResult(RESULT_OK, resultIntent);
-                finish();
-            }
-        });
 
         // 3. Khôi phục dữ liệu lên UI
         passengerViewModel.getPassengerLive().observe(this, passenger -> {
@@ -155,29 +155,27 @@ public class PassengerInputActivity extends AppCompatActivity {
         });
 
 
+        // quan sát chọn hành lý
+        passengerViewModel.getOutboundBaggageLive().observe(this, options -> {
+            if (options != null && !options.isEmpty()) {
+                setupBaggageRecyclerView(rvBaggageOutbound, options, false);
+            }
+        });
 
-            // quan sát chọn hành lý
-            passengerViewModel.getOutboundBaggageLive().observe(this, options -> {
+
+        if (isRoundTrip) {
+            passengerViewModel.getReturnBaggageLive().observe(this, options -> {
                 if (options != null && !options.isEmpty()) {
-                    setupBaggageRecyclerView(rvBaggageOutbound, options, false);
+                    setupBaggageRecyclerView(rvBaggageReturn, options, true);
                 }
             });
-
-
-            if (isRoundTrip) {
-                passengerViewModel.getReturnBaggageLive().observe(this, options -> {
-                    if (options != null && !options.isEmpty()) {
-                        setupBaggageRecyclerView(rvBaggageReturn, options, true);
-                    }
-                });
-            }
+        }
     }
 
     private void setupBaggageRecyclerView(RecyclerView rv,
                                           List<BaggageOption> options,
                                           boolean isReturn) {
         Passenger p = passengerViewModel.getPassengerLive().getValue();
-
 
         BaggageAdapter adapter = new BaggageAdapter(options, selected -> {
             if (isReturn) {
@@ -197,7 +195,6 @@ public class PassengerInputActivity extends AppCompatActivity {
             }
         }
 
-
     }
 
     private void setupTitleDropdown(String passengerType) {
@@ -216,26 +213,31 @@ public class PassengerInputActivity extends AppCompatActivity {
 
     private void setupUIListeners() {
         toolbarPasssenger.setOnClickListener(v -> finish());
-        // --- Danh xưng ---
+
+        //  Danh xưng
         actvTitle.setOnItemClickListener((parent, view, position, id) -> {
             passengerViewModel.updateTitle(parent.getItemAtPosition(position).toString());
+            // Tắt báo đỏ
+            actvTitle.setError(null);
         });
 
-        // --- Ngày sinh (DatePicker) ---
+        //  Ngày sinh (DatePicker)
         etDob.setOnClickListener(v -> {
             Calendar c = Calendar.getInstance();
             new DatePickerDialog(this,
                     (view, year, month, day) -> {
-                        // Format chuẩn 2 số (Ví dụ: 05/09/1998 thay vì 5/9/1998)
-                        String formattedDate = String.format(Locale.getDefault(), "%02d/%02d/%04d", day, month + 1, year);
+
+                        String formattedDate = PriceFormatter.formatDate(day, month, year);
                         etDob.setText(formattedDate);
                         passengerViewModel.updateDob(formattedDate);
+                        // Tắt báo đỏ
+                        etDob.setError(null);
                     },
                     c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)
             ).show();
         });
 
-        // --- Tên ---
+        //  Dùng TextWatcher để lưu giá trị nhập vào ViewModel
         etFullName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -248,10 +250,37 @@ public class PassengerInputActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 passengerViewModel.updateFullName(s.toString());
+                if (!s.toString().trim().isEmpty()) {
+                    etFullName.setError(null);
+                }
             }
         });
 
-        // --- Nút Submit ---
-        btnSubmit.setOnClickListener(v -> passengerViewModel.validateAndSave());
+
+        btnSave.setOnClickListener(v -> {
+            String fullName = etFullName.getText().toString();
+            String dob = etDob.getText().toString();
+            String title = actvTitle.getText().toString();
+
+            if (title.isEmpty()) {
+                actvTitle.setError("Vui lòng chọn danh xưng");
+                actvTitle.requestFocus();
+                return;
+            }
+
+            if (fullName.isEmpty()) {
+                etFullName.setError("Vui lòng nhập họ và tên");
+                etFullName.requestFocus();
+                return;
+            }
+            if (dob.isEmpty()) {
+                etDob.setError("Vui lòng chọn ngày sinh");
+                etDob.requestFocus();
+                return;
+            }
+
+
+            passengerViewModel.validateAndSave();
+        });
     }
 }

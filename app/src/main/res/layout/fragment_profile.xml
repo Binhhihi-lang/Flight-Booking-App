@@ -21,7 +21,6 @@
             android:background="@color/white"
             app:layout_anchor="@+id/appBarLayout"
             app:layout_anchorGravity="center"
-            android:layout_marginTop="@dimen/spacing_large"
             app:navigationIcon="@drawable/ic_back"
             app:navigationIconTint="@color/textTitle"
             app:title="Thông tin tài khoản"

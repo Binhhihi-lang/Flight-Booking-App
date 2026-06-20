@@ -157,7 +157,6 @@
                         app:hintEnabled="false"
                         app:startIconDrawable="@drawable/ic_profile_email"
                         app:startIconTint="#0175F3"
-                        app:endIconDrawable="@drawable/ic_lock"
                         app:endIconTint="@color/primary_blue"
                         app:boxBackgroundColor="@color/bg_input_field"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
@@ -166,9 +165,8 @@
                             android:id="@+id/edtEmail"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:enabled="false"
-                            android:text="nguyenxuanly@gmail.com"
-                            android:textColor="#9E9E9E"
+                            android:hint="nguyenxuanly@gmail.com"
+
                             android:textSize="15sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -194,7 +192,7 @@
                             android:id="@+id/edtPhone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="+84 987 654 321"
+                            android:hint="0987654321"
                             android:paddingStart="50dp"
                             android:inputType="phone"
                             android:maxLength="10"

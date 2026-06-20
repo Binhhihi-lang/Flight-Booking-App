@@ -36,25 +36,7 @@ public class AuthViewModel extends ViewModel {
 
     // Actions được gọi từ View
     public void login(String email, String password) {
-        // validate
-        if (email.isEmpty()) {
-            authState.setValue(UiState.error("Email phải được nhập"));
-            return;
-        }
-        // Kiểm tra xem định dạng email có hợp lệ không
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            resetState.setValue(UiState.error("Email không hợp lệ!"));
-            return;
-        }
 
-        if (password.isEmpty()) {
-            authState.setValue(UiState.error("Mật khẩu phải được nhập"));
-            return;
-        }
-        if (password.length() < 6) {
-            authState.setValue(UiState.error("Mật khẩu phải từ 6 ký tự trở lên"));
-            return;
-        }
         authState.setValue(UiState.loading());
 
         repository.login(email, password, new AuthRepository.RoleCallback() {

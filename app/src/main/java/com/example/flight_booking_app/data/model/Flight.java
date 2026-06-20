@@ -43,9 +43,8 @@ public class Flight implements Serializable {
 
     private String status;
 
-    // Transient display fields (KHÔNG lưu Firebase, điền sau JOIN)
-    // Repository sẽ set các field này sau khi JOIN City + Airline
-    // Đổi 'transient' thành '@Exclude' của Firebase để Intent không bị mất dữ liệu khi truyền Intent
+    // Transient display fields: không lưu lên Firebase
+    // '@Exclude' của Firebase để Intent không bị mất dữ liệu khi truyền Intent
     // Không lưu trong csdl
 
     @Exclude

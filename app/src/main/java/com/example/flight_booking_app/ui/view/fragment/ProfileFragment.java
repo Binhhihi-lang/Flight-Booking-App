@@ -125,7 +125,7 @@ public class ProfileFragment extends Fragment {
         });
 
         // Observe lỗi cập nhật người dùng
-        userViewModel.getUpdateState().observe(getViewLifecycleOwner(), result -> {
+        userViewModel.getUiState().observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == UiState.Status.ERROR) {
                 Toast.makeText(getActivity(), "Lỗi: " + result.getMessage(), Toast.LENGTH_SHORT).show();
             }

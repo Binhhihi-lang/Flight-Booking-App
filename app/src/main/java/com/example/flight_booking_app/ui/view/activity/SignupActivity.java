@@ -2,6 +2,8 @@ package com.example.flight_booking_app.ui.view.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,7 +31,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private EditText etFullName, etEmail, etPassword;
+    private EditText etFullName, etEmail, etPassword, etConfirmPassword;
     private Button btnSignUp, btnGoogleSignUp;
     private TextView tvGoToSignIn;
     private ProgressBar progressBar;
@@ -72,16 +74,18 @@ public class SignupActivity extends AppCompatActivity {
         setupGoogleSignIn();
         setupViewModel();
         setupClickListeners();
+        setupRealtimeValidation();
     }
 
     private void bindViews() {
-        etFullName     = findViewById(R.id.et_name);
-        etEmail        = findViewById(R.id.et_email);
-        etPassword     = findViewById(R.id.et_password);
-        btnSignUp      = findViewById(R.id.btn_signup);
+        etFullName = findViewById(R.id.et_name_sigup);
+        etEmail = findViewById(R.id.et_email_signup);
+        etPassword = findViewById(R.id.et_password_signup);
+        etConfirmPassword = findViewById(R.id.et_confirm_password);
+        btnSignUp = findViewById(R.id.btn_signup);
         btnGoogleSignUp = findViewById(R.id.btn_google_signup);
-        tvGoToSignIn   = findViewById(R.id.tv_sign_in_here);
-        progressBar    = findViewById(R.id.progress_bar);
+        tvGoToSignIn = findViewById(R.id.tv_sign_in_here);
+        progressBar = findViewById(R.id.progress_bar);
     }
 
     private void setupGoogleSignIn() {
@@ -121,13 +125,151 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
+    private void setupRealtimeValidation() {
+        etFullName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String name = s.toString().trim();
+                if (name.isEmpty()) {
+                    etFullName.setError("Họ tên không được để trống");
+                } else {
+                    // Xóa cảnh báo lỗi nếu người dùng đã nhập hợp lệ
+                    etFullName.setError(null);
+                }
+            }
+        });
+
+        etPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String password = s.toString().trim();
+
+                if (password.isEmpty()) {
+                    etPassword.setError("Mật khẩu không được để trống");
+
+                }
+                // Kiểm tra độ dài hợp lý
+                else if (password.length() < 6) {
+                    etPassword.setError("Mật khẩu phải từ 6 ký tự trở lên");
+
+                } else {
+                    etPassword.setError(null);
+                }
+            }
+        });
+
+        etConfirmPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String password = etPassword.getText().toString().trim();
+                String confirmPassword = s.toString().trim();
+
+                if (confirmPassword.isEmpty()) {
+                    etConfirmPassword.setError("Mật khẩu không được để trống");
+
+                }
+                // Kiểm tra độ dài hợp lý
+                else if (confirmPassword.length() < 6) {
+                    etConfirmPassword.setError("Mật khẩu phải từ 6 ký tự trở lên");
+
+                } else if (!confirmPassword.equals(password)) {
+                    etConfirmPassword.setError("Mật khẩu không khớp");
+                } else {
+                    etConfirmPassword.setError(null);
+                }
+
+            }
+        });
+
+        // check
+        etEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String email = s.toString().trim();
+                if (email.isEmpty()) {
+                    etEmail.setError("Email không được để trống");
+
+                } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    etEmail.setError("Email không đúng định dạng hợp lệ");
+
+                } else {
+                    etEmail.setError(null);
+                }
+
+            }
+
+        });
+    }
+
     private void setupClickListeners() {
         btnSignUp.setOnClickListener(v -> {
             String fullName = etFullName.getText().toString().trim();
-            String email    = etEmail.getText().toString().trim();
+            String email = etEmail.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
+            String confirmPassword = etConfirmPassword.getText().toString().trim();
 
-            authViewModel.signUp(fullName, email, password);
+            if (fullName.isEmpty()) {
+                etFullName.setError("Vui lòng nhập họ và tên");
+                etFullName.requestFocus();
+            }
+            else if (email.isEmpty()) {
+                etEmail.setError("Vui lòng nhập email");
+                etEmail.requestFocus();
+            }
+            else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                etEmail.setError("Định dạng email không hợp lệ");
+                etEmail.requestFocus();
+            }
+            else if (password.isEmpty()) {
+                etPassword.setError("Vui lòng nhập mật khẩu");
+                etPassword.requestFocus();
+            }
+            else if (password.length() < 6) {
+                etPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
+                etPassword.requestFocus();
+            }
+            else if (confirmPassword.isEmpty()) {
+                etConfirmPassword.setError("Vui lòng xác nhận lại mật khẩu");
+                etConfirmPassword.requestFocus();
+            }
+            else if (!confirmPassword.equals(password)) {
+                etConfirmPassword.setError("Mật khẩu xác nhận không trùng khớp");
+                etConfirmPassword.requestFocus();
+            } else {
+                authViewModel.signUp(fullName, email, password);
+            }
         });
 
         btnGoogleSignUp.setOnClickListener(v ->

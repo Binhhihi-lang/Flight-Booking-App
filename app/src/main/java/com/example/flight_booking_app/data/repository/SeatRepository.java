@@ -1,6 +1,8 @@
 package com.example.flight_booking_app.data.repository;
 
 import androidx.annotation.NonNull;
+
+import com.example.flight_booking_app.data.model.FareRule;
 import com.example.flight_booking_app.data.model.Seat;
 import com.example.flight_booking_app.data.model.SeatMapMetadata;
 import com.google.firebase.database.DataSnapshot;
@@ -15,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 public class SeatRepository {
-
     private final DatabaseReference dbTemplates;
     private final DatabaseReference dbFlightSeats;
 
@@ -108,4 +109,5 @@ public class SeatRepository {
             }
         });
     }
+
 }

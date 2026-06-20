@@ -9,6 +9,7 @@
     <string name="hint_email_example">alex@example.com</string>
     <string name="label_password">Mật khẩu</string>
     <string name="hint_password">Mật khẩu</string>
+    <string name="hint_confirm_password">Xác nhận mật khẩu</string>
     <string name="link_forgot_password">Quên mật khẩu?</string>
     <string name="btn_login">Đăng nhập</string>
     <string name="text_or_continue_with">hoặc tiếp tục với</string>

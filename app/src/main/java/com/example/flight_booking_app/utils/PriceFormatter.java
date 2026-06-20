@@ -29,4 +29,9 @@ public class PriceFormatter {
         DecimalFormat decimalFormat = new DecimalFormat("#,###", symbols);
         return String.format(Locale.getDefault(), "%d x %s đ", count, decimalFormat.format(singlePrice));
     }
+
+    // Format chuẩn 2 số (Ví dụ: 05/09/1998 thay vì 5/9/1998)
+    public static String formatDate(int day, int month, int year){
+        return String.format(Locale.getDefault(), "%02d/%02d/%04d", day, month + 1, year);
+    };
 }

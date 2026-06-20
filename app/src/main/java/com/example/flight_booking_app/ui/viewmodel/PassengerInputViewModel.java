@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.flight_booking_app.data.model.BaggageOption;
 import com.example.flight_booking_app.data.model.Passenger;
+import com.example.flight_booking_app.data.model.UiState;
 
 import java.util.List;
 
 public class PassengerInputViewModel extends ViewModel {
 
     private final MutableLiveData<Passenger> passengerLive = new MutableLiveData<>();
-    private final MutableLiveData<String> validationError = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> saveSuccess = new MutableLiveData<>();
+    private final MutableLiveData<UiState> uiState = new MutableLiveData<>();
 
     private final MutableLiveData<List<BaggageOption>> outboundBaggageLive = new MutableLiveData<>();
     private final MutableLiveData<List<BaggageOption>> returnBaggageLive   = new MutableLiveData<>();
@@ -35,8 +35,7 @@ public class PassengerInputViewModel extends ViewModel {
     }
 
     public LiveData<Passenger> getPassengerLive() { return passengerLive; }
-    public LiveData<String> getValidationError() { return validationError; }
-    public LiveData<Boolean> getSaveSuccess() { return saveSuccess; }
+    public LiveData<UiState> getUiState() { return uiState; }
     public LiveData<List<BaggageOption>> getOutboundBaggageLive() { return outboundBaggageLive; }
     public LiveData<List<BaggageOption>> getReturnBaggageLive()   { return returnBaggageLive; }
 
@@ -81,19 +80,17 @@ public class PassengerInputViewModel extends ViewModel {
         if (p == null) return;
 
         if (p.getTitle() == null || p.getTitle().trim().isEmpty()) {
-            validationError.setValue("Vui lòng chọn danh xưng");
             return;
         }
         if (p.getFullName() == null || p.getFullName().trim().isEmpty()) {
-            validationError.setValue("Vui lòng nhập họ và tên");
+
             return;
         }
         if (p.getDateOfBirth() == null || p.getDateOfBirth().trim().isEmpty()) {
-            validationError.setValue("Vui lòng chọn ngày sinh");
             return;
         }
 
-        // Nếu qua hết các bước kiểm tra -> Thành công
-        saveSuccess.setValue(true);
+        // Thành công
+        uiState.setValue(UiState.success());
     }
 }

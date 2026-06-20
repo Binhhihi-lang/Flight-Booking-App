@@ -74,6 +74,7 @@ public class BaggageAdapter extends RecyclerView.Adapter<BaggageAdapter.BaggageV
 
         // Hiển thị giá: "Miễn phí" nếu isFree, ngược lại định dạng tiền VND
         if (option.isFree() || option.getWeightKg() == 0) {
+            holder.tvWeight.setText("0 kg");
             holder.tvPrice.setText("Không thêm");
         } else {
             holder.tvPrice.setText(PriceFormatter.formatPrice(option.getPriceVnd()));
@@ -110,7 +111,7 @@ public class BaggageAdapter extends RecyclerView.Adapter<BaggageAdapter.BaggageV
         return options != null ? options.size() : 0;
     }
 
-    // ── Helper ────────────────────────────────────────────────────────────
+
 
     /** Lấy gói đang được chọn (dùng để lưu vào Passenger khi submit) */
     public BaggageOption getSelectedOption() {
@@ -136,7 +137,6 @@ public class BaggageAdapter extends RecyclerView.Adapter<BaggageAdapter.BaggageV
         }
     }
 
-    // ── ViewHolder ────────────────────────────────────────────────────────
 
     static class BaggageViewHolder extends RecyclerView.ViewHolder {
         TextView tvWeight;

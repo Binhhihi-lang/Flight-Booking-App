@@ -121,6 +121,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
         outFareClass = i.getStringExtra(EXTRA_OUT_FARE_CLASS);
         outFreeSeatTypes = i.getStringArrayListExtra(EXTRA_OUT_FREE_SEATS);
 
+
         preSelectedOutSeats = getIntent().getStringArrayListExtra(EXTRA_OUT_SEATS_SELECTED);
         if (preSelectedOutSeats == null) preSelectedOutSeats = new ArrayList<>();
 
@@ -137,6 +138,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
 
             retFareClass = i.getStringExtra(EXTRA_RET_FARE_CLASS);
             retFreeSeatTypes = i.getStringArrayListExtra(EXTRA_RET_FREE_SEATS);
+
         }
     }
 
@@ -180,14 +182,18 @@ public class SeatSelectionActivity extends AppCompatActivity {
 
     private void setupViewModel() {
         seatViewModel = new ViewModelProvider(this).get(SeatViewModel.class);
+
+        // Lưu lại ghế đã chọn trước đó
         seatViewModel.setPreSelectedSeats(preSelectedOutSeats, preSelectedRetSeats);
 
+        // quan sát số cột lưới ghế
         seatViewModel.getGridSpanCountLive().observe(this, spanCount -> {
             if (spanCount != null) {
                 rvSeatMap.setLayoutManager(new GridLayoutManager(this, spanCount));
             }
         });
 
+        // quan sát sơ đồ ghế
         seatViewModel.getSeatMapData().observe(this, uiSeats -> {
             if (uiSeats != null) {
                 seatAdapter.setSeats(uiSeats);
@@ -195,6 +201,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
             }
         });
 
+        // quan sát trạng thái tải sơ đồ ghế
         seatViewModel.getIsLoading().observe(this, state -> {
             if (state == null) return;
             progressBar.setVisibility(state.getStatus() == UiState.Status.LOADING ? View.VISIBLE : View.GONE);
@@ -203,6 +210,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
             }
         });
 
+        // quan sát ghế được click
         seatViewModel.getCurrentlyViewingSeatLive().observe(this, seat -> {
             if (seat == null) {
                 tvSelectedSeatLabel.setText("Vui lòng chọn");

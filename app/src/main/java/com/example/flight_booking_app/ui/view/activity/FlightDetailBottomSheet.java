@@ -26,11 +26,7 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
     // ── Callback interface
 
     public interface OnFlightActionListener {
-        /**
-         * Khứ hồi + lượt đi: người dùng xác nhận chuyến đi.
-         * SearchFlightActivity sẽ đóng sheet, chuyển sang tab LƯỢT VỀ,
-         * hiển thị Snackbar nhắc chọn chuyến về.
-         */
+        // Xác nhận chuyến
         void onOutboundConfirmed();
 
         /**
@@ -149,7 +145,7 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
         Bundle args = getArguments();
         if (args == null) return;
 
-        // ── 1. MÓC DỮ LIỆU TỪ BUNDLE VÀ OBJECT ──
+        // Lấy dữ liệu
         Flight flight = (Flight) args.getSerializable("selected_flight");
         FareClass fareClass = (FareClass) args.getSerializable("selected_fare_class");
 

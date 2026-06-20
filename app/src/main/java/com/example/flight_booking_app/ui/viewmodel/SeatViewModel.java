@@ -28,6 +28,7 @@ public class SeatViewModel extends ViewModel {
     // trạng thái số cột hiện thị lưới ghế
     private final MutableLiveData<Integer> gridSpanCountLive = new MutableLiveData<>();
 
+
     // ─── Trạng thái chọn ghế ──────────────────────────────────────────────
     //  khôi phục màu ghế sau khi xoay màn hình
     private final Map<String, Seat> selectedSeatById = new HashMap<>();

@@ -23,10 +23,14 @@ public class UserViewModel extends ViewModel {
     private final MutableLiveData<User> currentUser = new MutableLiveData<>();
 
     // Trạng thái update profile (loading/success/error)
-    private final MutableLiveData<UiState> updateState = new MutableLiveData<>();
+    private final MutableLiveData<UiState> uiState = new MutableLiveData<>();
 
     // Trạng thái logout  Fragment observe để chuyển màn hình
     private final MutableLiveData<Boolean> logoutState = new MutableLiveData<>();
+
+    private final MutableLiveData<Uri> selectedImageUri = new MutableLiveData<>();
+
+
 
     // ViewModel không có context
     public UserViewModel() {
@@ -35,8 +39,14 @@ public class UserViewModel extends ViewModel {
     }
 
     public LiveData<User> getCurrentUser() { return currentUser; }
-    public LiveData<UiState> getUpdateState() { return updateState; }
+    public LiveData<UiState> getUiState() { return uiState; }
     public LiveData<Boolean> getLogoutState() { return logoutState; }
+
+    public LiveData<Uri> getSelectedImageUri() { return selectedImageUri; }
+
+    public void setSelectedImageUri(Uri uri) {
+        selectedImageUri.setValue(uri);
+    }
 
     // Lắng nghe sự kiện thay đổi
     public void startObservingUser() {
@@ -45,7 +55,7 @@ public class UserViewModel extends ViewModel {
                 currentUser.setValue(user);  // cập nhật LiveData đến Fragment tự vẽ lại
             }
             @Override public void onError(String errorMessage) {
-                updateState.setValue(UiState.error(errorMessage));
+                uiState.setValue(UiState.error(errorMessage));
             }
         });
     }
@@ -58,12 +68,12 @@ public class UserViewModel extends ViewModel {
     }
 
     public void updateProfile(Uri newPhotoUri, HashMap<String,Object> updates, String fullName) {
-        updateState.setValue(UiState.loading());
+        uiState.setValue(UiState.loading());
         repository.updateProfile(newPhotoUri, updates, fullName, new UserRepository.UpdateUserCallback() {
             @Override
-            public void onSuccess() { updateState.setValue(UiState.success()); }
+            public void onSuccess() { uiState.setValue(UiState.success()); }
             @Override
-            public void onError(String msg) { updateState.setValue(UiState.error(msg)); }
+            public void onError(String msg) { uiState.setValue(UiState.error(msg)); }
         });
     }
 
@@ -83,9 +93,30 @@ public class UserViewModel extends ViewModel {
             }
             @Override
             public void onError(String msg) {
-                updateState.setValue(UiState.error(msg));
+                uiState.setValue(UiState.error(msg));
             }
         });
+    }
+
+    // Validate dữ liệu
+    public boolean validateInfo(String fullName, String email, String phone) {
+        if (fullName.isEmpty()) {
+            return false; // Dừng lại
+        }
+        if (email.isEmpty()) {
+            return false;
+        }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            return false;
+        }
+        if (phone.isEmpty()) {
+            return false;
+        }
+        if (!phone.startsWith("0") || phone.length() != 10) {
+            return false;
+        }
+
+        return true;
     }
 
 }

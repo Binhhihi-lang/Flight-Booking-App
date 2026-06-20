@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,6 +35,7 @@ import com.cloudinary.android.preprocess.DimensionsValidator;
 import com.cloudinary.android.preprocess.ImagePreprocessChain;
 import com.example.flight_booking_app.R;
 import com.example.flight_booking_app.ui.viewmodel.UserViewModel;
+import com.example.flight_booking_app.utils.PriceFormatter;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.Calendar;
@@ -57,17 +60,10 @@ public class UserEditProfileActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> galleryLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    selectedImageUri = result.getData().getData();
 
-                    // Glide cần Context
-                    Glide.with(this)
-                            .load(selectedImageUri)
-                            .override(300, 300)
-                            .into(imgAvatar);
-                    Glide.with(this)
-                            .load(selectedImageUri)
-                            .override(100, 100)
-                            .into(imgSmallAvatar);
+                    // gọi viewModel lưu trạng thái
+                    userViewModel.setSelectedImageUri(result.getData().getData());
+
                 }
             });
 
@@ -87,7 +83,9 @@ public class UserEditProfileActivity extends AppCompatActivity {
         bindViews();
         initCloudinary();
         setupViewModel(); // khởi tạo ViewModel
+
         setupClickListeners();
+        setupRealtimeValidation();
 
         // Lấy data user lần đầu để điền vào form
         // Chỉ load dữ liệu khi không có trạng thái lưu (lần đầu vào màn hình)
@@ -133,6 +131,21 @@ public class UserEditProfileActivity extends AppCompatActivity {
     private void setupViewModel() {
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 
+        // quan sát ảnh đã chọn
+        userViewModel.getSelectedImageUri().observe(this, uri -> {
+            if (uri != null) {
+
+                Glide.with(this)
+                        .load(uri)
+                        .override(300, 300)
+                        .into(imgAvatar);
+                Glide.with(this)
+                        .load(uri)
+                        .override(100, 100)
+                        .into(imgSmallAvatar);
+            }
+        });
+
         // Observe data user điền vào form khi lấy được data user
         userViewModel.getCurrentUser().observe(this, user -> {
             if (user == null) return;
@@ -143,21 +156,25 @@ public class UserEditProfileActivity extends AppCompatActivity {
             edtDob.setText(user.getDob());
             edtCitizenCard.setText(user.getCitizenCard());
 
-            String avatarUrl = user.getAvatar();
-            if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                Glide.with(this).load(avatarUrl)
-                        .placeholder(R.drawable.ic_nav_profile)
-                        .error(R.drawable.ic_nav_profile)
-                        .into(imgAvatar);
-                Glide.with(this).load(avatarUrl)
-                        .placeholder(R.drawable.ic_nav_profile)
-                        .error(R.drawable.ic_nav_profile)
-                        .into(imgSmallAvatar);
+            // Nếu chưa có ảnh được chọn thì load lên từ csdl
+            if (userViewModel.getSelectedImageUri().getValue() == null) {
+                String avatarUrl = user.getAvatar();
+                if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                    Glide.with(this).load(avatarUrl)
+                            .placeholder(R.drawable.ic_nav_profile)
+                            .error(R.drawable.ic_nav_profile)
+                            .into(imgAvatar);
+                    Glide.with(this).load(avatarUrl)
+                            .placeholder(R.drawable.ic_nav_profile)
+                            .error(R.drawable.ic_nav_profile)
+                            .into(imgSmallAvatar);
+                }
             }
+
         });
 
         // Observe trạng thái save (loading / success / error)
-        userViewModel.getUpdateState().observe(this, result -> {
+        userViewModel.getUiState().observe(this, result -> {
             if (result == null) return;
             switch (result.getStatus()) {
                 case LOADING:
@@ -188,14 +205,14 @@ public class UserEditProfileActivity extends AppCompatActivity {
             Calendar c = Calendar.getInstance();
             new DatePickerDialog(this,
                     (view, year, month, day) ->
-                            edtDob.setText(day + "/" + (month + 1) + "/" + year),
+                            edtDob.setText(PriceFormatter.formatDate(day,month,year)),
                     c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)
             ).show();
         });
 
         // Gender picker
         edtGender.setOnClickListener(v -> {
-            String[] genders = {"Male", "Female", "Other"};
+            String[] genders = {"Nam", "Nữ", "Khác"};
             new AlertDialog.Builder(this)
                     .setTitle("Chọn giới tính")
                     .setItems(genders, (dialog, which) -> edtGender.setText(genders[which]))
@@ -203,35 +220,137 @@ public class UserEditProfileActivity extends AppCompatActivity {
         });
     }
 
+    //
+    private void setupRealtimeValidation() {
+        // 1. Giám sát ô nhập Họ Tên
+        edtFullName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String name = s.toString().trim();
+                if (name.isEmpty()) {
+                    edtFullName.setError("Họ tên không được để trống");
+                } else {
+                    // Xóa cảnh báo lỗi nếu người dùng đã nhập hợp lệ
+                    edtFullName.setError(null);
+                }
+            }
+        });
+
+        // 1. Giám sát ô nhập Họ Tên
+        edtPhone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String phone = s.toString().trim();
+
+                if (phone.isEmpty()) {
+                    edtPhone.setError("Số điện thoại không được để trống");
+
+                }
+                // Kiểm tra xem có bắt đầu bằng số 0 không
+                else if (!phone.startsWith("0")) {
+                    edtPhone.setError("Số điện thoại phải bắt đầu bằng 0 ");
+
+                }
+                // Kiểm tra độ dài hợp lý
+                else if (phone.length() != 10) {
+                    edtPhone.setError("Số điện thoại không hợp lệ");
+
+                }
+                else {
+                    edtPhone.setError(null);
+                }
+            }
+        });
+
+        // 2. Giám sát ô nhập Email
+        edtEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String email = s.toString().trim();
+                if (email.isEmpty()) {
+                    edtEmail.setError("Email không được để trống");
+
+                } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    edtEmail.setError("Email không đúng định dạng hợp lệ");
+
+                } else {
+                    edtEmail.setError(null);
+                }
+
+            }
+
+        });
+    }
+
     private void handleSave() {
         String fullName = edtFullName.getText().toString().trim();
+        String email = edtEmail.getText().toString().trim();
         String phone = edtPhone.getText().toString().trim();
         String gender = edtGender.getText().toString().trim();
         String dob = edtDob.getText().toString().trim();
         String citizenCard = edtCitizenCard.getText().toString().trim();
 
         if (fullName.isEmpty()) {
-            edtFullName.setError("Họ tên không được để trống");
+            edtFullName.setError("Vui lòng nhập họ và tên");
             edtFullName.requestFocus();
-            return;
+        }
+        else if (email.isEmpty()) {
+            edtEmail.setError("Vui lòng nhập email liên hệ");
+            edtEmail.requestFocus();
+        }
+        else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            edtEmail.setError("Định dạng email không hợp lệ");
+            edtEmail.requestFocus();
+        }
+        else if (phone.isEmpty()) {
+            edtPhone.setError("Vui lòng nhập số điện thoại");
+            edtPhone.requestFocus();
+        }
+        else if (!phone.startsWith("0") || phone.length() != 10) {
+            edtPhone.setError("Số điện thoại phải bắt đầu bằng 0 và đủ 10 số");
+            edtPhone.requestFocus();
         }
 
-        progressDialog.show();
-        btnSaveChanges.setEnabled(false);
+        else {
+            // trường hợp mở form lên mà ô dữ liệu đấy trống không kích hoạt được TextWatcher
+            boolean isValid = userViewModel.validateInfo(fullName, email, phone);
+            if (!isValid) return;
+            progressDialog.show();
+            btnSaveChanges.setEnabled(false);
 
-        HashMap<String, Object> updates = new HashMap<>();
-        updates.put("fullName", fullName);
-        updates.put("phoneNumber", phone);
-        updates.put("gender", gender);
-        updates.put("dob", dob);
-        updates.put("citizenCard", citizenCard);
+            HashMap<String, Object> updates = new HashMap<>();
+            updates.put("fullName", fullName);
+            updates.put("email", email);
+            updates.put("phoneNumber", phone);
+            updates.put("gender", gender);
+            updates.put("dob", dob);
+            updates.put("citizenCard", citizenCard);
 
-        if (selectedImageUri != null) {
-            // Có ảnh mới upload Cloudinary trước
-            uploadImageToCloudinary(selectedImageUri, updates, fullName);
-        } else {
-            // Không đổi ảnh lưu Firebase ngay
-            userViewModel.updateProfile(null, updates, fullName);
+            if (selectedImageUri != null) {
+                // Có ảnh mới upload Cloudinary trước
+                uploadImageToCloudinary(selectedImageUri, updates, fullName);
+            } else {
+                // Không đổi ảnh lưu Firebase ngay
+                userViewModel.updateProfile(null, updates, fullName);
+            }
         }
     }
 
