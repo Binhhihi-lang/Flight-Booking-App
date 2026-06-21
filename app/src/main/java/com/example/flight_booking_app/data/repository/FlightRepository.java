@@ -4,6 +4,7 @@
 
     import com.example.flight_booking_app.data.model.Aircraft;
     import com.example.flight_booking_app.data.model.Airline;
+    import com.example.flight_booking_app.data.model.BaggageOption;
     import com.example.flight_booking_app.data.model.City;
     import com.example.flight_booking_app.data.model.FareClass;
     import com.example.flight_booking_app.data.model.FareRule;
@@ -22,21 +23,6 @@
     import java.util.List;
     import java.util.Map;
 
-    /**
-     * FlightRepository - Tìm kiếm chuyến bay với đầy đủ tiêu chí.
-     * LỌC THEO:
-     *   1. fromCityId, toCityId (điểm đi/đến)
-     *   2. departureDate (ngày bay)
-     *   3. seatType (ECONOMY / BUSINESS) - lọc qua fareOptions
-     *   4. totalPassengers (kiểm tra availableSeats)
-     * JOIN:
-     *   - Cities: cityName, iataCode
-     *   - Airlines: name, logo
-     *   - FareClasses: để xác định seatType của fareOptions
-     * LOGIC GIÁ:
-     *   - displayPrice = giá RẺ NHẤT trong fareOptions phù hợp với seatType
-     *   - Ví dụ: User chọn "Phổ thông" → lấy giá rẻ nhất trong các gói ECONOMY
-     */
     public class FlightRepository {
 
         private final DatabaseReference dbFlights;
@@ -45,13 +31,14 @@
         private final DatabaseReference dbAircrafts;
         private final DatabaseReference dbFareClasses;
         private final DatabaseReference dbFareRules;
+        private final DatabaseReference dbBaggageOptions;
 
         // Cache
         private Map<String, City> citiesMap = new HashMap<>();
         private Map<String, Airline> airlinesMap = new HashMap<>();
         private Map<String, FareClass> fareClassesMap = new HashMap<>();
         private Map<String, FareRule> fareRulesMap = new HashMap<>();
-
+        private Map<String, BaggageOption> baggageOptionsMap = new HashMap<>();
         private Map<String, Aircraft> aircraftsMap = new HashMap<>();
 
         public FlightRepository() {
@@ -61,6 +48,7 @@
             dbAirlines    = db.getReference("Airlines");
             dbFareClasses = db.getReference("FareClasses");
             dbFareRules = db.getReference("FareRules");
+            dbBaggageOptions = db.getReference("BaggageOptions");
             dbAircrafts   = db.getReference("Aircrafts");
         }
 
@@ -78,6 +66,7 @@
             if (fareClassesMap != null) fareClassesMap.clear();
             if (fareRulesMap != null) fareRulesMap.clear();
             if (aircraftsMap != null) aircraftsMap.clear();
+            if (baggageOptionsMap != null) baggageOptionsMap.clear();
             // Load cache
             loadAllCaches(() -> {
                 // Query Flights từ Firebase
@@ -91,7 +80,7 @@
          */
         private void loadAllCaches(Runnable onComplete) {
 
-            // Bước 5: Load Aircrafts xong thì chạy onComplete (Bắt đầu Query chuyến bay)
+            // Bước 6: Load Aircrafts xong thì chạy onComplete (Bắt đầu Query chuyến bay)
             Runnable loadAircraftsStep = () -> {
                 if (aircraftsMap.isEmpty()) {
                     loadAircraftsCache(onComplete);
@@ -100,12 +89,19 @@
                     onComplete.run();
                 }
             };
+            Runnable loadBaggageOptionsStep = () -> {
+                if (baggageOptionsMap.isEmpty()) {
+                    loadBaggageOptionsCache(loadAircraftsStep);
+                } else {
+                    loadAircraftsStep.run();
+                }
+            };
             //
             Runnable loadFareRulesStep = () -> {
                 if (fareRulesMap.isEmpty()) {
-                    loadFareRulesCache(loadAircraftsStep);
+                    loadFareRulesCache(loadBaggageOptionsStep);
                 } else {
-                    loadAircraftsStep.run();
+                    loadBaggageOptionsStep.run();
                 }
             };
 
@@ -220,6 +216,26 @@
                 }
             });
         }
+        private void loadBaggageOptionsCache(Runnable onComplete) {
+            dbBaggageOptions.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    baggageOptionsMap.clear();
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        BaggageOption bg = child.getValue(BaggageOption.class);
+                        if (bg != null && bg.getBaggageId() != null) {
+                            baggageOptionsMap.put(bg.getBaggageId(), bg);
+                        }
+                    }
+                    onComplete.run();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    onComplete.run();
+                }
+            });
+        }
 
         private void loadAircraftsCache(Runnable onComplete) {
             dbAircrafts.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -315,6 +331,21 @@
                                     // Nhồi luật vào đây trước khi trả về cho UI
                                     fareClass.setFareRule(fareRulesMap.get(ruleId));
                                 }
+
+                                // Lấy ds Hành lý ký gửi
+                                List<String> baggageOptionIds = fareClass.getBaggageOptionIds();
+                                ArrayList<BaggageOption> baggageOptions = new ArrayList<>();
+
+                                for(String baggageOptionId : baggageOptionIds){
+                                    // tìm trong Map lấy ra đối tượng baggageOption phù hợp cho vào ds baggageOptions
+                                    if(baggageOptionsMap.containsKey(baggageOptionId)){
+                                        baggageOptions.add(baggageOptionsMap.get(baggageOptionId));
+                                    }
+                                }
+
+                                fareClass.setBaggageOptions(baggageOptions);
+
+
                                 flightCard.setSelectedFareClass(fareClass);
                             }
 

@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    item_passenger_input.xml
-    ──────────────────────────────────────────────────────────────
-    Layout cho 1 hành khách trong danh sách "Nhập thông tin hành khách".
-    BookingActivity dùng LayoutInflater.inflate() và addView() vào
-    layout_passenger_list theo số lượng adultCount / childCount / babyCount.
 
-    Tag ngoài là LinearLayout để dễ addView vào parent LinearLayout.
-    ──────────────────────────────────────────────────────────────
--->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -88,10 +79,11 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/row_baggage_container"
+        android:id="@+id/row_InfoAdd_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#E5EFF9"
+        android:orientation="vertical"
         android:visibility="gone"
         android:paddingHorizontal="12dp"
         android:paddingVertical="12dp"
@@ -101,7 +93,30 @@
             android:id="@+id/tv_baggage_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="- Hành lý lượt đi 20kg lượt về 20kg"
+            android:textColor="#6F7780"
+            android:layout_marginStart="5dp"
+            >
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/tv_dob_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="- Ngày sinh: "
+            android:textColor="#6F7780"
+            android:layout_marginStart="5dp"
+            >
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/tv_idNumber_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="- Số giấy tờ"
             android:textColor="#6F7780"
             android:layout_marginStart="5dp"
             >

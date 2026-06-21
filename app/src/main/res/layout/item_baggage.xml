@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    item_baggage.xml
-    Layout cho một gói hành lý trong danh sách chọn của BaggageAdapter.
 
-    Background dùng drawable selector "bg_baggage_selecting":
-      - state_selected=true  → viền xanh (#0175F3) + nền xanh nhạt
-      - state_selected=false → viền xám + nền trắng
--->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -29,7 +22,7 @@
         android:text="20 kg"
         android:textSize="12sp"
         android:gravity="center"
-        android:visibility="gone"/>
+       />
 
     <!-- Giá: "Miễn phí" hoặc "+150.000đ" -->
     <TextView
@@ -37,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Miễn phí"
+        android:text="Không thêm"
         android:textSize="12sp"
         android:textColor="#0175F3"
         android:textStyle="bold"

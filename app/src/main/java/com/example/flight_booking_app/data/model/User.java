@@ -9,21 +9,19 @@ public class User {
     private String phoneNumber;
     private int role;
     private String dob;
-    private String citizenCard;
     private String gender;
     private String avatar;
 
     public User() {
     }
 
-    public User(String uId, String fullName, String email, String phoneNumber, int role, String dob, String citizenCard, String gender, String avatar) {
+    public User(String uId, String fullName, String email, String phoneNumber, int role, String dob, String gender, String avatar) {
         this.uId = uId;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.dob = dob;
-        this.citizenCard = citizenCard;
         this.gender = gender;
         this.avatar = avatar;
     }
@@ -67,13 +65,6 @@ public class User {
         this.gender = gender;
     }
 
-    public String getCitizenCard() {
-        return citizenCard;
-    }
-
-    public void setCitizenCard(String citizenCard) {
-        this.citizenCard = citizenCard;
-    }
 
     public String getDob() {
         return dob;

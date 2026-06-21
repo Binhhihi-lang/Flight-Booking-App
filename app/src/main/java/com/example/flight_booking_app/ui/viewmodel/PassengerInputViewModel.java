@@ -55,11 +55,16 @@ public class PassengerInputViewModel extends ViewModel {
         if (p != null) p.setDateOfBirth(dob);
     }
 
+    public void updateIdNumber(String idNumber) {
+        Passenger p = passengerLive.getValue();
+        if (p != null) p.setIdNumber(idNumber);
+    }
+
     public void updateOutboundBaggage(BaggageOption selected) {
         Passenger p = passengerLive.getValue();
         if (p == null || selected == null) return;
         p.setOutboundBaggageId(selected.getBaggageId());
-        p.setOutboundBaggagePrice(selected.isFree() ? 0 : selected.getPriceVnd());
+        p.setOutboundBaggagePrice(selected.getPriceVnd());
         p.setOutboundBaggageWeight(selected.getWeightKg());
     }
 
@@ -70,7 +75,7 @@ public class PassengerInputViewModel extends ViewModel {
         Passenger p = passengerLive.getValue();
         if (p == null || selected == null) return;
         p.setReturnBaggageId(selected.getBaggageId());
-        p.setReturnBaggagePrice(selected.isFree() ? 0 : selected.getPriceVnd());
+        p.setReturnBaggagePrice(selected.getPriceVnd());
         p.setReturnBaggageWeight(selected.getWeightKg());
     }
 

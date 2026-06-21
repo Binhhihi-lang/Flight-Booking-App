@@ -45,7 +45,7 @@ import java.util.Map;
 public class UserEditProfileActivity extends AppCompatActivity {
 
     private MaterialToolbar toolbar;
-    private EditText edtFullName, edtEmail, edtPhone, edtGender, edtDob, edtCitizenCard;
+    private EditText edtFullName, edtEmail, edtPhone, edtGender, edtDob;
     private ImageView imgAvatar, imgSmallAvatar, imgChangeAvatar;
     private Button btnSaveChanges;
 
@@ -102,7 +102,6 @@ public class UserEditProfileActivity extends AppCompatActivity {
         edtPhone = findViewById(R.id.edtPhone);
         edtGender = findViewById(R.id.edtGender);
         edtDob = findViewById(R.id.edtDob);
-        edtCitizenCard = findViewById(R.id.edtCccd);
         imgAvatar = findViewById(R.id.imgEditAvatar);
         imgSmallAvatar = findViewById(R.id.imgSmallAvatar);
         imgChangeAvatar = findViewById(R.id.imgChangeAvatar);
@@ -154,7 +153,7 @@ public class UserEditProfileActivity extends AppCompatActivity {
             edtPhone.setText(user.getPhoneNumber());
             edtGender.setText(user.getGender());
             edtDob.setText(user.getDob());
-            edtCitizenCard.setText(user.getCitizenCard());
+
 
             // Nếu chưa có ảnh được chọn thì load lên từ csdl
             if (userViewModel.getSelectedImageUri().getValue() == null) {
@@ -306,7 +305,6 @@ public class UserEditProfileActivity extends AppCompatActivity {
         String phone = edtPhone.getText().toString().trim();
         String gender = edtGender.getText().toString().trim();
         String dob = edtDob.getText().toString().trim();
-        String citizenCard = edtCitizenCard.getText().toString().trim();
 
         if (fullName.isEmpty()) {
             edtFullName.setError("Vui lòng nhập họ và tên");
@@ -342,7 +340,6 @@ public class UserEditProfileActivity extends AppCompatActivity {
             updates.put("phoneNumber", phone);
             updates.put("gender", gender);
             updates.put("dob", dob);
-            updates.put("citizenCard", citizenCard);
 
             if (selectedImageUri != null) {
                 // Có ảnh mới upload Cloudinary trước

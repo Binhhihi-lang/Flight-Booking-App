@@ -127,37 +127,4 @@ public class BookingInfoViewModel extends ViewModel {
         }
     }
 
-    //Validate
-    public boolean validateContactInfo(String fullName, String email, String phone) {
-        if (fullName.isEmpty()) {
-            uiState.setValue(UiState.error("Họ tên phải được nhập"));
-            return false; // Dừng lại, báo lỗi
-        }
-        if (email.isEmpty()) {
-            uiState.setValue(UiState.error("Email phải được nhập"));
-            return false;
-        }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            uiState.setValue(UiState.error("Email không hợp lệ!"));
-            return false;
-        }
-        if (phone.isEmpty()) {
-            uiState.setValue(UiState.error("Số điện thoại phải được nhập"));
-            return false;
-        }
-        if (!phone.startsWith("0") || phone.length() != 10) {
-            uiState.setValue(UiState.error("Số điện thoại không hợp lệ"));
-            return false;
-        }
-
-        ArrayList<Passenger> passengerList = passengerListLive.getValue();
-        for (Passenger p : passengerList) {
-            if (!p.isComplete()) {
-                uiState.setValue(UiState.error("Vui lòng nhập đầy đủ thông tin hành khách!"));
-                return false;
-            }
-        }
-
-        return true;
-    }
 }

@@ -5,11 +5,12 @@ import java.io.Serializable;
 public class Passenger implements Serializable {
     private String passengerId;
     private String type;          // "ADULT", "CHILD", "BABY"
-    private int index;
+    private int index; // chỉ mục trong danh sách hành khách
     private String label;         // Nhãn hiển thị UI: "Người lớn 1", "Trẻ em 1"
     private String title;         // Danh xưng hiển thị: "Ông", "Bà", "Bé trai", "Bé gái"
     private String fullName;
     private String dateOfBirth;
+    private String idNumber;
     private String seatNumber;
     private double seatPrice;
 
@@ -71,6 +72,8 @@ public class Passenger implements Serializable {
     public void setSeatNumber(String seatNumber) { this.seatNumber = seatNumber; }
     public double getSeatPrice() { return seatPrice; }
     public void setSeatPrice(double seatPrice) { this.seatPrice = seatPrice; }
+    public String getIdNumber() { return idNumber; }
+    public void setIdNumber(String idNumber) { this.idNumber = idNumber; }
 
     public int getReturnBaggageWeight() {
         return returnBaggageWeight;

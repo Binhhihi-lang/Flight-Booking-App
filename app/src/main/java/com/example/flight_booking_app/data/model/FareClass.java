@@ -16,10 +16,12 @@ public class FareClass implements Serializable {
 
     // ── KIẾN TRÚC HYBRID ──
     private String fareRuleId; // Lưu ID để làm việc với DB/Web Admin/Booking
+    private List<String> baggageOptionIds = new ArrayList<>();
 
     @Exclude
     private FareRule fareRule; // Object được "nhồi" vào để UI hiển thị (Bỏ qua khi lưu lên DB)
 
+    @Exclude
     private ArrayList<BaggageOption> baggageOptions = new ArrayList<>();
 
 
@@ -83,6 +85,15 @@ public class FareClass implements Serializable {
     public void setBaggageOptions(ArrayList<BaggageOption> baggageOptions) {
         this.baggageOptions = baggageOptions;
     }
+
+    public List<String> getBaggageOptionIds() {
+        return baggageOptionIds;
+    }
+
+    public void setBaggageOptionIds(List<String> baggageOptionIds) {
+        this.baggageOptionIds = baggageOptionIds;
+    }
+
     public FareRule getFareRule() { return fareRule; }
     public void setFareRule(FareRule fareRule) { this.fareRule = fareRule; }
 }

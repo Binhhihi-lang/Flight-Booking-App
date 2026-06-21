@@ -50,7 +50,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="100dp">
+            android:paddingBottom="50dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutAvatar"
@@ -268,34 +268,7 @@
                             android:textSize="15sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ID Card (CCCD)"
-                        android:textColor="@color/text_title"
-                        android:textSize="@dimen/text_size_body"
-                        android:layout_marginBottom="6dp" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:hintEnabled="false"
-                        app:boxBackgroundColor="@color/bg_input_field"
-                        app:startIconDrawable="@drawable/ic_profile_card"
-                        app:startIconTint="#0175F3"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/edtCccd"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="012345678912"
-                            android:paddingStart="50dp"
-                            android:inputType="number"
-                            android:maxLength="12"
-                            android:textColor="#212121"
-                            android:textSize="15sp" />
-                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
