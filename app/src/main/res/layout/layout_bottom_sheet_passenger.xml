@@ -61,10 +61,13 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn_minus_adult"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:importantForAccessibility="no"
                 android:clickable="true"
                 android:focusable="true"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="6dp"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:background="@color/blue_primary"
                 android:src="@drawable/ic_minus"
@@ -82,8 +85,11 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn_plus_adult"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:importantForAccessibility="no"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="6dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -139,9 +145,11 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn_minus_child"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:importantForAccessibility="no"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="6dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -161,8 +169,11 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn_plus_child"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:importantForAccessibility="no"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="6dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -223,8 +234,11 @@
             <!-- Hiệu ứng như button khi ấn  -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn_minus_baby"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:importantForAccessibility="no"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="6dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -244,8 +258,11 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn_plus_baby"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:importantForAccessibility="no"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="6dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless"

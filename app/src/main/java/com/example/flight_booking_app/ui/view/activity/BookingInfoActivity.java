@@ -221,7 +221,7 @@ public class BookingInfoActivity extends AppCompatActivity {
 
         btnBookNow = findViewById(R.id.btn_book_now);
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Đang giữ chỗ đặt vé...");
+        progressDialog.setMessage("Đang giữ chỗ đặt vé... Vui lòng đợi trong giây lát!");
         progressDialog.setCancelable(false);
     }
 
@@ -596,6 +596,8 @@ public class BookingInfoActivity extends AppCompatActivity {
                 boolean isValid = userViewModel.validateInfo(fullName, email, phone);
                 if (isValid) {
                     // TODO: Gửi thông tin lên server
+                    Intent intent = new Intent(this,OrderDetailActivity.class);
+                    startActivity(intent);
                 }
             }
         });

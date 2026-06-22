@@ -206,7 +206,7 @@ public class SearchFlightActivity extends AppCompatActivity
         flightViewModel = new ViewModelProvider(this).get(FlightViewModel.class);
         filterViewModel = new ViewModelProvider(this).get(FlightFilterViewModel.class);
 
-        // ── Observer 1: Danh sách chuyến bay hiển thị (tích lũy theo trang) ──
+        // Danh sách chuyến bay hiển thị (tích lũy theo trang) ──
         flightViewModel.getPagedFlightsLive().observe(this, flights -> {
             if (flights == null) return;
 

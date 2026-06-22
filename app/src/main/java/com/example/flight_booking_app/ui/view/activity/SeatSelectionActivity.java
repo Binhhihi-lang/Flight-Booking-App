@@ -181,6 +181,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
     }
 
     private void setupViewModel() {
+        // `ViewModelProvider` giúp ViewModel "sống sót" qua các sự kiện như xoay màn hình, tránh phải tải lại dữ liệu từ đầu
         seatViewModel = new ViewModelProvider(this).get(SeatViewModel.class);
 
         // Lưu lại ghế đã chọn trước đó

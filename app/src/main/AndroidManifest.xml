@@ -18,7 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FlightBookingApp">
-
+        <activity
+            android:name=".ui.view.activity.OrderDetailActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.view.activity.SeatSelectionActivity"
             android:exported="false" />
