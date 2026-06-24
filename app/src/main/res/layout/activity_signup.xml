@@ -112,7 +112,7 @@
             app:boxCornerRadiusTopEnd="8dp"
             app:boxCornerRadiusTopStart="8dp"
             app:boxStrokeWidth="0dp"
-            app:startIconDrawable="@drawable/ic_nav_inbox"
+            app:startIconDrawable="@drawable/ic_inbox"
             app:startIconTint="#9E9E9E"
             app:layout_constraintTop_toBottomOf="@id/til_name">
 

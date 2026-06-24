@@ -1,375 +1,354 @@
-    package com.example.flight_booking_app.data.repository;
+package com.example.flight_booking_app.data.repository;
 
-    import androidx.annotation.NonNull;
+import com.example.flight_booking_app.data.model.BaggageOption;
+import com.example.flight_booking_app.data.model.FareClass;
+import com.example.flight_booking_app.data.model.FareOption;
+import com.example.flight_booking_app.data.model.FareRule;
+import com.example.flight_booking_app.data.model.Flight;
+import com.example.flight_booking_app.data.model.FlightFilterState;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
-    import com.example.flight_booking_app.data.model.Aircraft;
-    import com.example.flight_booking_app.data.model.Airline;
-    import com.example.flight_booking_app.data.model.BaggageOption;
-    import com.example.flight_booking_app.data.model.City;
-    import com.example.flight_booking_app.data.model.FareClass;
-    import com.example.flight_booking_app.data.model.FareRule;
-    import com.example.flight_booking_app.data.model.Flight;
-    import com.example.flight_booking_app.data.model.FareOption;
-    import com.google.firebase.database.DataSnapshot;
-    import com.google.firebase.database.DatabaseError;
-    import com.google.firebase.database.DatabaseReference;
-    import com.google.firebase.database.FirebaseDatabase;
-    import com.google.firebase.database.Query;
-    import com.google.firebase.database.ValueEventListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    import java.util.ArrayList;
-    import java.util.Comparator;
-    import java.util.HashMap;
-    import java.util.List;
-    import java.util.Map;
+/**
+ * FlightRepository — Firestore edition
+ * ─────────────────────────────────────
+ * Nhờ cấu trúc Firestore đã denormalize (snapshot airline/city nhúng thẳng vào Flight,
+ * fareRule + baggageOptions nhúng thẳng vào FareClass), Repository này:
+ * <p>
+ * • Chỉ gọi 2 collection: "flights" + "fareClasses"
+ * • KHÔNG còn loadAllCaches() / chain-of-callbacks 6 bước
+ * • KHÔNG còn JOIN thủ công City / Airline / FareRule / BaggageOption
+ * • Hỗ trợ pagination với DocumentSnapshot cursor
+ */
+public class FlightRepository {
 
-    public class FlightRepository {
+    private static final int PAGE_SIZE = 5;
 
-        private final DatabaseReference dbFlights;
-        private final DatabaseReference dbCities;
-        private final DatabaseReference dbAirlines;
-        private final DatabaseReference dbAircrafts;
-        private final DatabaseReference dbFareClasses;
-        private final DatabaseReference dbFareRules;
-        private final DatabaseReference dbBaggageOptions;
+    private final FirebaseFirestore db;
+    private final AppCacheManager cacheManager = AppCacheManager.getInstance();
 
-        // Cache
-        private Map<String, City> citiesMap = new HashMap<>();
-        private Map<String, Airline> airlinesMap = new HashMap<>();
-        private Map<String, FareClass> fareClassesMap = new HashMap<>();
-        private Map<String, FareRule> fareRulesMap = new HashMap<>();
-        private Map<String, BaggageOption> baggageOptionsMap = new HashMap<>();
-        private Map<String, Aircraft> aircraftsMap = new HashMap<>();
+    public FlightRepository() {
+        db = FirebaseFirestore.getInstance();
+    }
 
-        public FlightRepository() {
-            FirebaseDatabase db = FirebaseDatabase.getInstance();
-            dbFlights     = db.getReference("Flights");
-            dbCities      = db.getReference("Cities");
-            dbAirlines    = db.getReference("Airlines");
-            dbFareClasses = db.getReference("FareClasses");
-            dbFareRules = db.getReference("FareRules");
-            dbBaggageOptions = db.getReference("BaggageOptions");
-            dbAircrafts   = db.getReference("Aircrafts");
-        }
+    public interface OnFlightsLoaded {
 
-        public interface OnFlightsLoaded {
-            void onLoaded(List<Flight> flights);
-            void onError(String error);
-        }
+        // DocumentSnapshot lastVisible (đây chính là "dấu sách" ghi nhớ bản ghi cuối cùng của trang trước)
+        // để báo cho Firestore biết cần lấy tiếp từ vị trí đó.
+        void onLoaded(List<Flight> flights, DocumentSnapshot lastVisible, Boolean isOffline);
 
-        // tìm kiếm chuyến bay theo trang HOME
-        public void searchFlights(String fromCityId, String toCityId, String departureDate,
-                                  int totalPassengers, OnFlightsLoaded callback) {
-            // Clear cache trước
-            if (citiesMap != null) citiesMap.clear();
-            if (airlinesMap != null) airlinesMap.clear();
-            if (fareClassesMap != null) fareClassesMap.clear();
-            if (fareRulesMap != null) fareRulesMap.clear();
-            if (aircraftsMap != null) aircraftsMap.clear();
-            if (baggageOptionsMap != null) baggageOptionsMap.clear();
-            // Load cache
-            loadAllCaches(() -> {
-                // Query Flights từ Firebase
-                queryAndFilterFlights(fromCityId, toCityId, departureDate, totalPassengers, callback);
-            });
-        }
+        void onError(String error);
+    }
 
-        /**
-         * Load tất cả cache cần thiết theo thứ tự nối tiếp nhau (Chain of Callbacks).
-         * Cities -> Airlines -> FareClasses -> Aircrafts
-         */
-        private void loadAllCaches(Runnable onComplete) {
+    // ─────────────────────────────────────────────────────────────────────────
+    // PUBLIC API
+    // ─────────────────────────────────────────────────────────────────────────
 
-            // Bước 6: Load Aircrafts xong thì chạy onComplete (Bắt đầu Query chuyến bay)
-            Runnable loadAircraftsStep = () -> {
-                if (aircraftsMap.isEmpty()) {
-                    loadAircraftsCache(onComplete);
-                } else {
-                    // bắt đầu chạy hàm tìm chuyến bay queryAndFilterFlights
-                    onComplete.run();
-                }
-            };
-            Runnable loadBaggageOptionsStep = () -> {
-                if (baggageOptionsMap.isEmpty()) {
-                    loadBaggageOptionsCache(loadAircraftsStep);
-                } else {
-                    loadAircraftsStep.run();
-                }
-            };
-            //
-            Runnable loadFareRulesStep = () -> {
-                if (fareRulesMap.isEmpty()) {
-                    loadFareRulesCache(loadBaggageOptionsStep);
-                } else {
-                    loadBaggageOptionsStep.run();
-                }
-            };
+    /**
+     * Tìm chuyến bay — trang đầu (không cursor).
+     * Gọi từ HomeFragment khi người dùng bấm "Tìm".
+     */
+    public void searchFlights(String fromCityId, String toCityId, String departureDate,
+                              int totalPassengers, FlightFilterState filterState, OnFlightsLoaded callback) {
+        searchFlightsInternal(fromCityId, toCityId, departureDate,
+                totalPassengers, filterState, null, callback);
+    }
 
-            // Bước 3: Load FareClasses xong thì gọi Bước 4
-            Runnable loadFareClassesStep = () -> {
-                if (fareClassesMap.isEmpty()) {
-                    loadFareClassesCache(loadFareRulesStep);
-                }
-                // nếu tải xong hoặc có dữ liệu thì sang bước tiếp
-                else {
-                    loadFareRulesStep.run();
-                }
-            };
+    /**
+     * Tải trang tiếp theo — dùng cursor (DocumentSnapshot trang cuối cùng).
+     * Gọi từ ViewModel khi người dùng scroll xuống cuối danh sách.
+     */
+    public void searchFlightsNextPage(String fromCityId, String toCityId, String departureDate,
+                                      int totalPassengers, FlightFilterState filterState, DocumentSnapshot lastVisible,
+                                      OnFlightsLoaded callback) {
+        searchFlightsInternal(fromCityId, toCityId, departureDate,
+                totalPassengers, filterState, lastVisible, callback);
+    }
 
-            // Bước 2: Load Airlines xong thì gọi Bước 3
-            Runnable loadAirlinesStep = () -> {
-                if (airlinesMap.isEmpty()) {
-                    loadAirlinesCache(loadFareClassesStep);
-                } else {
-                    loadFareClassesStep.run();
-                }
-            };
+    private void searchFlightsInternal(String fromCityId, String toCityId,
+                                       String departureDate, int totalPassengers,
+                                       FlightFilterState filterState,
+                                       DocumentSnapshot cursor,
+                                       OnFlightsLoaded callback) {
+        // Firestore query — server-side filter 3 điều kiện, sort theo minPrice
+        Query query = db.collection("flights")
+                .whereEqualTo("fromCityId", fromCityId)
+                .whereEqualTo("toCityId", toCityId)
+                .whereEqualTo("departureDate", departureDate)
+                .whereEqualTo("status", "ON_TIME");
 
-            // Bước 1: Bắt đầu từ Load Cities, xong thì gọi Bước 2
-            if (citiesMap.isEmpty()) {
-                loadCitiesCache(loadAirlinesStep);
-            } else {
-                loadAirlinesStep.run();
+        // Áp dụng bộ lọc
+        if (filterState != null) {
+            // Lọc Hãng bay (Server gánh việc loại bỏ các document không cần thiết)
+            // filterState.selectedAirlines.size() tối đa là 10 do giới hạn của Firestore
+            if (filterState.selectedAirlines != null && !filterState.selectedAirlines.isEmpty()) {
+                query = query.whereIn("airlineName", filterState.selectedAirlines);
             }
+
+            // Sắp xếp cơ bản
+            switch (filterState.sortMode) {
+                case "PRICE_ASC":
+                    query = query.orderBy("minPrice", Query.Direction.ASCENDING);
+                    break;
+                case "DEPART_EARLY":
+                    query = query.orderBy("departureTime", Query.Direction.ASCENDING);
+                    break;
+                case "DURATION":
+                    query = query.orderBy("duration", Query.Direction.ASCENDING); // Giả sử duration lưu dạng số phút trên db
+                    break;
+                default:
+                    query = query.orderBy("minPrice", Query.Direction.ASCENDING);
+                    break;
+            }
+        } else {
+            // Sắp xếp mặc định
+            query = query.orderBy("minPrice", Query.Direction.ASCENDING);
         }
 
-        private void loadCitiesCache(Runnable onComplete) {
-            dbCities.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    citiesMap.clear();
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        City city = child.getValue(City.class);
-                        if (city != null && city.getCityId() != null) {
-                            citiesMap.put(city.getCityId(), city);
-                        }
+        // Đặt giới hạn trang
+        query = query.limit(PAGE_SIZE);
+
+        if (cursor != null) {
+            query = query.startAfter(cursor);
+        }
+
+
+        query.get().addOnSuccessListener(querySnapshot -> {
+                    // Lấy con trỏ phân trang (Cursor) cho lần gọi tiếp theo
+                    DocumentSnapshot nextCursor = null;
+                    if (!querySnapshot.isEmpty()) {
+                        nextCursor = querySnapshot.getDocuments().get(querySnapshot.size() - 1);
                     }
-                    onComplete.run();
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    onComplete.run();
-                }
-            });
-        }
+                    // Kiểm tra trạng thái mạng mạng (Đọc từ Cache Firestore hay từ Server)
+                    boolean isOffline = querySnapshot.getMetadata().isFromCache();
 
-        private void loadAirlinesCache(Runnable onComplete) {
-            dbAirlines.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    airlinesMap.clear();
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        Airline airline = child.getValue(Airline.class);
-                        if (airline != null && airline.getAirlineId() != null) {
-                            airlinesMap.put(airline.getAirlineId(), airline);
-                        }
-                    }
-                    onComplete.run();
-                }
+                    //  Khởi tạo các kho chứa tạm thời
+                    List<Flight> flightListRaw = new ArrayList<>();
+                    List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+                    Map<Flight, String> cardToFareClassIdMap = new HashMap<>();
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    onComplete.run();
-                }
-            });
-        }
+                    //  KIỂM TRA TRẠNG THÁI HẠN SỬ DỤNG CỦA RAM CACHE (Quan trọng!)
+                    boolean isCacheReady = cacheManager.isCacheValid();
 
-        private void loadFareClassesCache(Runnable onComplete) {
-            dbFareClasses.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    fareClassesMap.clear();
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        FareClass fc = child.getValue(FareClass.class);
-                        if (fc != null && fc.getFareClassId() != null) {
-                            fareClassesMap.put(fc.getFareClassId(), fc);
-                        }
-                    }
-                    onComplete.run();
-                }
+                    //  Duyệt qua danh sách chuyến bay thô từ Firestore
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        Flight flight = parseFlightDocument(doc);
+                        if (flight == null) continue;
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    onComplete.run();
-                }
-            });
-        }
+                        // Lọc sơ bộ: Sức chứa phải đủ cho tổng số hành khách
+                        if (flight.getAvailableSeats() < totalPassengers) continue;
 
-        private void loadFareRulesCache(Runnable onComplete) {
-            dbFareRules.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    fareRulesMap.clear();
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        FareRule fr = child.getValue(FareRule.class);
-                        if (fr != null && fr.getFareRuleId() != null) {
-                            fareRulesMap.put(fr.getFareRuleId(), fr);
-                        }
-                    }
-                    onComplete.run();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    onComplete.run();
-                }
-            });
-        }
-        private void loadBaggageOptionsCache(Runnable onComplete) {
-            dbBaggageOptions.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    baggageOptionsMap.clear();
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        BaggageOption bg = child.getValue(BaggageOption.class);
-                        if (bg != null && bg.getBaggageId() != null) {
-                            baggageOptionsMap.put(bg.getBaggageId(), bg);
-                        }
-                    }
-                    onComplete.run();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    onComplete.run();
-                }
-            });
-        }
-
-        private void loadAircraftsCache(Runnable onComplete) {
-            dbAircrafts.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    aircraftsMap.clear();
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        Aircraft aircraft = child.getValue(Aircraft.class);
-                        if (aircraft != null && aircraft.getAirCraftId() != null) {
-                            aircraftsMap.put(aircraft.getAirCraftId(), aircraft);
-                        }
-                    }
-                    onComplete.run();
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    onComplete.run();
-                }
-            });
-        }
-
-        /**
-         * Query Flights và lọc theo tất cả tiêu chí.
-         */
-        private void queryAndFilterFlights(String fromCityId, String toCityId, String departureDate,
-                                           int totalPassengers, OnFlightsLoaded callback) {
-
-            // Query server-side theo fromCityId
-            Query query = dbFlights.orderByChild("fromCityId").equalTo(fromCityId);
-
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    List<Flight> result = new ArrayList<>();
-
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        Flight originalFlight = child.getValue(Flight.class);
-                        if (originalFlight == null) continue;
-
-                        // 1. Lọc theo điểm đến, ngày bay, số ghế trống (Giữ nguyên như cũ)
-                        if (!toCityId.equals(originalFlight.getToCityId())) continue;
-                        if (departureDate != null && !departureDate.isEmpty()) {
-                            if (!departureDate.equals(originalFlight.getDepartureDate())) continue;
-                        }
-                        if (originalFlight.getAvailableSeats() < totalPassengers) continue;
-                        if (!"ON_TIME".equalsIgnoreCase(originalFlight.getStatus())) continue;
-
-                        List<FareOption> fareOptions = originalFlight.getFareOptions();
+                        List<FareOption> fareOptions = flight.getFareOptions();
                         if (fareOptions == null || fareOptions.isEmpty()) continue;
 
-                        // ══════════════════════════════════════════════════════════════════════
-                        // 2. LOGIC MỚI: DUYỆT TỪNG TÙY CHỌN VÉ VÀ TẠO RA CÁC THẺ ĐỘC LẬP
-                        // ══════════════════════════════════════════════════════════════════════
                         for (FareOption option : fareOptions) {
-                            // Kiểm tra gói vé này còn chỗ không
                             if (!option.isAvailable()) continue;
 
-                            // Lấy lại dữ liệu từ child.getValue() để tạo ra một bản sao (clone)
-                            // độc lập của chuyến bay này, tránh việc tham chiếu đè dữ liệu lên nhau.
-                            Flight flightCard = child.getValue(Flight.class);
+                            // Tạo một bản sao độc lập của Flight để gắn riêng từng gói vé (FareOption)
+                            Flight card = parseFlightDocument(doc);
+                            if (card == null) continue;
 
-                            // --- JOIN THÔNG TIN CITY / AIRLINE ---
-                            City fromCity = citiesMap.get(flightCard.getFromCityId());
-                            City toCity   = citiesMap.get(flightCard.getToCityId());
+                            flightListRaw.add(card);
+                            String fareClassId = option.getFareClassId();
+                            cardToFareClassIdMap.put(card, fareClassId);
 
-                            if (fromCity != null) {
-                                flightCard.setFrom(fromCity.getCityName());
-                                flightCard.setFromIata(fromCity.getIataCode());
+                            // CƠ CHẾ LAI (HYBRID):
+                            // Nếu Cache tổng thể HỢP LỆ VÀ trong RAM đã có sẵn ID này -> Bỏ qua không gọi mạng.
+                            // Nếu Cache HẾT HẠN HOẶC trong RAM chưa từng có ID này -> Bắt buộc tạo Task gọi Firebase.
+                            if (!isCacheReady || cacheManager.getFareClass(fareClassId) == null) {
+                                Task<DocumentSnapshot> fetchTask = db.collection("fareClasses").document(fareClassId).get();
+                                tasks.add(fetchTask);
                             }
-                            if (toCity != null) {
-                                flightCard.setTo(toCity.getCityName());
-                                flightCard.setToIata(toCity.getIataCode());
-                            }
-
-                            Airline airline = airlinesMap.get(flightCard.getAirlineId());
-                            if (airline != null) {
-                                flightCard.setAirlineName(airline.getName());
-                                flightCard.setAirlineLogo(airline.getLogo());
-                            }
-
-
-                            // lấy hạng vé và hạng ghế để lọc
-                            FareClass fareClass = fareClassesMap.get(option.getFareClassId());
-                            if (fareClass != null) {
-                                flightCard.setSeatType(fareClass.getSeatType());
-                                // --- GẮN GIÁ VÀ TÊN HẠNG VÉ RIÊNG BIỆT CHO THẺ NÀY ---
-                                flightCard.setDisplayPrice(fareClass.getBasePrice());
-
-                                // lấy ra FareRuleId trong FareClass để lấy ra object FareRule
-                                String ruleId = fareClass.getFareRuleId();
-
-                                if (fareRulesMap.containsKey(ruleId)) {
-                                    // Nhồi luật vào đây trước khi trả về cho UI
-                                    fareClass.setFareRule(fareRulesMap.get(ruleId));
-                                }
-
-                                // Lấy ds Hành lý ký gửi
-                                List<String> baggageOptionIds = fareClass.getBaggageOptionIds();
-                                ArrayList<BaggageOption> baggageOptions = new ArrayList<>();
-
-                                for(String baggageOptionId : baggageOptionIds){
-                                    // tìm trong Map lấy ra đối tượng baggageOption phù hợp cho vào ds baggageOptions
-                                    if(baggageOptionsMap.containsKey(baggageOptionId)){
-                                        baggageOptions.add(baggageOptionsMap.get(baggageOptionId));
-                                    }
-                                }
-
-                                fareClass.setBaggageOptions(baggageOptions);
-
-
-                                flightCard.setSelectedFareClass(fareClass);
-                            }
-
-                            if (flightCard.getAircraftId() != null) {
-                                Aircraft aircraft = aircraftsMap.get(flightCard.getAircraftId());
-                                if (aircraft != null) {
-                                    flightCard.setAirCraftName(aircraft.getModelName());
-                                }
-                            }
-
-
-                            // Add thẻ độc lập này vào danh sách
-                            result.add(flightCard);
                         }
                     }
 
-                    callback.onLoaded(result);
-                }
+                    final DocumentSnapshot finalCursor = nextCursor;
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    callback.onError(error.getMessage());
-                }
-            });
-        }
+                    // XỬ LÝ BẤT ĐỒNG BỘ: Chờ tất cả các Task gọi mạng chạy song song (nếu có)
+                    if (!tasks.isEmpty()) {
+                        Tasks.whenAllComplete(tasks).addOnCompleteListener(allTasks -> {
+
+                            // Gom toàn bộ FareClass mới lấy từ server về vào danh sách tạm
+                            List<FareClass> newlyFetchedFares = new ArrayList<>();
+                            for (Task<?> task : tasks) {
+                                if (task.isSuccessful() && task.getResult() instanceof DocumentSnapshot) {
+                                    DocumentSnapshot fareDoc = (DocumentSnapshot) task.getResult();
+                                    if (fareDoc.exists()) {
+                                        FareClass fc = parseFareClass(fareDoc);
+                                        if (fc != null) {
+                                            newlyFetchedFares.add(fc);
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Nạp vào RAM
+                            cacheManager.saveAllFareClasses(newlyFetchedFares);
+
+                            // Ráp dữ liệu FareClass (lúc này chắc chắn đã đủ trong Cache) vào Flight
+                            List<Flight> finalResult = matchFlightWithFareClass(flightListRaw, cardToFareClassIdMap);
+
+                            // Trả kết quả về cho ViewModel
+                            callback.onLoaded(finalResult, finalCursor, isOffline);
+                        });
+                    } else {
+                        //  Nếu mọi thứ đã có sẵn trong RAM và Cache chưa hết hạn,
+                        // ráp dữ liệu và trả về luôn TỨC THỜI, không tốn thời gian đợi Task mạng!
+                        List<Flight> finalResult = matchFlightWithFareClass(flightListRaw, cardToFareClassIdMap);
+                        callback.onLoaded(finalResult, finalCursor, isOffline);
+                    }
+                })
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
 
     }
+    private List<Flight> matchFlightWithFareClass(List<Flight> flightListRaw, Map<Flight, String> cardToFareClassIdMap) {
+        List<Flight> finalResult = new ArrayList<>();
+
+        for (Flight card : flightListRaw) {
+            String neededId = cardToFareClassIdMap.get(card);
+            FareClass fc = cacheManager.getFareClass(neededId);
+
+            if (fc != null) {
+                card.setSeatType(fc.getSeatType());
+                card.setDisplayPrice(fc.getBasePrice());
+                card.setSelectedFareClass(fc);
+                finalResult.add(card);
+            }
+        }
+        return finalResult;
+    }
+
+    // biến dữ liệu thô từ Firestore thành các Object Java.
+
+    /**
+     * Parse Flight từ Firestore document.
+     */
+    @SuppressWarnings("unchecked")
+    private Flight parseFlightDocument(DocumentSnapshot doc) {
+        if (!doc.exists()) return null;
+
+        Flight f = new Flight();
+        f.setFlightId(doc.getString("flightId"));
+        f.setFlightNumber(doc.getString("flightNumber"));
+        f.setAirlineId(doc.getString("airlineId"));
+        f.setAircraftId(doc.getString("aircraftId"));
+        f.setFromCityId(doc.getString("fromCityId"));
+        f.setToCityId(doc.getString("toCityId"));
+        f.setDepartureDate(doc.getString("departureDate"));
+        f.setDepartureTime(doc.getString("departureTime"));
+        f.setArrivalDate(doc.getString("arrivalDate"));
+        f.setArrivalTime(doc.getString("arrivalTime"));
+        f.setDuration(doc.getString("duration"));
+        f.setStatus(doc.getString("status"));
+        f.setSeatMapId(doc.getString("seatMapId"));
+        f.setAirCraftName(doc.getString("aircraftModel"));
+
+        Long seats = doc.getLong("availableSeats");
+        if (seats != null) f.setAvailableSeats(seats.intValue());
+
+        Double tax = doc.getDouble("taxFee");
+        if (tax != null) f.setTaxFee(tax);
+
+        // ── Snapshot airline/city đã denormalize — gán thẳng ──
+        f.setAirlineName(doc.getString("airlineName"));
+        f.setAirlineLogo(doc.getString("airlineLogo"));
+        f.setFrom(doc.getString("fromCity"));
+        f.setFromIata(doc.getString("fromIata"));
+        f.setTo(doc.getString("toCity"));
+        f.setToIata(doc.getString("toIata"));
+
+        // ── fareOptions array ──
+        List<Map<String, Object>> rawOptions =
+                (List<Map<String, Object>>) doc.get("fareOptions");
+        if (rawOptions != null) {
+            List<FareOption> options = new ArrayList<>();
+            for (Map<String, Object> raw : rawOptions) {
+                FareOption fo = new FareOption();
+                fo.setFareClassId((String) raw.get("fareClassId"));
+                Long limit = (Long) raw.get("seatLimit");
+                Long booked = (Long) raw.get("bookedCount");
+                if (limit != null) fo.setSeatLimit(limit.intValue());
+                if (booked != null) fo.setBookedCount(booked.intValue());
+                options.add(fo);
+            }
+            f.setFareOptions(options);
+        }
+
+        return f;
+    }
+
+    /**
+     * Parse FareClass từ Firestore document.
+     * fareRule + baggageOptions đã nhúng sẵn trong document.
+     */
+    @SuppressWarnings("unchecked")
+    private FareClass parseFareClass(DocumentSnapshot doc) {
+        if (!doc.exists()) return null;
+
+        FareClass fc = new FareClass();
+        fc.setFareClassId(doc.getString("fareClassId"));
+        fc.setAirlineId(doc.getString("airlineId"));
+        fc.setTitle(doc.getString("title"));
+        fc.setSeatType(doc.getString("seatType"));
+        fc.setFareRuleId(doc.getString("fareRuleId"));
+
+        Double basePrice = doc.getDouble("basePrice");
+        if (basePrice != null) fc.setBasePrice(basePrice);
+
+        // ── FareRule nhúng sẵn ──
+        Map<String, Object> ruleMap = (Map<String, Object>) doc.get("fareRule");
+        if (ruleMap != null) {
+            FareRule rule = new FareRule();
+            rule.setFareRuleId((String) ruleMap.get("fareRuleId"));
+            rule.setAirlineId((String) ruleMap.get("airlineId"));
+            rule.setFareClassName((String) ruleMap.get("fareClassName"));
+            Long cabin = (Long) ruleMap.get("cabinBaggage");
+            Long checked = (Long) ruleMap.get("checkedBaggage");
+            if (cabin != null) rule.setCabinBaggage(cabin.intValue());
+            if (checked != null) rule.setCheckedBaggage(checked.intValue());
+            Boolean changeable = (Boolean) ruleMap.get("isChangeable");
+            Boolean refundable = (Boolean) ruleMap.get("isRefundable");
+            Boolean lounge = (Boolean) ruleMap.get("hasLoungeAccess");
+            Boolean priority = (Boolean) ruleMap.get("hasPriority");
+            Boolean meal = (Boolean) ruleMap.get("hasMeal");
+            if (changeable != null) rule.setChangeable(changeable);
+            if (refundable != null) rule.setRefundable(refundable);
+            if (lounge != null) rule.setLoungeAccess(lounge);
+            if (priority != null) rule.setHasPriority(priority);
+            if (meal != null) rule.setHasMeal(meal);
+            List<String> freeSeats = (List<String>) ruleMap.get("freeIncludedSeatTypes");
+            if (freeSeats != null) rule.setFreeIncludedSeatTypes(freeSeats);
+            fc.setFareRule(rule);
+        }
+
+        // ── BaggageOptions nhúng sẵn ──
+        List<Map<String, Object>> rawBags =
+                (List<Map<String, Object>>) doc.get("baggageOptions");
+        if (rawBags != null) {
+            ArrayList<BaggageOption> bags = new ArrayList<>();
+            for (Map<String, Object> raw : rawBags) {
+                BaggageOption bag = new BaggageOption();
+                bag.setBaggageId((String) raw.get("baggageId"));
+                Long weight = (Long) raw.get("weightKg");
+                Double price = ((Number) raw.get("priceVnd")).doubleValue();
+                if (weight != null) bag.setWeightKg(weight.intValue());
+                if (price != null) bag.setPriceVnd(price);
+                bags.add(bag);
+            }
+            fc.setBaggageOptions(bags);
+        }
+
+        return fc;
+    }
+
+
+}

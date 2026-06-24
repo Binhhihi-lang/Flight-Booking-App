@@ -118,7 +118,7 @@
                         app:boxCornerRadiusTopEnd="8dp"
                         app:boxCornerRadiusTopStart="8dp"
                         app:boxStrokeWidth="0dp"
-                        app:startIconDrawable="@drawable/ic_nav_notification"
+                        app:startIconDrawable="@drawable/ic_inbox"
                         app:layout_constraintTop_toBottomOf="@id/tv_label_email">
 
                         <com.google.android.material.textfield.TextInputEditText

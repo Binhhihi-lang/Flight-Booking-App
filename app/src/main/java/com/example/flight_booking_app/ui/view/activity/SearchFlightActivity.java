@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -82,11 +83,6 @@ public class SearchFlightActivity extends AppCompatActivity
     private FlightFilterViewModel filterViewModel;
     private FlightAdapter   adapter;
 
-    /**
-     * Danh sách gốc đầy đủ (allFlights từ ViewModel) để FlightFilterBottomSheet
-     * luôn lọc từ đầu thay vì chỉ lọc trang hiện tại.
-     */
-    private List<Flight> fullFlightList = new ArrayList<>();
 
     // ── Scroll listener – giữ tham chiếu để remove khi cần ──────────────
     private FlightPaginationScrollListener paginationScrollListener;
@@ -98,9 +94,6 @@ public class SearchFlightActivity extends AppCompatActivity
     private int     adultCount, childCount, babyCount;
     private boolean isRoundTrip;
 
-    // ══════════════════════════════════════════════════════════════════════
-    // Lifecycle
-    // ══════════════════════════════════════════════════════════════════════
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,10 +113,6 @@ public class SearchFlightActivity extends AppCompatActivity
         setupToolbar();
         setupClickListeners();
     }
-
-    // ══════════════════════════════════════════════════════════════════════
-    // Setup
-    // ══════════════════════════════════════════════════════════════════════
 
     private void bindViews() {
         toolbar            = findViewById(R.id.toolbarFlights);
@@ -206,27 +195,58 @@ public class SearchFlightActivity extends AppCompatActivity
         flightViewModel = new ViewModelProvider(this).get(FlightViewModel.class);
         filterViewModel = new ViewModelProvider(this).get(FlightFilterViewModel.class);
 
-        // Danh sách chuyến bay hiển thị (tích lũy theo trang) ──
+        // Danh sách chuyến bay hiển thị
         flightViewModel.getPagedFlightsLive().observe(this, flights -> {
             if (flights == null) return;
 
-            // Cập nhật fullFlightList từ allFlights của ViewModel để filter đúng
-            // (allFlights không phơi ra ngoài trực tiếp vì là internal state)
-            // Tạm thời dùng flights cho filter — sẽ chuẩn hơn nếu expose getAllFlights()
+            // đổ vào Adapter để hiển thị
             adapter.submitList(new ArrayList<>(flights));
-            layoutEmptyState.setVisibility(flights.isEmpty() ? View.VISIBLE : View.GONE);
-            // Lưu để FlightFilterBottomSheet dùng (dùng list đầy đủ nhất hiện có)
-            fullFlightList = new ArrayList<>(flights);
+
         });
 
         // ── Observer 2: Trạng thái load lần đầu (search mới / chuyển tab) ──
         flightViewModel.getLoadState().observe(this, state -> {
-            progressBarMain.setVisibility(
-                    state.getStatus() == UiState.Status.LOADING ? View.VISIBLE : View.GONE);
-            if (state.getStatus() == UiState.Status.ERROR) {
-                Toast.makeText(this, state.getMessage(), Toast.LENGTH_SHORT).show();
+            UiState.Status status = state.getStatus();
+
+            // Ẩn/Hiện ProgressBar
+            progressBarMain.setVisibility(status == UiState.Status.LOADING ? View.VISIBLE : View.GONE);
+
+            switch (status) {
+                case LOADING:
+                    layoutEmptyState.setVisibility(View.GONE);
+                    break;
+
+                case SUCCESS:
+                    // kiểm tra xem danh sách có rỗng thật hay không
+                    List<Flight> currentFlights = flightViewModel.getPagedFlightsLive().getValue();
+                    boolean isEmpty = (currentFlights == null || currentFlights.isEmpty());
+
+                    layoutEmptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+                    break;
+
+                    // (Mất mạng, lỗi Firebase...)
+                case ERROR:
+                    layoutEmptyState.setVisibility(View.GONE);
+
+                    Toast.makeText(this, state.getMessage(), Toast.LENGTH_SHORT).show();
+                    break;
             }
         });
+
+
+        flightViewModel.getIsOfflineLive().observe(this, isOffline -> {
+            if (isOffline) {
+                // Nếu không có mạng (isOffline = true)
+                Snackbar snackbar = Snackbar.make(
+                        findViewById(android.R.id.content),
+                        "Mất kết nối mạng. Đang hiển thị dữ liệu lưu tạm.",
+                        Snackbar.LENGTH_LONG
+                );
+                snackbar.setBackgroundTint(ContextCompat.getColor(this, R.color.primary_red));
+                snackbar.show();
+            }
+        });
+
 
         // ── Observer 3: Trạng thái load thêm trang ──
         flightViewModel.getLoadingMoreLive().observe(this, isLoadingMore -> {
@@ -235,10 +255,12 @@ public class SearchFlightActivity extends AppCompatActivity
             }
         });
 
-        // ── Observer 4: Đã đến trang cuối ──
+        // quan sát trạng thái đi đến trang cuối
         flightViewModel.getIsLastPageLive().observe(this, lastPage -> {
             // Không cần làm gì thêm — scroll listener tự check isLastPage()
-            if(lastPage){
+            List<Flight> currentFlights = flightViewModel.getPagedFlightsLive().getValue();
+            boolean isEmpty = (currentFlights == null || currentFlights.isEmpty());
+            if(lastPage && !isEmpty){
                 Toast.makeText(this, "Đã đến trang cuối !!",Toast.LENGTH_SHORT).show();
             }
         });
@@ -285,7 +307,7 @@ public class SearchFlightActivity extends AppCompatActivity
 
         fabFilter.setOnClickListener(v -> {
             // nếu ds tìm kiếm chuyến bay rỗng thì không hiển thị
-            if (flightViewModel.getAllFlights().isEmpty()) return;
+            if (flightViewModel.getFlights().isEmpty()) return;
 
             FlightFilterBottomSheet sheet = new FlightFilterBottomSheet();
             sheet.show(getSupportFragmentManager(), "filter");

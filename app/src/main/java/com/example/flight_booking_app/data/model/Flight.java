@@ -1,26 +1,18 @@
 package com.example.flight_booking_app.data.model;
 
-
-import com.google.firebase.database.Exclude;
+import com.google.firebase.firestore.Exclude;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Flight lưu foreign keys (fromCityId, toCityId, airlineId) thay vì dữ liệu thô.
- * Sau khi Repository JOIN với City và Airline:
- * → các transient field được điền để Adapter hiển thị.
- * <p>
- * Transient field KHÔNG lưu lên Firebase (Firebase bỏ qua transient).
- */
 public class Flight implements Serializable {
     private String flightId;
     private String flightNumber;
-    private String airlineId;    // FK → Airlines
+    private String airlineId;
     private String aircraftId;
-    private String fromCityId;   // FK → Cities
-    private String toCityId;     // FK → Cities
+    private String fromCityId;
+    private String toCityId;
 
     private String departureDate;
     private String departureTime;
@@ -29,46 +21,66 @@ public class Flight implements Serializable {
     private String duration;
 
     private int availableSeats;
-    private int adultCount = 1;
-    private int childCount = 0;
-    private int babyCount = 0;
 
     private String selectedSeatClass;
-    private int checkedBaggage; // (Số kg hành lý ký gửi
+    private int checkedBaggage;
     private double taxFee;
     private double totalPrice;
 
+    // TRƯỜNG MỚI: Cần thiết vì Repository đang dùng .orderBy("minPrice")
+    private long minPrice;
+
     private List<FareOption> fareOptions = new ArrayList<>();
     private String seatMapId;
-
     private String status;
 
-    // Transient display fields: không lưu lên Firebase
-    // '@Exclude' của Firebase để Intent không bị mất dữ liệu khi truyền Intent
-    // Không lưu trong csdl
-
-    @Exclude
-    private String from;         // tên thành phố đi   "Hà Nội"
-    @Exclude
-    private String fromIata;     // mã IATA điểm đi    "HAN"
-    @Exclude
-    private String to;           // tên thành phố đến
-    @Exclude
-    private String toIata;       // mã IATA điểm đến
-    @Exclude
-    private String airlineName;  // tên hãng            "Vietnam Airlines"
-    @Exclude
+    private String from;         // Tương ứng "fromCity" trên Firestore
+    private String fromIata;
+    private String to;           // Tương ứng "toCity" trên Firestore
+    private String toIata;
+    private String airlineName;
     private String airCraftName;
-    @Exclude
-    private String airlineLogo;  // URL logo hãng
-    @Exclude
-    private String seatType;     // loại hạng ghế để lọc
+    private String airlineLogo;
 
-    private transient FareClass selectedFareClass; // Dùng để lưu cấu hình hạng vé phục vụ UI
 
-    public FareClass getSelectedFareClass() { return selectedFareClass; }
-    public void setSelectedFareClass(FareClass selectedFareClass) { this.selectedFareClass = selectedFareClass; }
-    private transient double displayPrice;
+    @Exclude
+    private int adultCount = 1;
+
+    @Exclude
+    private int childCount = 0;
+
+    @Exclude
+    private int babyCount = 0;
+
+    @Exclude
+    private String seatType;
+
+    @Exclude
+    private FareClass selectedFareClass;
+
+    @Exclude
+    private double displayPrice;
+
+    // Bắt buộc phải có Constructor rỗng cho Firestore
+    public Flight() {
+    }
+
+    public long getMinPrice() {
+        return minPrice;
+    }
+
+    public void setMinPrice(long minPrice) {
+        this.minPrice = minPrice;
+    }
+
+    public FareClass getSelectedFareClass() {
+        return selectedFareClass;
+    }
+
+    public void setSelectedFareClass(FareClass selectedFareClass) {
+        this.selectedFareClass = selectedFareClass;
+    }
+
     public String getSeatType() {
         return seatType;
     }
@@ -76,15 +88,6 @@ public class Flight implements Serializable {
     public void setSeatType(String seatType) {
         this.seatType = seatType;
     }
-
-    /**
-     * Giá rẻ nhất hiển thị trên card — lấy từ fareOptions sau JOIN.
-     * Nếu không có fareOptions thì = 0.
-     */
-
-    public Flight() {
-    }
-
 
     public String getFlightId() {
         return flightId;
@@ -238,9 +241,6 @@ public class Flight implements Serializable {
         fareOptions = v;
     }
 
-
-    // Transient nơi chứa tạm thời các dữ liệu đầy đủ đó sau khi thực hiện thuật toán JOIN (Kết hợp) ở tầng Repository.
-
     public String getFrom() {
         return from;
     }
@@ -296,6 +296,7 @@ public class Flight implements Serializable {
     public void setDisplayPrice(double v) {
         displayPrice = v;
     }
+
     public String getStatus() {
         return status;
     }
@@ -303,6 +304,7 @@ public class Flight implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+
     public String getSelectedSeatClass() {
         return selectedSeatClass;
     }

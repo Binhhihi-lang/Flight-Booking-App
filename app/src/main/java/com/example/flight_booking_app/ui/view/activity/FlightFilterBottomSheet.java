@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,9 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.flight_booking_app.R;
-import com.example.flight_booking_app.data.model.AirlineFilterItem;
-import com.example.flight_booking_app.data.model.Flight;
+import com.example.flight_booking_app.data.model.Airline;
+
 import com.example.flight_booking_app.data.model.FlightFilterState;
+import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.ui.view.adapter.AirlineFilterAdapter;
 import com.example.flight_booking_app.ui.viewmodel.FlightFilterViewModel;
 import com.example.flight_booking_app.ui.viewmodel.FlightViewModel;
@@ -29,15 +32,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+
 import java.util.List;
-import java.util.Map;
+
 
 public class FlightFilterBottomSheet extends BottomSheetDialogFragment {
 
     private FlightFilterViewModel filterViewModel;
-    private FlightViewModel flightViewModel; // Dùng chung để lấy danh sách chuyến bay gốc
     private AirlineFilterAdapter airlineAdapter;
+    private ProgressBar progressBar;
 
     private LinearLayout layoutPriceFull, layoutPriceNet;
     private RadioGroup rgSortBy, rgSeatClass;
@@ -93,15 +96,31 @@ public class FlightFilterBottomSheet extends BottomSheetDialogFragment {
 
     private void setupViewModel() {
         filterViewModel = new ViewModelProvider(requireActivity()).get(FlightFilterViewModel.class);
-        flightViewModel = new ViewModelProvider(requireActivity()).get(FlightViewModel.class);
+        // lấy ra danh sách hãng máy bay
+        filterViewModel.getAllAirlines();
 
-        setupDynamicAirlines();
+        // Khi nào có đủ hãng bay thì mới cài đặt giao diện
+        filterViewModel.getAirlinesLive().observe(getViewLifecycleOwner(), airlineList -> {
+            if (airlineList != null && !airlineList.isEmpty()) {
+                // Truyền trực tiếp danh sách vừa tải xong vào hàm setup
+                setupDynamicAirlines(airlineList);
+            }
+        });
+
+        filterViewModel.getLoadState().observe(this, state -> {
+            progressBar.setVisibility(
+                    state.getStatus() == UiState.Status.LOADING ? View.VISIBLE : View.GONE);
+            if (state.getStatus() == UiState.Status.ERROR) {
+                Toast.makeText(getActivity(), state.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // quan sát trạng thái thay đổi
         filterViewModel.getFilterState().observe(getViewLifecycleOwner(), state -> renderUIFromState(state));
     }
 
     private void bindViews(View v) {
+        progressBar  = v.findViewById(R.id.progress_bar);
         layoutPriceFull = v.findViewById(R.id.layout_price_full);
         layoutPriceNet = v.findViewById(R.id.layout_price_net);
         rgSortBy = v.findViewById(R.id.rg_sort_by);
@@ -115,29 +134,15 @@ public class FlightFilterBottomSheet extends BottomSheetDialogFragment {
         toolBarBack = v.findViewById(R.id.tool_bar_back);
     }
 
-    private void setupDynamicAirlines() {
-        List<Flight> fullFlightList = flightViewModel.getAllFlights();
-        Map<String, AirlineFilterItem> airlineMap = new LinkedHashMap<>();
-
-        // Put hãng may vào Map
-        for (Flight f : fullFlightList) {
-            String name = f.getAirlineName();
-            if (name == null || name.isEmpty()) continue;
-
-            if (!airlineMap.containsKey(name)) {
-                airlineMap.put(name, new AirlineFilterItem(name, f.getAirlineLogo()));
-            }
-        }
-
-        List<AirlineFilterItem> airlineList = new ArrayList<>(airlineMap.values());
-
-        // trạng thái bộ lọc
+    private void setupDynamicAirlines(List<Airline> airlineList) {
+        // Trạng thái bộ lọc
         FlightFilterState currentState = filterViewModel.getFilterState().getValue();
+        if (currentState == null) return;
 
         // Lưu tên hãng máy bay từ trạng thái
         List<String> currentSelected = new ArrayList<>(currentState.selectedAirlines);
 
-        // đổ vào Adapter
+        // Đổ vào Adapter (Sử dụng trực tiếp danh sách airlineList nhận được)
         airlineAdapter = new AirlineFilterAdapter(airlineList, currentSelected, () -> {
             if (!isBindingState) {
                 filterViewModel.setSelectedAirlines(new ArrayList<>(currentSelected));

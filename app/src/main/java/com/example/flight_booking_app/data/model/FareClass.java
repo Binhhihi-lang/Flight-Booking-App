@@ -1,7 +1,6 @@
 package com.example.flight_booking_app.data.model;
 
-import com.google.firebase.database.Exclude;
-
+import com.google.firebase.firestore.Exclude;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

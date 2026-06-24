@@ -1,8 +1,5 @@
 package com.example.flight_booking_app.ui.viewmodel;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,6 +9,7 @@ import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.Flight;
 import com.example.flight_booking_app.data.model.FlightFilterState;
 import com.example.flight_booking_app.data.repository.FlightRepository;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,126 +17,196 @@ import java.util.List;
 
 public class FlightViewModel extends ViewModel {
 
-    private static final int PAGE_SIZE = 10;
-    private static final long LOAD_DELAY_MS = 800;
-
     private final FlightRepository repository;
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
-    // ─── LiveData cho UI observe ───────────────────────────────────────────
-    /**
-     * Danh sách đang hiển thị trên RecyclerView (tăng dần theo trang).
-     */
-    private final MutableLiveData<List<Flight>> pagedFlightsLive = new MutableLiveData<>();
+    private final MutableLiveData<List<Flight>> pagedFlightsLive = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<UiState> loadState = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loadingMoreLive = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> isLastPageLive = new MutableLiveData<>(false);
-
-    // QUẢN LÝ TRẠNG THÁI BỘ LỌC
     private final MutableLiveData<FlightFilterState> filterStateLive = new MutableLiveData<>(FlightFilterState.defaultState());
+    private final MutableLiveData<Boolean> isOfflineLive = new MutableLiveData<>(false);
 
-    // ─── NGUỒN DỮ LIỆU
-    private List<Flight> allFlights = new ArrayList<>();         // Dữ liệu gốc từ Firebase
-    private List<Flight> currentPoolFlights = new ArrayList<>(); // Dữ liệu đã lọc, dùng để cắt trang
-    private List<Flight> pagedFlights = new ArrayList<>();       // Dữ liệu tích lũy đang hiển thị trên RecyclerView
+    public LiveData<Boolean> getIsOfflineLive() {
+        return isOfflineLive;
+    }
 
-    // Biến tạm lưu Hạng vé người dùng đang xem ở BottomSheet
+    // Lưu trữ danh sách chuyến bay tích lũy từ server
+    private final List<Flight> accumulatedFlights = new ArrayList<>();
+
+    // Con trỏ giữ vị trí phân trang của Firestore
+    private DocumentSnapshot lastVisibleDoc = null;
+
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+
+    // Các biến lưu trạng thái đặt vé phục vụ UI
     private FareClass currentlyViewingFare;
-
-    // Biến lưu chính thức Hạng vé đã chốt
     private FareClass selectedOutboundFare;
     private FareClass selectedReturnFare;
+    private Flight selectedOutboundFlight = null;
+    private Flight selectedReturnFlight = null;
+    private boolean isSelectingReturn = false;
+    private Flight currentlyViewingFlight = null;
 
-    public void setCurrentlyViewingFare(FareClass fareClass) {
-        this.currentlyViewingFare = fareClass;
+    // Lưu các tham số search để dùng lại khi phân trang (Load more)
+    private String currentFromCityId, currentToCityId, currentDepartureDate;
+    private int currentTotalPassengers, currentAdultCount, currentChildCount, currentBabyCount;
+
+    //
+    public FlightViewModel() {
+        repository = new FlightRepository();
+    }
+
+
+    public LiveData<List<Flight>> getPagedFlightsLive() {
+        return pagedFlightsLive;
+    }
+
+    public LiveData<UiState> getLoadState() {
+        return loadState;
+    }
+
+    public LiveData<Boolean> getLoadingMoreLive() {
+        return loadingMoreLive;
+    }
+
+    public LiveData<Boolean> getIsLastPageLive() {
+        return isLastPageLive;
+    }
+
+    public LiveData<FlightFilterState> getFilterStateLive() {
+        return filterStateLive;
+    }
+
+    public List<Flight> getFlights() {
+        return accumulatedFlights;
+    }
+
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    public boolean isLastPage() {
+        return isLastPage;
+    }
+
+    public boolean isFirstLoad() {
+        return accumulatedFlights.isEmpty() && lastVisibleDoc == null;
+    }
+
+    public void setCurrentlyViewingFare(FareClass fc) {
+        this.currentlyViewingFare = fc;
     }
 
     public FareClass getCurrentlyViewingFare() {
         return currentlyViewingFare;
     }
 
-    public void setSelectedOutboundFare(FareClass fareClass) {
-        this.selectedOutboundFare = fareClass;
+    public void setSelectedOutboundFare(FareClass fc) {
+        this.selectedOutboundFare = fc;
     }
 
     public FareClass getSelectedOutboundFare() {
         return selectedOutboundFare;
     }
 
-    public void setSelectedReturnFare(FareClass fareClass) {
-        this.selectedReturnFare = fareClass;
+    public void setSelectedReturnFare(FareClass fc) {
+        this.selectedReturnFare = fc;
     }
 
     public FareClass getSelectedReturnFare() {
         return selectedReturnFare;
     }
 
-    private int currentPage = 0;
-    private boolean isLoading = false;
-    private boolean isLastPage = false;
-
-    // ─── Trạng thái chọn chuyến bay
-    private Flight selectedOutboundFlight = null;
-    private Flight selectedReturnFlight = null;
-    private boolean isSelectingReturn = false;
-    private Flight currentlyViewingFlight = null;
-
-    public FlightViewModel() {
-        repository = new FlightRepository();
+    public Flight getSelectedOutboundFlight() {
+        return selectedOutboundFlight;
     }
 
-    // ─── Getters ─────────────────────────────────────────────────────────
-    public LiveData<List<Flight>> getPagedFlightsLive() { return pagedFlightsLive; }
-    public LiveData<UiState> getLoadState() { return loadState; }
-    public LiveData<Boolean> getLoadingMoreLive() { return loadingMoreLive; }
-    public LiveData<Boolean> getIsLastPageLive() { return isLastPageLive; }
+    public void setSelectedOutboundFlight(Flight f) {
+        selectedOutboundFlight = f;
+    }
 
-    public LiveData<FlightFilterState> getFilterStateLive() { return filterStateLive; }
-    public List<Flight> getAllFlights() { return allFlights; }
+    public Flight getSelectedReturnFlight() {
+        return selectedReturnFlight;
+    }
 
-    public boolean isLoading() { return isLoading; }
-    public boolean isLastPage() { return isLastPage; }
-    public boolean isFirstLoad() { return currentPage == 0 && allFlights.isEmpty(); }
+    public void setSelectedReturnFlight(Flight f) {
+        selectedReturnFlight = f;
+    }
 
-    public Flight getSelectedOutboundFlight() { return selectedOutboundFlight; }
-    public void setSelectedOutboundFlight(Flight f) { selectedOutboundFlight = f; }
-    public Flight getSelectedReturnFlight() { return selectedReturnFlight; }
-    public void setSelectedReturnFlight(Flight f) { selectedReturnFlight = f; }
-    public boolean isSelectingReturn() { return isSelectingReturn; }
-    public void setSelectingReturn(boolean v) { isSelectingReturn = v; }
-    public Flight getCurrentlyViewingFlight() { return currentlyViewingFlight; }
-    public void setCurrentlyViewingFlight(Flight f) { currentlyViewingFlight = f; }
+    public boolean isSelectingReturn() {
+        return isSelectingReturn;
+    }
 
+    public void setSelectingReturn(boolean v) {
+        isSelectingReturn = v;
+    }
 
-    // ─── API TÌM KIẾM TỪ REPOSITORY ──────────────────────────────────────
+    public Flight getCurrentlyViewingFlight() {
+        return currentlyViewingFlight;
+    }
+
+    public void setCurrentlyViewingFlight(Flight f) {
+        currentlyViewingFlight = f;
+    }
+
+    // Tìm chuyến bay từ server
     public void searchFlights(String fromCityId, String toCityId, String departureDate,
                               int adultCount, int childCount, int babyCount) {
+
         resetPaginationState();
         loadState.setValue(UiState.loading());
 
-        int totalPassengers = adultCount + childCount + babyCount;
+        // Lưu tham số để dùng cho việc kéo trang tiếp theo
+        this.currentFromCityId = fromCityId;
+        this.currentToCityId = toCityId;
+        this.currentDepartureDate = departureDate;
+        this.currentAdultCount = adultCount;
+        this.currentChildCount = childCount;
+        this.currentBabyCount = babyCount;
+        this.currentTotalPassengers = adultCount + childCount + babyCount;
 
-        repository.searchFlights(fromCityId, toCityId, departureDate, totalPassengers,
+        executeServerSearch(adultCount, childCount, babyCount);
+    }
+
+    // Lấy trang đầu tiên từ Firestore Cloud
+    private void executeServerSearch(int adultCount, int childCount, int babyCount) {
+        repository.searchFlights(currentFromCityId, currentToCityId, currentDepartureDate, currentTotalPassengers, filterStateLive.getValue(),
                 new FlightRepository.OnFlightsLoaded() {
                     @Override
-                    public void onLoaded(List<Flight> flights) {
+                    public void onLoaded(List<Flight> flights, DocumentSnapshot lastVisible, Boolean isOffline) {
+                        isLoading = false;
+                        lastVisibleDoc = lastVisible;
+
+                        if (isOffline != null) {
+                            isOfflineLive.setValue(isOffline);
+                        }
+
+                        if (flights == null || flights.isEmpty()) {
+                            isLastPage = true;
+                            isLastPageLive.setValue(true);
+                        }
+
                         for (Flight f : flights) {
                             f.setAdultCount(adultCount);
                             f.setChildCount(childCount);
                             f.setBabyCount(babyCount);
                         }
-                        allFlights = new ArrayList<>(flights);
 
+                        accumulatedFlights.clear();
+                        accumulatedFlights.addAll(flights);
 
-                        // Lần đầu tải về, chưa có bộ lọc nào được áp dụng
-                        applyFilterState(FlightFilterState.defaultState());
+                        // Để lọc nốt Khung giờ / Hạng ghế trên RAM và hiển thị
+                        renderDataToUI();
                         loadState.setValue(UiState.success());
                     }
 
                     @Override
                     public void onError(String error) {
+                        isLoading = false;
                         loadState.setValue(UiState.error(error));
                     }
+
                 });
     }
 
@@ -147,48 +215,104 @@ public class FlightViewModel extends ViewModel {
         searchFlights(toCityId, fromCityId, returnDate, adultCount, childCount, babyCount);
     }
 
-    // ─── API LỌC DỮ LIỆU & ÁP DỤNG STATE ─────────────────────────────────
+    public void loadNextPage() {
+        if (isLoading || isLastPage || lastVisibleDoc == null) return;
+
+        isLoading = true;
+        loadingMoreLive.setValue(true);
+
+        repository.searchFlightsNextPage(currentFromCityId, currentToCityId, currentDepartureDate,
+                currentTotalPassengers, filterStateLive.getValue(), lastVisibleDoc, new FlightRepository.OnFlightsLoaded() {
+                    @Override
+                    public void onLoaded(List<Flight> nextFlights, DocumentSnapshot nextCursor, Boolean isOffline) {
+                        isLoading = false;
+                        loadingMoreLive.setValue(false);
+
+                        if (isOffline != null) {
+                            isOfflineLive.setValue(isOffline);
+                        }
+
+                        if (nextFlights == null || nextFlights.isEmpty()) {
+                            isLastPage = true;
+                            isLastPageLive.setValue(true);
+                            return;
+                        }
+
+                        lastVisibleDoc = nextCursor; // Cập nhật con trỏ trang tiếp theo
+
+                        // Đồng bộ số lượng hành khách cho các thẻ mới nạp
+                        if (!accumulatedFlights.isEmpty()) {
+                            Flight first = accumulatedFlights.get(0);
+                            for (Flight f : nextFlights) {
+                                f.setAdultCount(first.getAdultCount());
+                                f.setChildCount(first.getChildCount());
+                                f.setBabyCount(first.getBabyCount());
+                            }
+                        }
+
+                        // Gộp dữ liệu mới tải từ server vào bộ nhớ tích lũy
+                        accumulatedFlights.addAll(nextFlights);
+                        renderDataToUI();
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        isLoading = false;
+                        loadingMoreLive.setValue(false);
+                    }
+                });
+    }
+
+    // lọc dữ liệu hiển thị
+
     public void applyFilterState(FlightFilterState newState) {
         filterStateLive.setValue(newState);
-        mainHandler.removeCallbacksAndMessages(null); // Hủy các tác vụ load delay cũ
+
+        accumulatedFlights.clear();
+        lastVisibleDoc = null;
+        isLastPage = false;
+        isLastPageLive.setValue(false);
+
+        // Ra lệnh cho Server tìm kiếm theo bộ lọc mới
+        executeServerSearch(currentAdultCount, currentChildCount, currentBabyCount);
+    }
+
+    private void renderDataToUI() {
+        FlightFilterState currentState = filterStateLive.getValue();
+
+        // Nếu chưa áp dụng bộ lọc nào (Lần đầu tải app), hiển thị toàn bộ kho
+        if (currentState == null) {
+            pagedFlightsLive.setValue(new ArrayList<>(accumulatedFlights));
+            return;
+        }
 
         List<Flight> filteredList = new ArrayList<>();
+        for (Flight f : accumulatedFlights) {
+            // (Server đã lọc Hãng bay rồi
 
-        for (Flight f : allFlights) {
-            // 1. Lọc Hãng bay
-            // Nếu list không rỗng và không chứa hãng thì loại
-            if (!newState.selectedAirlines.isEmpty() && !newState.selectedAirlines.contains(f.getAirlineName())) {
-                continue;
-            }
-
-            // 2. Lọc Khung giờ [Sáng, Chiều, Tối]
-            boolean hasTimeSelected = newState.timeSlots.contains(true);
+            //  Lọc Khung giờ
+            boolean hasTimeSelected = currentState.timeSlots.contains(true);
             if (hasTimeSelected) {
                 int hour = parseDepartureHour(f.getDepartureTime());
                 boolean matchesTime = false;
-                if (newState.timeSlots.get(0) && hour >= 0 && hour < 12) matchesTime = true;
-                if (newState.timeSlots.get(1) && hour >= 12 && hour < 18) matchesTime = true;
-                if (newState.timeSlots.get(2) && hour >= 18 && hour < 24) matchesTime = true;
+                if (currentState.timeSlots.get(0) && hour >= 0 && hour < 12) matchesTime = true;
+                if (currentState.timeSlots.get(1) && hour >= 12 && hour < 18) matchesTime = true;
+                if (currentState.timeSlots.get(2) && hour >= 18 && hour < 24) matchesTime = true;
                 if (!matchesTime) continue;
             }
 
-            // 3. Lọc Hạng ghế
-            if (!"ALL".equals(newState.seatClass)) {
+            // Lọc Hạng ghế
+            if (!"ALL".equals(currentState.seatClass)) {
                 String targetSeatType = f.getSeatType();
-
-                // Nếu thẻ này bị lỗi mất dữ liệu seatType
                 if (targetSeatType == null) continue;
 
                 boolean matches = false;
-
-                // Đối chiếu chuẩn xác giữa bộ lọc UI và bản chất vật lý của thẻ vé
-                if ("ECONOMY".equals(newState.seatClass) && "ECONOMY".equals(targetSeatType)) {
+                if ("ECONOMY".equals(currentState.seatClass) && "ECONOMY".equals(targetSeatType))
                     matches = true;
-                } else if ("PREMIUM".equals(newState.seatClass) && "PREMIUM_ECONOMY".equals(targetSeatType)) {
+                else if ("PREMIUM".equals(currentState.seatClass) && "PREMIUM_ECONOMY".equals(targetSeatType))
                     matches = true;
-                } else if ("BUSINESS".equals(newState.seatClass) && "BUSINESS".equals(targetSeatType)) {
+                else if ("BUSINESS".equals(currentState.seatClass) && "BUSINESS".equals(targetSeatType))
                     matches = true;
-                }
 
                 if (!matches) continue;
             }
@@ -196,93 +320,18 @@ public class FlightViewModel extends ViewModel {
             filteredList.add(f);
         }
 
-        // 4. Sắp xếp
-        switch (newState.sortMode) {
-            case "PRICE_ASC":
-                if (newState.showFullPrice) {
-                    // Nếu chọn xem giá đầy đủ: Sắp xếp theo tổng Giá hiển thị + Thuế phí
-                    filteredList.sort(Comparator.comparingDouble(f -> f.getDisplayPrice() + f.getTaxFee()));
-                } else {
-                    // Nếu chỉ xem giá gốc
-                    filteredList.sort(Comparator.comparingDouble(Flight::getDisplayPrice));
-                }
-                break;
-            case "DEPART_EARLY":
-                filteredList.sort((a, b) -> {
-                    if (a.getDepartureTime() == null) return 1;
-                    if (b.getDepartureTime() == null) return -1;
-                    return a.getDepartureTime().compareTo(b.getDepartureTime());
-                });
-                break;
-            case "DURATION":
-                filteredList.sort((a, b) ->
-                        parseDurationMinutes(a.getDuration()) - parseDurationMinutes(b.getDuration()));
-                break;
+        //  Sắp xếp giá Full có thuế theo thứ tự tăng dần
+        if ("PRICE_ASC".equals(currentState.sortMode) && currentState.showFullPrice) {
+            filteredList.sort(Comparator.comparingDouble(f -> f.getDisplayPrice() + f.getTaxFee()));
         }
 
-        // Đổ vào pool và cắt trang lại từ đầu
-        currentPoolFlights = filteredList;
-        loadFirstPage();
-    }
-
-    // ─── API PHÂN TRANG (Cắt từ currentPoolFlights) ──────────────────────
-    private void loadFirstPage() {
-        currentPage = 1;
-        isLastPage = false;
-        isLastPageLive.setValue(false);
-
-        if (currentPoolFlights.isEmpty()) {
-            pagedFlights = new ArrayList<>();
-            pagedFlightsLive.setValue(pagedFlights);
-            isLastPage = true;
-            isLastPageLive.setValue(true);
-            return;
-        }
-
-        int toIndex = Math.min(PAGE_SIZE, currentPoolFlights.size());
-        pagedFlights = new ArrayList<>(currentPoolFlights.subList(0, toIndex));
-        pagedFlightsLive.setValue(new ArrayList<>(pagedFlights));
-
-        isLastPage = (toIndex >= currentPoolFlights.size());
-        isLastPageLive.setValue(isLastPage);
-    }
-
-    public void loadNextPage() {
-        if (isLoading || isLastPage) return;
-
-        isLoading = true;
-        loadingMoreLive.setValue(true);
-
-        mainHandler.postDelayed(() -> {
-            int fromIndex = currentPage * PAGE_SIZE;
-            int toIndex = Math.min(fromIndex + PAGE_SIZE, currentPoolFlights.size());
-
-            if (fromIndex >= currentPoolFlights.size()) {
-                isLastPage = true;
-                isLastPageLive.setValue(true);
-            } else {
-                List<Flight> nextPage = currentPoolFlights.subList(fromIndex, toIndex);
-                pagedFlights.addAll(nextPage);
-                pagedFlightsLive.setValue(new ArrayList<>(pagedFlights));
-                currentPage++;
-
-                if (toIndex >= currentPoolFlights.size()) {
-                    isLastPage = true;
-                    isLastPageLive.setValue(true);
-                }
-            }
-
-            isLoading = false;
-            loadingMoreLive.setValue(false);
-        }, LOAD_DELAY_MS);
+        // set giá trị lọc vào LiveData để hiển thị
+        pagedFlightsLive.setValue(filteredList);
     }
 
     private void resetPaginationState() {
-        mainHandler.removeCallbacksAndMessages(null);
-        allFlights = new ArrayList<>();
-        currentPoolFlights = new ArrayList<>();
-        pagedFlights = new ArrayList<>();
-        currentPage = 0;
+        accumulatedFlights.clear();
+        lastVisibleDoc = null;
         isLoading = false;
         isLastPage = false;
         isLastPageLive.setValue(false);
@@ -293,29 +342,11 @@ public class FlightViewModel extends ViewModel {
     // ─── Helpers ─────────────────────────────────────────────────────────
     private int parseDepartureHour(String time) {
         if (time == null || !time.contains(":")) return -1;
-        try { return Integer.parseInt(time.split(":")[0]); }
-        catch (NumberFormatException e) { return -1; }
-    }
-
-    private int parseDurationMinutes(String duration) {
-        if (duration == null) return 0;
-        int total = 0;
         try {
-            String d = duration.toLowerCase().replace("p", "m").replace(" ", "");
-            int hIdx = d.indexOf('h');
-            int mIdx = d.indexOf('m');
-            if (hIdx >= 0) total += Integer.parseInt(d.substring(0, hIdx)) * 60;
-            if (mIdx > hIdx + 1) {
-                String mPart = d.substring(hIdx + 1, mIdx);
-                if (!mPart.isEmpty()) total += Integer.parseInt(mPart);
-            }
-        } catch (Exception ignored) { }
-        return total;
+            return Integer.parseInt(time.split(":")[0]);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        mainHandler.removeCallbacksAndMessages(null);
-    }
 }

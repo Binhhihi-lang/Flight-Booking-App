@@ -10,19 +10,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.R;
-import com.example.flight_booking_app.data.model.AirlineFilterItem;
+import com.example.flight_booking_app.data.model.Airline;
 
 import java.util.List;
 
 
 public class AirlineFilterAdapter extends RecyclerView.Adapter<AirlineFilterAdapter.FlightFilterViewHolder> {
 
-    private final List<AirlineFilterItem> items;
+    private final List<Airline> items;
     private final List<String> selectedNames;
     private final Runnable onChanged;
 
 
-    public AirlineFilterAdapter(List<AirlineFilterItem> items,
+    public AirlineFilterAdapter(List<Airline> items,
                                 List<String> selectedNames,
                                 Runnable onChanged) {
         this.items = items;
@@ -46,13 +46,13 @@ public class AirlineFilterAdapter extends RecyclerView.Adapter<AirlineFilterAdap
     // đổ dữ liệu lên
     @Override
     public void onBindViewHolder(@NonNull FlightFilterViewHolder holder, int position) {
-        AirlineFilterItem item = items.get(position);
-        holder.tvName.setText(item.name);
+        Airline item = items.get(position);
+        holder.tvName.setText(item.getName());
 
-        holder.cbCheck.setChecked(selectedNames.contains(item.name));
+        holder.cbCheck.setChecked(selectedNames.contains(item.getName()));
 
         Glide.with(holder.itemView.getContext())
-                .load(item.logoUrl)
+                .load(item.getLogo())
                 .placeholder(R.drawable.ic_airline)
                 .error(R.drawable.ic_airline)
                 .into(holder.imgLogo);
@@ -61,13 +61,13 @@ public class AirlineFilterAdapter extends RecyclerView.Adapter<AirlineFilterAdap
         View.OnClickListener toggleClick = v -> {
             if (selectedNames.isEmpty()) {
                 // Đang rỗng (mặc định), bấm 1 cái -> Add đúng cái đó vào list
-                selectedNames.add(item.name);
+                selectedNames.add(item.getName());
             } else {
                 // Đang có tích -> Bấm vào thì Thêm/Xóa bình thường
-                if (selectedNames.contains(item.name)) {
-                    selectedNames.remove(item.name);
+                if (selectedNames.contains(item.getName())) {
+                    selectedNames.remove(item.getName());
                 } else {
-                    selectedNames.add(item.name);
+                    selectedNames.add(item.getName());
                 }
             }
 

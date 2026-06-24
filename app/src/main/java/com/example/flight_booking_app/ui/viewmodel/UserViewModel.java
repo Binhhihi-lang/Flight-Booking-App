@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.User;
+import com.example.flight_booking_app.data.repository.AppCacheManager;
 import com.example.flight_booking_app.data.repository.AuthRepository;
 import com.example.flight_booking_app.data.repository.UserRepository;
 
@@ -16,6 +17,7 @@ import java.util.HashMap;
 public class UserViewModel extends ViewModel {
     private final UserRepository repository;
     private final AuthRepository authRepository;
+    private final AppCacheManager appCacheManager;
 
     // MutableLiveData để có quyền cập nhật dữ liệu khi các hàm callback từ Repository
 
@@ -36,6 +38,7 @@ public class UserViewModel extends ViewModel {
     public UserViewModel() {
         repository = new UserRepository();
         authRepository = new AuthRepository();
+        appCacheManager = new AppCacheManager();
     }
 
     public LiveData<User> getCurrentUser() { return currentUser; }
@@ -64,6 +67,7 @@ public class UserViewModel extends ViewModel {
     public void logout() {
         repository.removeUserObserver(); // dọn listener trước khi đăng xuất
         authRepository.signOut();
+        appCacheManager.clearCache();
         logoutState.setValue(true);
     }
 

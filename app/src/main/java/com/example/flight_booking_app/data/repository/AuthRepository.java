@@ -1,23 +1,11 @@
 package com.example.flight_booking_app.data.repository;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
-import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.User;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-/**
- * giao tiếp với Firebase Auth & Database.
- * Kết quả trả về qua interface Callback để ViewModel xử lý tiếp.
- */
 public class AuthRepository {
-
-    // Callback interfaces
 
     public interface AuthCallback {
         void onSuccess();
@@ -31,16 +19,15 @@ public class AuthRepository {
     }
 
     private final FirebaseAuth mAuth;
-    private final DatabaseReference mDatabase;
-    private final MutableLiveData<UiState> resetState = new MutableLiveData<>();
+    private final FirebaseFirestore db;                          // ← đổi từ DatabaseReference
 
     public AuthRepository() {
-        mAuth    = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        db    = FirebaseFirestore.getInstance();                 // ← đổi từ FirebaseDatabase
     }
-    public LiveData<UiState> getResetState() {
-        return resetState;
-    }
+
+
+    // ─── Đăng nhập ───────────────────────────────────────────────────────────
 
     public void login(String email, String password, RoleCallback callback) {
         mAuth.signInWithEmailAndPassword(email, password)
@@ -56,10 +43,8 @@ public class AuthRepository {
                 });
     }
 
-    /**
-     * Đăng ký tài khoản mới bằng email/password.
-     * Tạo user trên Firebase Auth rồi lưu thông tin vào Realtime DB.
-     */
+    // ─── Đăng ký ─────────────────────────────────────────────────────────────
+
     public void signUp(String fullName, String email, String password, AuthCallback callback) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
@@ -76,6 +61,8 @@ public class AuthRepository {
                 });
     }
 
+    // ─── Đăng nhập Google ────────────────────────────────────────────────────
+
     public void signInWithGoogle(AuthCredential credential,
                                  String displayName, String email,
                                  RoleCallback callback) {
@@ -85,69 +72,35 @@ public class AuthRepository {
                         callback.onError("Xác thực Google thất bại");
                         return;
                     }
-                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                    String uid = firebaseUser.getUid();
+                    String uid = mAuth.getCurrentUser().getUid();
 
-                    // Kiểm tra user đã tồn tại trong DB chưa
-                    mDatabase.child("Users").child(uid).get()
-                            .addOnCompleteListener(dbTask -> {
-                                if (!dbTask.isSuccessful()) {
-                                    callback.onError("Không thể kết nối Database");
-                                    return;
-                                }
-                                if (dbTask.getResult().exists()) {
-                                    // Đã có thì kiểm tra role
+                    // Kiểm tra user đã tồn tại trong Firestore chưa
+                    db.collection("users").document(uid).get()
+                            .addOnSuccessListener(doc -> {
+                                if (doc.exists()) {
+                                    // Đã có → kiểm tra role
                                     checkUserRole(callback);
                                 } else {
-                                    // Chưa có tạo mới
+                                    // Chưa có → tạo mới
                                     User newUser = new User(uid, displayName, email, 0);
                                     saveUserToDatabase(uid, newUser, new AuthCallback() {
                                         @Override public void onSuccess() { callback.onRoleVerified(); }
                                         @Override public void onError(String msg) { callback.onError(msg); }
                                     });
                                 }
-                            });
+                            })
+                            .addOnFailureListener(e -> callback.onError("Không thể kết nối Database"));
                 });
     }
-
 
     // đăng xuất
     public void signOut() {
         mAuth.signOut();
     }
 
-
-    private void checkUserRole(RoleCallback callback) {
-        String uid = mAuth.getCurrentUser().getUid();
-        mDatabase.child("Users").child(uid).get()
-                .addOnCompleteListener(dbTask -> {
-                    if (!dbTask.isSuccessful()) {
-                        callback.onError("Không thể lấy dữ liệu người dùng");
-                        return;
-                    }
-                    User user = dbTask.getResult().getValue(User.class);
-                    if (user != null && user.getRole() == 0) {
-                        callback.onRoleVerified();
-                    } else {
-                        mAuth.signOut();
-                        callback.onAccessDenied();
-                    }
-                });
-    }
-
-    private void saveUserToDatabase(String uid, User user, AuthCallback callback) {
-        mDatabase.child("Users").child(uid).setValue(user)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        callback.onSuccess();
-                    } else {
-                        callback.onError("Lưu thông tin người dùng thất bại");
-                    }
-                });
-    }
+    // ─── Đặt lại mật khẩu ────────────────────────────────────────────────────
 
     public void sendPasswordReset(String email, AuthCallback callback) {
-        // Gọi Firebase gửi email reset
         mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 callback.onSuccess();
@@ -158,7 +111,32 @@ public class AuthRepository {
                 callback.onError(msg);
             }
         });
-
     }
 
+    // ─── Internal ────────────────────────────────────────────────────────────
+
+    private void checkUserRole(RoleCallback callback) {
+        String uid = mAuth.getCurrentUser().getUid();
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) {
+                        callback.onError("Không tìm thấy người dùng");
+                        return;
+                    }
+                    User user = doc.toObject(User.class);
+                    if (user != null && user.getRole() == 0) {
+                        callback.onRoleVerified();
+                    } else {
+                        mAuth.signOut();
+                        callback.onAccessDenied();
+                    }
+                })
+                .addOnFailureListener(e -> callback.onError("Không thể lấy dữ liệu người dùng"));
+    }
+
+    private void saveUserToDatabase(String uid, User user, AuthCallback callback) {
+        db.collection("users").document(uid).set(user)
+                .addOnSuccessListener(unused -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError("Lưu thông tin người dùng thất bại"));
+    }
 }

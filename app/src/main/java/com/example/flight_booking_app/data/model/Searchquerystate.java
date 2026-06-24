@@ -78,23 +78,6 @@ public class Searchquerystate {
         return new Searchquerystate(fromCity, toCity, departDate, returnDate,
                 adult,child,baby,isRoundTrip);
     }
-    public Searchquerystate withAdultCount(int adult) {
-        return new Searchquerystate(fromCity, toCity, departDate, returnDate,
-                adult, childCount, babyCount, isRoundTrip);
-    }
-    public Searchquerystate withChildCount( int child) {
-        return new Searchquerystate(fromCity, toCity, departDate, returnDate,
-                adultCount, child, babyCount, isRoundTrip);
-    }
-    public Searchquerystate withBabyCount(int baby) {
-        return new Searchquerystate(fromCity, toCity, departDate, returnDate,
-                adultCount, childCount, baby, isRoundTrip);
-    }
-
-    public Searchquerystate withSeatClass(String seatClass) {
-        return new Searchquerystate(fromCity, toCity, departDate, returnDate,
-                adultCount, childCount, babyCount, isRoundTrip);
-    }
 
     public Searchquerystate withRoundTrip(boolean roundTrip) {
         return new Searchquerystate(fromCity, toCity, departDate, returnDate,

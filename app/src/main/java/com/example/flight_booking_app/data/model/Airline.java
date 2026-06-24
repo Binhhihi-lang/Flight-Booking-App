@@ -8,6 +8,11 @@ public class Airline {
 
     public Airline() {}
 
+    public Airline(String name, String logo) {
+        this.name = name;
+        this.logo = logo;
+    }
+
     public Airline(String airlineId, String name, String logo, String iataCode) {
         this.airlineId = airlineId;
         this.name = name;

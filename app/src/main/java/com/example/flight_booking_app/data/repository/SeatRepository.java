@@ -1,113 +1,201 @@
 package com.example.flight_booking_app.data.repository;
 
-import androidx.annotation.NonNull;
-
-import com.example.flight_booking_app.data.model.FareRule;
 import com.example.flight_booking_app.data.model.Seat;
 import com.example.flight_booking_app.data.model.SeatMapMetadata;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SeatRepository {
-    private final DatabaseReference dbTemplates;
-    private final DatabaseReference dbFlightSeats;
+
+    private final FirebaseFirestore db;
 
     public interface OnSeatsLoadedListener {
         void onLoaded(List<Seat> seats, SeatMapMetadata metadata);
         void onError(String error);
     }
+    public interface OnUpdateCallback {
+        void onSuccess();
+        void onError(String error);
+    }
 
     public SeatRepository() {
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
-        dbTemplates = db.getReference("seatMapTemplates");
-        dbFlightSeats = db.getReference("flightSeats");
+        db = FirebaseFirestore.getInstance();
     }
 
     /**
-     * Tải sơ đồ ghế trộn (Merge): Khung xương (Template) + Trạng thái thực tế (FlightSeats)
+     * Tải sơ đồ ghế cho một chuyến bay.
+     *
+     * Firestore structure:
+     *   seatMapTemplates/{templateId}          → metadata, modelName
+     *   seatMapTemplates/{templateId}/seats/*  → Seat (khung xương)
+     *   flightSeats/{flightId}/seats/*         → { status, passengerId } (override)
+     *
+     * Logic giống cũ: fetch template + flightSeats song song, merge lại.
      */
-    public void fetchSeatsForFlight(String templateId, String flightId, OnSeatsLoadedListener listener) {
-        // BƯỚC 1: Lấy cấu trúc khung xương ghế từ Template
-        dbTemplates.child(templateId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot templateSnapshot) {
-                List<Seat> templateSeats = new ArrayList<>();
-                SeatMapMetadata tempMetadata = null;
-                for (DataSnapshot ds : templateSnapshot.getChildren()) {
-                    if (ds.getKey().equals("metadata")) {
-                        tempMetadata = ds.getValue(SeatMapMetadata.class);
-                    }
-                    // Kiểm tra xem key có phải là "seats" hoặc bỏ qua các thuộc tính như "modelName"
-                    if (ds.getKey().equals("modelName")) continue;
+    public void fetchSeatsForFlight(String templateId, String flightId,
+                                    OnSeatsLoadedListener listener) {
 
-                    // Nếu dữ liệu nằm trong nhánh "seats"
-                    if (ds.getKey().equals("seats")) {
-                        for (DataSnapshot seatDs : ds.getChildren()) {
-                            Seat seat = seatDs.getValue(Seat.class);
-                            if (seat != null) {
-                                // Lấy key của seatDs (Ví dụ: "10A")
-                                String realSeatId = seatDs.getKey();
-                                seat.setSeatId(realSeatId);
+        // Dùng AtomicInteger để biết khi nào cả 2 fetch song song đều xong
+        final AtomicInteger latch = new AtomicInteger(2);
+        final List<Seat>[] templateSeatsHolder = new List[]{null};
+        final SeatMapMetadata[] metadataHolder  = new SeatMapMetadata[]{null};
+        final Map<String, Seat>[] overrideHolder = new Map[]{null};
+        final String[] errorHolder = new String[]{null};
 
-                                seat.setStatus("AVAILABLE");
-                                templateSeats.add(seat);
-                            }
-                        }
+        Runnable tryMerge = () -> {
+            if (latch.decrementAndGet() != 0) return; // espera ao outro fetch
+
+            if (errorHolder[0] != null) {
+                listener.onError(errorHolder[0]);
+                return;
+            }
+
+            List<Seat> templateSeats = templateSeatsHolder[0];
+            Map<String, Seat> overrideMap = overrideHolder[0];
+
+            if (templateSeats == null) {
+                listener.onError("Không tìm thấy template ghế: " + templateId);
+                return;
+            }
+
+            // Merge: ghi đè status/passengerId từ flightSeats lên template
+            if (overrideMap != null && !overrideMap.isEmpty()) {
+                for (Seat seat : templateSeats) {
+                    Seat override = overrideMap.get(seat.getSeatNumber());
+                    if (override != null) {
+                        seat.setStatus(override.getStatus());
+                        seat.setPassengerId(override.getPassengerId());
                     }
                 }
+            }
 
-                //
-                final SeatMapMetadata finalMetadata = tempMetadata;
+            listener.onLoaded(templateSeats, metadataHolder[0]);
+        };
 
-                // Lấy trạng thái đặt chỗ thực tế của chuyến bay
-                dbFlightSeats.child(flightId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot statusSnapshot) {
-                        // Băm dữ liệu trạng thái vào Map
-                        Map<String, Seat> bookedSeatsMap = new HashMap<>();
-                        for (DataSnapshot ds : statusSnapshot.getChildren()) {
-                            // lấy ra ghế đã đặt hoặc bị hỏng
-                            Seat bookedInfo = ds.getValue(Seat.class);
-                            if (bookedInfo != null) {
-                                // Lấy key (VD: "1A") làm key cho Map chứa các ghế đã được sử dụng
-                                bookedSeatsMap.put(ds.getKey(), bookedInfo);
+        // ── FETCH 1: Template metadata + seats subcollection ─────────────────
+
+        // Lấy metadata từ document chính
+        db.collection("seatMapTemplates")
+                .document(templateId)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        SeatMapMetadata meta = new SeatMapMetadata();
+                        Map<String, Object> metaMap =
+                                (Map<String, Object>) doc.get("metadata");
+                        if (metaMap != null) {
+                            Long span = (Long) metaMap.get("spanCount");
+                            if (span != null) meta.spanCount = span.intValue();
+                            meta.columns = (List<String>) metaMap.get("columns");
+                            List<Long> aislesRaw = (List<Long>) metaMap.get("aisles");
+                            if (aislesRaw != null) {
+                                List<Integer> aisles = new ArrayList<>();
+                                for (Long a : aislesRaw) aisles.add(a.intValue());
+                                meta.aisles = aisles;
                             }
                         }
-
-                        // Trộn dữ liệu ghế được sử dụng hoặc được chọn vào khung
-                        for (Seat seat : templateSeats) {
-                            Seat dynamicInfo = bookedSeatsMap.get(seat.getSeatId());
-                            if (dynamicInfo != null) {
-                                // Ghi đè trạng thái và passengerId nếu ghế này đã có biến động
-                                seat.setStatus(dynamicInfo.getStatus());
-                                seat.setPassengerId(dynamicInfo.getPassengerId());
-                            }
-                        }
-
-                        // Trả kết quả đã trộn hoàn chỉnh về cho ViewModel
-                        listener.onLoaded(templateSeats, finalMetadata);
+                        metadataHolder[0] = meta;
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        listener.onError(error.getMessage());
-                    }
+                    // Lấy subcollection seats
+                    db.collection("seatMapTemplates")
+                            .document(templateId)
+                            .collection("seats")
+                            .get()
+                            .addOnSuccessListener(seatsSnap -> {
+                                List<Seat> seats = new ArrayList<>();
+                                for (DocumentSnapshot seatDoc : seatsSnap.getDocuments()) {
+                                    Seat seat = parseSeat(seatDoc);
+                                    if (seat != null) {
+                                        seat.setStatus("AVAILABLE"); // reset về AVAILABLE trước khi merge
+                                        seats.add(seat);
+                                    }
+                                }
+                                templateSeatsHolder[0] = seats;
+                                tryMerge.run();
+                            })
+                            .addOnFailureListener(e -> {
+                                errorHolder[0] = "Lỗi tải ghế template: " + e.getMessage();
+                                tryMerge.run();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    errorHolder[0] = "Lỗi tải template: " + e.getMessage();
+                    // Vẫn gọi tryMerge 2 lần để latch về 0
+                    latch.decrementAndGet(); // bù cho fetch seats bên trong không chạy
+                    tryMerge.run();
                 });
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                listener.onError(error.getMessage());
-            }
-        });
+        // ── FETCH 2: FlightSeats override (song song với fetch 1) ────────────
+
+        db.collection("flightSeats")
+                .document(flightId)
+                .collection("seats")
+                .get()
+                .addOnSuccessListener(overrideSnap -> {
+                    Map<String, Seat> overrideMap = new HashMap<>();
+                    for (DocumentSnapshot doc : overrideSnap.getDocuments()) {
+                        // doc.getId() = seatNumber (VD: "12C")
+                        String seatNumber = doc.getId();
+                        String status      = doc.getString("status");
+                        String passengerId = doc.getString("passengerId");
+                        Seat s = new Seat();
+                        s.setSeatNumber(seatNumber);
+                        s.setStatus(status != null ? status : "AVAILABLE");
+                        s.setPassengerId(passengerId != null ? passengerId : "");
+                        overrideMap.put(seatNumber, s);
+                    }
+                    overrideHolder[0] = overrideMap;
+                    tryMerge.run();
+                })
+                .addOnFailureListener(e -> {
+                    // FlightSeats không có → chuyến bay chưa có ghế nào bị đặt, vẫn ổn
+                    overrideHolder[0] = new HashMap<>();
+                    tryMerge.run();
+                });
     }
+
+    /**
+     * Cập nhật trạng thái một ghế khi hành khách đặt/huỷ.
+     * Ghi vào flightSeats/{flightId}/seats/{seatNumber}
+     */
+    public void updateSeatStatus(String flightId, String seatNumber,
+                                 String status, String passengerId,
+                                 OnUpdateCallback callback) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("status", status);
+        data.put("passengerId", passengerId != null ? passengerId : "");
+
+        db.collection("flightSeats")
+                .document(flightId)
+                .collection("seats")
+                .document(seatNumber)
+                .set(data)
+                .addOnSuccessListener(unused -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    private Seat parseSeat(DocumentSnapshot doc) {
+        if (!doc.exists()) return null;
+        Seat seat = new Seat();
+        seat.setSeatId("seat_" + doc.getId());
+        seat.setSeatNumber(doc.getString("seatNumber") != null
+                ? doc.getString("seatNumber") : doc.getId());
+        Long row = doc.getLong("row");
+        if (row != null) seat.setRow(row.intValue());
+        seat.setColumn(doc.getString("column"));
+        seat.setType(doc.getString("type"));
+        Double price = doc.getDouble("price");
+        if (price != null) seat.setPrice(price);
+        seat.setStatus(doc.getString("status") != null ? doc.getString("status") : "AVAILABLE");
+        return seat;
+    }
+
 
 }

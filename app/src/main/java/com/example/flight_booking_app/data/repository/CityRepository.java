@@ -1,21 +1,21 @@
 package com.example.flight_booking_app.data.repository;
 
-import androidx.annotation.NonNull;
 import com.example.flight_booking_app.data.model.City;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class CityRepository {
-    private final DatabaseReference dbRef;
+
+    private final FirebaseFirestore db;
+
+    // Cache in-memory — cities gần như không đổi trong suốt session
+    private List<City> cachedCities = null;
 
     public CityRepository() {
-        // Trỏ thẳng vào node cities
-        this.dbRef = FirebaseDatabase.getInstance().getReference("Cities");
+        db = FirebaseFirestore.getInstance();
     }
 
     public interface OnCitiesLoaded {
@@ -23,24 +23,25 @@ public class CityRepository {
         void onError(String error);
     }
 
-    public void getAllCities(OnCitiesLoaded callCitiesLoaded) {
-        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<City> cities = new ArrayList<>();
-                // Duyệt qua từng Key (HAN, SGN, ...) để lấy Object City[cite: 13]
-                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-                    City city = postSnapshot.getValue(City.class);
-                    if (city != null) cities.add(city);
-                }
-                callCitiesLoaded.onLoaded(cities);
-            }
+    public void getAllCities(OnCitiesLoaded callback) {
+        // Trả cache ngay nếu đã có, không fetch lại
+        if (cachedCities != null && !cachedCities.isEmpty()) {
+            callback.onLoaded(cachedCities);
+            return;
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                callCitiesLoaded.onError(error.getMessage());
-            }
-        });
+        db.collection("cities")
+                .orderBy("cityName")   // sort sẵn để Adapter không cần sort thêm
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<City> cities = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        City city = doc.toObject(City.class);
+                        if (city != null) cities.add(city);
+                    }
+                    cachedCities = cities;
+                    callback.onLoaded(cities);
+                })
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
-
 }

@@ -1,27 +1,28 @@
 package com.example.flight_booking_app.data.repository;
 
 import android.net.Uri;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 
 import com.example.flight_booking_app.data.model.User;
-import com.example.flight_booking_app.ui.view.activity.UserEditProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.HashMap;
 
 /**
- * Có 2 kiểu lấy data:
- *   getCurrentUser(): lấy MỘT LẦN (.get())
- *   observeCurrentUser(): lắng nghe LIÊN TỤC (addValueEventListener)
+ * UserRepository — Firestore edition
+
+ * Hai chế độ giống cũ:
+ *   getCurrentUser()     → lấy một lần (.get())
+ *   observeCurrentUser() → lắng nghe realtime (.addSnapshotListener)
+
+ * Thay đổi so với Realtime DB:
+ *   - Dùng FirebaseFirestore thay FirebaseDatabase
+ *   - Listener kiểu ListenerRegistration (remove() thay vì removeEventListener)
+ *   - Không cần @NonNull DataSnapshot / DatabaseError
  */
 public class UserRepository {
 
@@ -36,101 +37,101 @@ public class UserRepository {
     }
 
     private final FirebaseAuth mAuth;
-    private final DatabaseReference usersRef;
+    private final FirebaseFirestore db;
 
-    // tham chiếu để xóa listener khi cần
-    private ValueEventListener userListener;
-    private DatabaseReference activeUserRef;
+    // Giữ tham chiếu listener realtime để remove khi cần
+    private ListenerRegistration userListenerReg;
 
     public UserRepository() {
-        mAuth    = FirebaseAuth.getInstance();
-        usersRef = FirebaseDatabase.getInstance().getReference("Users");
+        mAuth = FirebaseAuth.getInstance();
+        db    = FirebaseFirestore.getInstance();
     }
 
-    // Lấy data một lần
+
+    // Lấy dữ liệu một lần
+
+
     public void getCurrentUser(GetUserCallback callback) {
-        if (mAuth.getCurrentUser() == null) {
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser == null) {
             callback.onError("Chưa đăng nhập");
             return;
         }
 
-        String uid = mAuth.getCurrentUser().getUid();
-        usersRef.child(uid).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                User user = task.getResult().getValue(User.class);
-                if (user != null) {
-                    callback.onSuccess(user);
-                }
-                else {
-                    callback.onError("Không tìm thấy người dùng");
-                }
-            } else {
-                callback.onError("Không thể tải thông tin người dùng");
-            }
-        });
+        db.collection("users")
+                .document(firebaseUser.getUid())
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        User user = doc.toObject(User.class);
+                        if (user != null) callback.onSuccess(user);
+                        else callback.onError("Không parse được dữ liệu người dùng");
+                    } else {
+                        callback.onError("Không tìm thấy người dùng");
+                    }
+                })
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
-    // Lắng nghe realtime dữ liệu sẽ thay đổi khi cập nhật người dùng
+
+    // Lắng nghe realtime — tự động cập nhật UI khi dữ liệu thay đổi
     public void observeCurrentUser(GetUserCallback callback) {
-        if (mAuth.getCurrentUser() == null) {
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser == null) {
             callback.onError("Chưa đăng nhập");
             return;
         }
 
-        String uid = mAuth.getCurrentUser().getUid();
-        activeUserRef = usersRef.child(uid);
+        DocumentReference userRef = db.collection("users")
+                .document(firebaseUser.getUid());
 
-        userListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    User user = snapshot.getValue(User.class);
-                    if (user != null) callback.onSuccess(user);
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+        userListenerReg = userRef.addSnapshotListener((doc, error) -> {
+            if (error != null) {
                 callback.onError(error.getMessage());
+                return;
             }
-        };
-        activeUserRef.addValueEventListener(userListener);
-    }
-
-    /** ViewModel.onCleared() để giải phóng listener khi ko dùng observe (người dùng đăng xuất) */
-    public void removeUserObserver() {
-        if (activeUserRef != null && userListener != null) {
-            activeUserRef.removeEventListener(userListener);
-            userListener  = null;
-            activeUserRef = null;
-        }
-    }
-
-    // Cập nhật
-    public void updateProfile(Uri newPhotoUri, HashMap<String,Object> updates, String newName, UpdateUserCallback callback) {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        // lấy uid của Firebase Auth để cập nhật
-        String uid = currentUser.getUid();
-
-        usersRef.child(uid).updateChildren(updates).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-
-                //  Cập nhật UserProfile của Firebase Auth
-                UserProfileChangeRequest.Builder profileUpdatesBuilder = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(newName);
-                if (newPhotoUri != null) {
-                    profileUpdatesBuilder.setPhotoUri(newPhotoUri);
-                }
-                UserProfileChangeRequest profileUpdates = profileUpdatesBuilder.build();
-
-
-                currentUser.updateProfile(profileUpdates).addOnCompleteListener(authTask -> {
-                    callback.onSuccess();
-                });
-
-            } else {
-                callback.onError("Cập nhật Database thất bại!");
+            if (doc != null && doc.exists()) {
+                User user = doc.toObject(User.class);
+                if (user != null) callback.onSuccess(user);
             }
         });
     }
 
+    /**
+     * Gọi trong ViewModel.onCleared() để giải phóng listener realtime.
+     */
+    public void removeUserObserver() {
+        if (userListenerReg != null) {
+            userListenerReg.remove();
+            userListenerReg = null;
+        }
+    }
+
+
+    public void updateProfile(Uri newPhotoUri, HashMap<String, Object> updates,
+                              String newName, UpdateUserCallback callback) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            callback.onError("Chưa đăng nhập");
+            return;
+        }
+
+        // 1. Cập nhật Firestore
+        db.collection("users")
+                .document(currentUser.getUid())
+                .update(updates)
+                .addOnSuccessListener(unused -> {
+                    // 2. Cập nhật Firebase Auth profile (displayName + photo)
+                    UserProfileChangeRequest.Builder builder =
+                            new UserProfileChangeRequest.Builder().setDisplayName(newName);
+                    if (newPhotoUri != null) builder.setPhotoUri(newPhotoUri);
+
+                    currentUser.updateProfile(builder.build())
+                            .addOnSuccessListener(v -> callback.onSuccess())
+                            .addOnFailureListener(e -> callback.onError(
+                                    "Cập nhật Auth thất bại: " + e.getMessage()));
+                })
+                .addOnFailureListener(e -> callback.onError(
+                        "Cập nhật Firestore thất bại: " + e.getMessage()));
+    }
 }

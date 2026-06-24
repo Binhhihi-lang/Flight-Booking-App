@@ -79,6 +79,7 @@ public class BookingInfoActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     private boolean isRoundTrip;
+
     private int adultCount, childCount, babyCount;
 
     // Dữ liệu truyền sang SeatSelectionActivity
@@ -229,7 +230,6 @@ public class BookingInfoActivity extends AppCompatActivity {
     private void renderFlightInfo() {
         Intent intent = getIntent();
 
-        // 1. NHẬN CÁC OBJECT NGUYÊN KHỐI VÀ ĐẾM SỐ LƯỢNG KHÁCH
         isRoundTrip = intent.getBooleanExtra("is_round_trip", false);
         adultCount = intent.getIntExtra("adult_count", 1);
         childCount = intent.getIntExtra("child_count", 0);
