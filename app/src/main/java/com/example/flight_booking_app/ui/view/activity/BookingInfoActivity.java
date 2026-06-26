@@ -258,11 +258,11 @@ public class BookingInfoActivity extends AppCompatActivity {
 
         // CHUYẾN ĐI
         tvOutRoute.setText(outboundFlight.getFrom() + " -> " + outboundFlight.getTo());
-        tvOutDate.setText(outboundFlight.getDepartureDate());
-        tvOutDepartTime.setText(outboundFlight.getDepartureTime());
+        tvOutDate.setText(PriceFormatter.formatDateOnly(outboundFlight.getDepartureTime()));
+        tvOutDepartTime.setText(PriceFormatter.formatTimeOnly(outboundFlight.getDepartureTime()));
         tvOutFromIata.setText(outFromIata);
         tvOutDuration.setText(outboundFlight.getDuration());
-        tvOutArrivalTime.setText(outboundFlight.getArrivalTime());
+        tvOutArrivalTime.setText(PriceFormatter.formatTimeOnly(outboundFlight.getArrivalTime()));
         tvOutToIata.setText(outToIata);
         tvOutFlightNumber.setText(outboundFlight.getFlightNumber());
         tvOutFareClass.setText(outboundFare.getTitle()); // Tên hạng vé
@@ -286,11 +286,11 @@ public class BookingInfoActivity extends AppCompatActivity {
 
             // Render UI
             tvRetRoute.setText(returnFlight.getFrom() + " -> " + returnFlight.getTo());
-            tvRetDate.setText(returnFlight.getDepartureDate());
-            tvRetDepartTime.setText(returnFlight.getDepartureTime());
+            tvRetDate.setText(PriceFormatter.formatDateOnly(returnFlight.getDepartureTime()));
+            tvRetDepartTime.setText(PriceFormatter.formatTimeOnly(returnFlight.getDepartureTime()));
             tvRetFromIata.setText(retFromIata);
             tvRetDuration.setText(returnFlight.getDuration());
-            tvRetArrivalTime.setText(returnFlight.getArrivalTime());
+            tvRetArrivalTime.setText(PriceFormatter.formatTimeOnly(returnFlight.getArrivalTime()));
             tvRetToIata.setText(retToIata);
             tvRetFlightNumber.setText(returnFlight.getFlightNumber());
             tvRetFareClass.setText(returnFare.getTitle());
@@ -593,7 +593,7 @@ public class BookingInfoActivity extends AppCompatActivity {
                 edtContactPhone.setError("Số điện thoại phải bắt đầu bằng 0 và đủ 10 số");
                 edtContactPhone.requestFocus();
             } else {
-                boolean isValid = userViewModel.validateInfo(fullName, email, phone);
+                boolean isValid = bookingInfoViewModel.validateInfo(fullName, email, phone);
                 if (isValid) {
                     // TODO: Gửi thông tin lên server
                     Intent intent = new Intent(this,OrderDetailActivity.class);

@@ -39,4 +39,12 @@
     <color name="nav_select">#CAE6FA</color>
     <color name="logout">#BA1A1A</color>
 
+    <color name="colorPending">#FF9800</color>
+
+    <color name="colorFailed">#F44336</color>
+
+    <color name="colorExpired">#9E9E9E</color>
+
+    <color name="colorSuccess">#4CAF50</color>
+
 </resources>

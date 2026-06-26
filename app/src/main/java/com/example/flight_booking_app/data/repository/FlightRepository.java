@@ -8,11 +8,13 @@ import com.example.flight_booking_app.data.model.Flight;
 import com.example.flight_booking_app.data.model.FlightFilterState;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +58,7 @@ public class FlightRepository {
      * Tìm chuyến bay — trang đầu (không cursor).
      * Gọi từ HomeFragment khi người dùng bấm "Tìm".
      */
-    public void searchFlights(String fromCityId, String toCityId, String departureDate,
+    public void searchFlights(String fromCityId, String toCityId, Long departureDate,
                               int totalPassengers, FlightFilterState filterState, OnFlightsLoaded callback) {
         searchFlightsInternal(fromCityId, toCityId, departureDate,
                 totalPassengers, filterState, null, callback);
@@ -66,7 +68,7 @@ public class FlightRepository {
      * Tải trang tiếp theo — dùng cursor (DocumentSnapshot trang cuối cùng).
      * Gọi từ ViewModel khi người dùng scroll xuống cuối danh sách.
      */
-    public void searchFlightsNextPage(String fromCityId, String toCityId, String departureDate,
+    public void searchFlightsNextPage(String fromCityId, String toCityId, Long departureDate,
                                       int totalPassengers, FlightFilterState filterState, DocumentSnapshot lastVisible,
                                       OnFlightsLoaded callback) {
         searchFlightsInternal(fromCityId, toCityId, departureDate,
@@ -74,15 +76,30 @@ public class FlightRepository {
     }
 
     private void searchFlightsInternal(String fromCityId, String toCityId,
-                                       String departureDate, int totalPassengers,
+                                       Long departureDate, int totalPassengers,
                                        FlightFilterState filterState,
                                        DocumentSnapshot cursor,
                                        OnFlightsLoaded callback) {
+        // 1. Tính toán mốc bắt đầu ngày (00:00:00)
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(departureDate);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        Timestamp startOfDay = new Timestamp(cal.getTime());
+
+        // 2. Tính toán mốc kết thúc ngày (23:59:59)
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+
+        Timestamp endOfDay = new Timestamp(cal.getTime());
         // Firestore query — server-side filter 3 điều kiện, sort theo minPrice
         Query query = db.collection("flights")
                 .whereEqualTo("fromCityId", fromCityId)
                 .whereEqualTo("toCityId", toCityId)
-                .whereEqualTo("departureDate", departureDate)
+                .whereGreaterThanOrEqualTo("departureTime", startOfDay) // Lớn hơn hoặc bằng đầu ngày
+                .whereLessThanOrEqualTo("departureTime", endOfDay)       // Nhỏ hơn hoặc bằng cuối ngày
                 .whereEqualTo("status", "ON_TIME");
 
         // Áp dụng bộ lọc
@@ -243,10 +260,8 @@ public class FlightRepository {
         f.setAircraftId(doc.getString("aircraftId"));
         f.setFromCityId(doc.getString("fromCityId"));
         f.setToCityId(doc.getString("toCityId"));
-        f.setDepartureDate(doc.getString("departureDate"));
-        f.setDepartureTime(doc.getString("departureTime"));
-        f.setArrivalDate(doc.getString("arrivalDate"));
-        f.setArrivalTime(doc.getString("arrivalTime"));
+        f.setDepartureTime(doc.getTimestamp("departureTime"));
+        f.setArrivalTime(doc.getTimestamp("arrivalTime"));
         f.setDuration(doc.getString("duration"));
         f.setStatus(doc.getString("status"));
         f.setSeatMapId(doc.getString("seatMapId"));

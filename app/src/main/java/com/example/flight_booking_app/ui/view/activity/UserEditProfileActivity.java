@@ -305,6 +305,7 @@ public class UserEditProfileActivity extends AppCompatActivity {
         String phone = edtPhone.getText().toString().trim();
         String gender = edtGender.getText().toString().trim();
         String dob = edtDob.getText().toString().trim();
+        selectedImageUri = userViewModel.getSelectedImageUri().getValue();
 
         if (fullName.isEmpty()) {
             edtFullName.setError("Vui lòng nhập họ và tên");

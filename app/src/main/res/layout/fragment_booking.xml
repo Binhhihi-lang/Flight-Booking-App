@@ -53,7 +53,7 @@
             android:overScrollMode="never"
             android:paddingBottom="4dp"
             tools:itemCount="2"
-            tools:listitem="@layout/item_order" />
+            tools:listitem="@layout/item_booking" />
 
     </androidx.core.widget.NestedScrollView>
 

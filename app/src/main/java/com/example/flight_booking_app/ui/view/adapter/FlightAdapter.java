@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.R;
 import com.example.flight_booking_app.data.model.FareClass;
 import com.example.flight_booking_app.data.model.Flight;
+import com.example.flight_booking_app.utils.PriceFormatter;
 
 import java.util.Locale;
 
@@ -100,9 +101,9 @@ public class FlightAdapter extends ListAdapter<Flight, FlightAdapter.FlightViewH
             tvFlightNumber.setText(flight.getFlightNumber());
             tvFlightAirline.setText(flight.getAirlineName());
             tvDuration.setText(flight.getDuration());
-            tvDepartureDate.setText(flight.getDepartureDate());
-            tvDepartureTime.setText(flight.getDepartureTime());
-            tvArrivalTime.setText(flight.getArrivalTime());
+            tvDepartureDate.setText(PriceFormatter.formatDateOnly(flight.getDepartureTime()));
+            tvDepartureTime.setText(PriceFormatter.formatTimeOnly(flight.getDepartureTime()));
+            tvArrivalTime.setText(PriceFormatter.formatTimeOnly(flight.getArrivalTime()));
 
             tvDepartureLocation.setText(flight.getFromIata());
             tvArrivalLocation.setText(flight.getToIata());

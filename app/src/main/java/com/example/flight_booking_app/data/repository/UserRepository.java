@@ -14,25 +14,27 @@ import java.util.HashMap;
 
 /**
  * UserRepository — Firestore edition
-
+ * <p>
  * Hai chế độ giống cũ:
- *   getCurrentUser()     → lấy một lần (.get())
- *   observeCurrentUser() → lắng nghe realtime (.addSnapshotListener)
-
+ * getCurrentUser()     → lấy một lần (.get())
+ * observeCurrentUser() → lắng nghe realtime (.addSnapshotListener)
+ * <p>
  * Thay đổi so với Realtime DB:
- *   - Dùng FirebaseFirestore thay FirebaseDatabase
- *   - Listener kiểu ListenerRegistration (remove() thay vì removeEventListener)
- *   - Không cần @NonNull DataSnapshot / DatabaseError
+ * - Dùng FirebaseFirestore thay FirebaseDatabase
+ * - Listener kiểu ListenerRegistration (remove() thay vì removeEventListener)
+ * - Không cần @NonNull DataSnapshot / DatabaseError
  */
 public class UserRepository {
 
     public interface GetUserCallback {
         void onSuccess(User user);
+
         void onError(String errorMessage);
     }
 
     public interface UpdateUserCallback {
         void onSuccess();
+
         void onError(String errorMessage);
     }
 
@@ -44,7 +46,7 @@ public class UserRepository {
 
     public UserRepository() {
         mAuth = FirebaseAuth.getInstance();
-        db    = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
 
@@ -116,12 +118,12 @@ public class UserRepository {
             return;
         }
 
-        // 1. Cập nhật Firestore
+        // Cập nhật Firestore
         db.collection("users")
                 .document(currentUser.getUid())
                 .update(updates)
                 .addOnSuccessListener(unused -> {
-                    // 2. Cập nhật Firebase Auth profile (displayName + photo)
+                    // Cập nhật Firebase Auth profile (displayName + photo)
                     UserProfileChangeRequest.Builder builder =
                             new UserProfileChangeRequest.Builder().setDisplayName(newName);
                     if (newPhotoUri != null) builder.setPhotoUri(newPhotoUri);

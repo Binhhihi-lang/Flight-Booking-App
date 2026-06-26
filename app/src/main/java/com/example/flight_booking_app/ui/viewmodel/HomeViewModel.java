@@ -8,19 +8,19 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.City;
-import com.example.flight_booking_app.data.model.Searchquerystate;
+import com.example.flight_booking_app.data.model.SearchQueryState;
 import com.example.flight_booking_app.ui.view.activity.SearchFlightActivity;
 
 public class HomeViewModel extends ViewModel {
 
     // SearchQueryState lưu thông tin chuyến bay cần tìm kiếm
-    private final MutableLiveData<Searchquerystate> searchState =
-            new MutableLiveData<>(Searchquerystate.defaultState());
+    private final MutableLiveData<SearchQueryState> searchState =
+            new MutableLiveData<>(SearchQueryState.defaultState());
 
     private final MutableLiveData<UiState> validationError = new MutableLiveData<>();
 
 
-    public LiveData<Searchquerystate> getSearchState() {
+    public LiveData<SearchQueryState> getSearchState() {
         return searchState;
     }
 
@@ -31,12 +31,12 @@ public class HomeViewModel extends ViewModel {
     // ── Helper cập nhật
 
     public interface StateUpdater {
-        Searchquerystate apply(Searchquerystate current);
+        SearchQueryState apply(SearchQueryState current);
     }
 
     private void update(StateUpdater updater) {
-        Searchquerystate current = searchState.getValue();
-        if (current == null) current = Searchquerystate.defaultState();
+        SearchQueryState current = searchState.getValue();
+        if (current == null) current = SearchQueryState.defaultState();
         searchState.setValue(updater.apply(current));
     }
 
@@ -50,11 +50,11 @@ public class HomeViewModel extends ViewModel {
         update(s -> s.withToCity(city));
     }
 
-    public void setDepartDate(String d) {
+    public void setDepartDate(Long d) {
         update(s -> s.withDepartDate(d));
     }
 
-    public void setReturnDate(String d) {
+    public void setReturnDate(Long d) {
         update(s -> s.withReturnDate(d));
     }
     public void setPassengerCount(int adultCount, int childCount, int babyCount){
@@ -66,13 +66,13 @@ public class HomeViewModel extends ViewModel {
     }
 
     public void swapCities() {
-        update(Searchquerystate::withSwappedCities);
+        update(SearchQueryState::withSwappedCities);
     }
 
     // validate passenger
     // Trong HomeViewModel.java
     public void  updatePassengers(int adultDelta, int childDelta, int babyDelta) {
-        Searchquerystate s = searchState.getValue();
+        SearchQueryState s = searchState.getValue();
             int newAdult = s.adultCount + adultDelta;
             int newChild = s.childCount + childDelta;
             int newBaby = s.babyCount + babyDelta;
@@ -105,7 +105,7 @@ public class HomeViewModel extends ViewModel {
      * Fragment gọi hàm này, ViewModel tự đóng gói toàn bộ state vào Intent
      */
     public void buildSearchIntent(Intent intent) {
-        Searchquerystate s = searchState.getValue();
+        SearchQueryState s = searchState.getValue();
 
         intent.putExtra(SearchFlightActivity.EXTRA_IS_ROUND_TRIP, s.isRoundTrip);
         intent.putExtra(SearchFlightActivity.EXTRA_FROM_CITY_ID, s.fromCity.getCityId());
@@ -114,8 +114,8 @@ public class HomeViewModel extends ViewModel {
         intent.putExtra(SearchFlightActivity.EXTRA_TO_CITY, s.toCity.getCityName());
         intent.putExtra(SearchFlightActivity.EXTRA_FROM_IATA, s.fromCity.getIataCode());
         intent.putExtra(SearchFlightActivity.EXTRA_TO_IATA, s.toCity.getIataCode());
-        intent.putExtra(SearchFlightActivity.EXTRA_DEPART_DATE, s.departDate);
-        intent.putExtra(SearchFlightActivity.EXTRA_RETURN_DATE, s.returnDate);
+        intent.putExtra(SearchFlightActivity.EXTRA_DEPART_DATE, s.departDateMillis);
+        intent.putExtra(SearchFlightActivity.EXTRA_RETURN_DATE, s.returnDateMillis);
         intent.putExtra(SearchFlightActivity.EXTRA_ADULT, s.adultCount);
         intent.putExtra(SearchFlightActivity.EXTRA_CHILD, s.childCount);
         intent.putExtra(SearchFlightActivity.EXTRA_BABY, s.babyCount);

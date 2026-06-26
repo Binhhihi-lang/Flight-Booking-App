@@ -1059,8 +1059,9 @@
                             tools:text="#571070" />
                     </LinearLayout>
 
-                    <!-- Mã đặt chỗ (Code) -->
+                    <!-- Mã đặt chỗ (Code) lượt đi -->
                     <LinearLayout
+                        android:id="@+id/layout_booking_code_outbound"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -1071,12 +1072,39 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Mã đặt chỗ (Code):"
+                            android:text="Mã đặt chỗ lượt đi:"
                             android:textColor="#555555"
                             android:textSize="14sp" />
 
                         <TextView
-                            android:id="@+id/tv_booking_code"
+                            android:id="@+id/tv_booking_code_outbound"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#E53935"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            tools:text="Đang xác nhận" />
+                    </LinearLayout>
+
+                    <!-- Mã đặt chỗ (Code) lượt về -->
+                    <LinearLayout
+                        android:id="@+id/layout_booking_code_return"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Mã đặt chỗ lượt về:"
+                            android:textColor="#555555"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tv_booking_code_return"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#E53935"
@@ -1242,7 +1270,6 @@
 
     <!-- ══════════════════════════════════════════
          THANH HÀNH ĐỘNG DƯỚI CÙNG — sticky bottom
-         Chỉ MỘT trong 2 nhóm dưới đây hiển thị tại 1 thời điểm
          ══════════════════════════════════════════ -->
     <LinearLayout
         android:id="@+id/layout_bottom_bar"
@@ -1310,6 +1337,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:text="THANH TOÁN NGAY"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:background="@drawable/bg_gradient_pay_button"
+                android:elevation="4dp" />
+
+        </LinearLayout>
+
+        <!-- Trạng thái hết hạn thanh toán -->
+        <LinearLayout
+            android:id="@+id/layout_bottom_payment_expire"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="gone">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_pay_contact"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="LIÊN LẠC HỖ TRỢ"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textAllCaps="true"

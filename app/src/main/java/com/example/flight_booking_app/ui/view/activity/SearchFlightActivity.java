@@ -24,6 +24,7 @@ import com.example.flight_booking_app.data.model.Flight;
 import com.example.flight_booking_app.ui.view.adapter.FlightAdapter;
 import com.example.flight_booking_app.ui.viewmodel.FlightFilterViewModel;
 import com.example.flight_booking_app.ui.viewmodel.FlightViewModel;
+import com.example.flight_booking_app.utils.PriceFormatter;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,22 +33,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * SearchFlightActivity – Màn hình kết quả tìm kiếm chuyến bay.
- *
- * ── Phân trang ─────────────────────────────────────────────────────────────
- * RecyclerView + FlightPaginationScrollListener + FlightViewModel.
- *
- * - progressBarMain : hiển thị khi search mới / chuyển tab (load lần đầu)
- * - progressBarMore : footer ProgressBar, hiển thị khi load thêm trang
- *
- * Toàn bộ trạng thái phân trang nằm trong ViewModel
- * → xoay màn hình KHÔNG reset về trang 1, KHÔNG gọi lại Firebase.
- *
- * ── Filter ─────────────────────────────────────────────────────────────────
- * FlightFilterBottomSheet gọi viewModel.applyFilter() khi người dùng OK.
- * allFlights (danh sách gốc) vẫn được giữ trong ViewModel để reset filter.
- */
+
 public class SearchFlightActivity extends AppCompatActivity
         implements FlightDetailBottomSheet.OnFlightActionListener {
 
@@ -90,7 +76,8 @@ public class SearchFlightActivity extends AppCompatActivity
     // ── State từ Intent ───────────────────────────────────────────────────
     private String  fromCityId, toCityId;
     private String  fromCity, toCity;
-    private String  departDate, returnDate;
+    private Long  departDate, returnDate;
+    private String departStringDate, returnStringDate;
     private int     adultCount, childCount, babyCount;
     private boolean isRoundTrip;
 
@@ -138,8 +125,10 @@ public class SearchFlightActivity extends AppCompatActivity
         toCityId   = i.getStringExtra(EXTRA_TO_CITY_ID);
         fromCity   = i.getStringExtra(EXTRA_FROM_CITY);
         toCity     = i.getStringExtra(EXTRA_TO_CITY);
-        departDate = i.getStringExtra(EXTRA_DEPART_DATE);
-        returnDate = i.getStringExtra(EXTRA_RETURN_DATE);
+        departDate = i.getLongExtra(EXTRA_DEPART_DATE, 0L);
+        returnDate = i.getLongExtra(EXTRA_RETURN_DATE, 0L);
+        departStringDate = PriceFormatter.formatDateFromMillis(departDate);
+        returnStringDate = PriceFormatter.formatDateFromMillis(returnDate);
         adultCount = i.getIntExtra(EXTRA_ADULT, 1);
         childCount = i.getIntExtra(EXTRA_CHILD, 0);
         babyCount  = i.getIntExtra(EXTRA_BABY, 0);
@@ -150,7 +139,8 @@ public class SearchFlightActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        updateToolbarRoute(fromCity, toCity, departDate);
+        // Đổi từ departDate sang định dạng chữ
+        updateToolbarRoute(fromCity, toCity, PriceFormatter.formatDateFromMillis(departDate));
         tvAdultCount.setText(String.valueOf(adultCount));
         tvChildCount.setText(String.valueOf(childCount));
         tvBabyCount.setText(String.valueOf(babyCount));
@@ -321,7 +311,7 @@ public class SearchFlightActivity extends AppCompatActivity
     private void switchToOutboundTab() {
         flightViewModel.setSelectingReturn(false);
         selectTab(false);
-        updateToolbarRoute(fromCity, toCity, departDate);
+        updateToolbarRoute(fromCity, toCity, departStringDate);
         flightViewModel.searchFlights(fromCityId, toCityId, departDate,
                 adultCount, childCount, babyCount);
     }
@@ -329,7 +319,7 @@ public class SearchFlightActivity extends AppCompatActivity
     private void switchToReturnTab() {
         flightViewModel.setSelectingReturn(true);
         selectTab(true);
-        updateToolbarRoute(toCity, fromCity, returnDate);
+        updateToolbarRoute(toCity, fromCity, returnStringDate);
         flightViewModel.searchReturnFlights(fromCityId, toCityId, returnDate,
                 adultCount, childCount, babyCount);
     }
@@ -352,7 +342,7 @@ public class SearchFlightActivity extends AppCompatActivity
         FlightDetailBottomSheet sheet = FlightDetailBottomSheet.newInstance(
                 flight,
                 fareClass,
-                isReturnFlight ? returnDate : departDate,
+                isReturnFlight ? returnStringDate : departStringDate,
                 adultCount, childCount, babyCount,
                 !isReturnFlight, isRoundTrip
         );

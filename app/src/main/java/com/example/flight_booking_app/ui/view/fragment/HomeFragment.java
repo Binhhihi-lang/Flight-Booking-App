@@ -24,21 +24,22 @@ import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.R;
 import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.City;
-import com.example.flight_booking_app.data.model.Searchquerystate;
+import com.example.flight_booking_app.data.model.SearchQueryState;
 import com.example.flight_booking_app.ui.view.activity.SearchCityActivity;
 import com.example.flight_booking_app.ui.view.activity.SearchFlightActivity;
 import com.example.flight_booking_app.ui.view.activity.PassengerBottomSheet;
 import com.example.flight_booking_app.ui.viewmodel.HomeViewModel;
 import com.example.flight_booking_app.ui.viewmodel.UserViewModel;
+import com.example.flight_booking_app.utils.PriceFormatter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.Timestamp;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+
 
 public class HomeFragment extends Fragment {
     private ImageView imgAvatar;
@@ -55,10 +56,6 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     private UserViewModel userViewModel;
-
-    private long selectedDepartMillis = System.currentTimeMillis();
-    private long selectedReturnMillis = System.currentTimeMillis();
-
 
     private final ActivityResultLauncher<Intent> cityLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -156,7 +153,7 @@ public class HomeFragment extends Fragment {
      * Nhận SearchQueryState cập nhật toàn bộ UI.
      * Gọi lại mỗi khi bất kỳ field nào thay đổi.
      */
-    private void renderState(Searchquerystate s) {
+    private void renderState(SearchQueryState s) {
         if (s == null) return;
 
         // Thành phố đi
@@ -174,9 +171,9 @@ public class HomeFragment extends Fragment {
         }
 
         // Ngày
-        if (tvDepartureDate != null) tvDepartureDate.setText(s.departDate);
-        if (tvReturnDate != null && s.isRoundTrip == true) {
-            tvReturnDate.setText(s.returnDate);
+        if (tvDepartureDate != null) tvDepartureDate.setText(PriceFormatter.formatDateFromMillis(s.departDateMillis));
+        if (tvReturnDate != null && s.isRoundTrip) {
+            tvReturnDate.setText(PriceFormatter.formatDateFromMillis(s.returnDateMillis));
         }
         else{
             tvReturnDate.setText("");
@@ -238,26 +235,24 @@ public class HomeFragment extends Fragment {
 
             // biến phải đặt trong vì khi chạy ứng dụng chạy Fagment trước
             // chạy hết các hàm rồi mới quan sát LiveData
-            Searchquerystate currentFlight = homeViewModel.getSearchState().getValue();
-            String currentReturn = currentFlight.returnDate;
-            if (currentReturn == null || currentReturn.isEmpty()){
-                // Tính toán +2 ngày từ ngày đi hiện tại
-                long twoDaysMillis = 2 * 24 * 60 * 60 * 1000L;
-                selectedReturnMillis = selectedDepartMillis + twoDaysMillis;
+            SearchQueryState currentFlight = homeViewModel.getSearchState().getValue();
+            if (currentFlight != null) {
+                // Kiểm tra biến Long xem có null không thay vì kiểm tra chuỗi rỗng
+                if (currentFlight.returnDateMillis == null) {
+                    long twoDaysMillis = 2 * 24 * 60 * 60 * 1000L;
+                    // Lấy trực tiếp ngày đi từ State hiện tại để cộng dồn, cực kỳ an toàn
+                    long suggestedReturnMillis = currentFlight.departDateMillis + twoDaysMillis;
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                String suggestedReturnDate = sdf.format(new Date(selectedReturnMillis));
-
-                homeViewModel.setReturnDate(suggestedReturnDate);
-            }
-            else{
-                tvReturnDate.setText(currentFlight.returnDate);
+                    // Đẩy lên ViewModel
+                    homeViewModel.setReturnDate(suggestedReturnMillis);
+                }
             }
 
         });
 
         // Gọi hàm chọn ngày riêng biệt
         cardDeparture.setOnClickListener(v ->  showDatePicker(true));
+
         cardReturn.setOnClickListener(v -> {
             rbOneWay.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white));
             rbOneWay.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue_primary));
@@ -266,24 +261,21 @@ public class HomeFragment extends Fragment {
             rbRoundTrip.setTextColor(ContextCompat.getColor(requireContext(), R.color.white));
 
             cardReturn.setAlpha(1.0f);
+
             // set trạng thái khứ hồi
             homeViewModel.setRoundTrip(true);
-            Searchquerystate currentFlight = homeViewModel.getSearchState().getValue();
-            String currentReturn = currentFlight.returnDate;
-            if (currentReturn == null || currentReturn.isEmpty()){
-                // Tính toán +2 ngày từ ngày đi hiện tại
-                long twoDaysMillis = 2 * 24 * 60 * 60 * 1000L;
-                selectedReturnMillis = selectedDepartMillis + twoDaysMillis;
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                String suggestedReturnDate = sdf.format(new Date(selectedReturnMillis));
+            SearchQueryState currentFlight = homeViewModel.getSearchState().getValue();
+            if (currentFlight != null) {
+                if (currentFlight.returnDateMillis == null) {
+                    long twoDaysMillis = 2 * 24 * 60 * 60 * 1000L;
+                    long suggestedReturnMillis = currentFlight.departDateMillis + twoDaysMillis;
 
-                homeViewModel.setReturnDate(suggestedReturnDate);
-            }
-            else{
-                tvReturnDate.setText(currentFlight.returnDate);
+                    homeViewModel.setReturnDate(suggestedReturnMillis);
+                }
             }
 
+            // 3. Mở Calendar để người dùng chọn ngày (false = chọn ngày về)
             showDatePicker(false);
 
         });
@@ -324,30 +316,30 @@ public class HomeFragment extends Fragment {
         CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
         if (!isDeparture) {
             // Nếu chọn ngày về, chỉ cho phép chọn từ ngày đi trở đi
-            constraintsBuilder.setValidator(DateValidatorPointForward.from(selectedDepartMillis));
+            constraintsBuilder.setValidator(DateValidatorPointForward.from(System.currentTimeMillis()));
         } else {
             constraintsBuilder.setValidator(DateValidatorPointForward.now());
         }
         builder.setCalendarConstraints(constraintsBuilder.build());
 
         MaterialDatePicker<Long> picker = builder.build();
+
         picker.addOnPositiveButtonClickListener(selection -> {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            String dateString = sdf.format(new Date(selection));
+            if (isDeparture) {
+                homeViewModel.setDepartDate(selection);
 
-                if (isDeparture) {
-                    selectedDepartMillis = selection;
-                    homeViewModel.setDepartDate(dateString);
-
-                    // Nếu đang là khứ hồi mà ngày về cũ lại trước ngày đi mới -> Reset ngày về +2
-                    if (selectedReturnMillis < selectedDepartMillis) {
-                        selectedReturnMillis = selectedDepartMillis + (2 * 24 * 60 * 60 * 1000L);
-                        homeViewModel.setReturnDate(sdf.format(new Date(selectedReturnMillis)));
+                // Lấy state hiện tại từ ViewModel để so sánh ngày về
+                SearchQueryState currentState = homeViewModel.getSearchState().getValue();
+                if (currentState != null && currentState.isRoundTrip && currentState.returnDateMillis != null) {
+                    if (currentState.returnDateMillis < selection) {
+                        // Nếu ngày về cũ trước ngày đi mới -> Tự động tăng ngày về lên +2 ngày
+                        long autoReturnMillis = selection + (2 * 24 * 60 * 60 * 1000L);
+                        homeViewModel.setReturnDate(autoReturnMillis);
                     }
-                } else {
-                    selectedReturnMillis = selection;
-                    homeViewModel.setReturnDate(dateString);
                 }
+            } else {
+                homeViewModel.setReturnDate(selection);
+            }
         });
 
         picker.show(getChildFragmentManager(), "DATE_PICKER");

@@ -7,13 +7,18 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.flight_booking_app.data.model.Booking;
+import com.example.flight_booking_app.data.model.FareClass;
+import com.example.flight_booking_app.data.model.Flight;
 import com.example.flight_booking_app.data.model.Passenger;
 import com.example.flight_booking_app.data.model.UiState;
+import com.example.flight_booking_app.data.repository.BookingRepository;
+import com.google.firebase.Timestamp;
 
 import java.util.ArrayList;
 
 public class BookingInfoViewModel extends ViewModel {
-
+    private final BookingRepository bookingRepository;
     private final MutableLiveData<Double> subTotalPriceLive = new MutableLiveData<>();
     private final MutableLiveData<UiState> uiState = new MutableLiveData<>();
 
@@ -22,7 +27,7 @@ public class BookingInfoViewModel extends ViewModel {
     public LiveData<ArrayList<Passenger>> getPassengerListLive() { return passengerListLive; }
 
     public BookingInfoViewModel() {
-
+        this.bookingRepository = new BookingRepository();
     }
     public LiveData<Double> getSubTotalPriceLive() { return subTotalPriceLive; }
     public LiveData<UiState> getUiState() { return uiState; }
@@ -127,4 +132,90 @@ public class BookingInfoViewModel extends ViewModel {
         }
     }
 
+    //Validate
+    public boolean validateInfo(String fullName, String email, String phone) {
+        if (fullName.isEmpty()) {
+            return false; // Dừng lại, báo lỗi
+        }
+        if (email.isEmpty()) {
+            return false;
+        }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            return false;
+        }
+        if (phone.isEmpty()) {
+            return false;
+        }
+        if (!phone.startsWith("0") || phone.length() != 10) {
+            return false;
+        }
+
+        ArrayList<Passenger> passengerList = passengerListLive.getValue();
+        for (Passenger p : passengerList) {
+            if (!p.isComplete()) {
+                uiState.setValue(UiState.error("Vui lòng nhập đầy đủ thông tin hành khách!"));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    // đặt vé giữ chỗ
+    public void submitBooking(String currentUserId, Flight outFlight, FareClass outFare,
+                              Flight retFlight, FareClass retFare, boolean isRoundTrip,
+                              double totalAmount) {
+
+        uiState.setValue(UiState.loading());
+
+        Booking booking = new Booking();
+        // 1. Tự sinh Mã hiển thị và set trạng thái
+        booking.setOrderCode("DH" + System.currentTimeMillis());
+        booking.setStatus("RESERVATION_SUCCESS");
+        booking.setUserId(currentUserId);
+        booking.setTotalAmount(totalAmount);
+
+        // 2. Set Thời gian tạo và Thời gian hết hạn (+15 phút)
+        booking.setCreatedAt(Timestamp.now());
+        long deadlineMillis = System.currentTimeMillis() + (15 * 60 * 1000);
+        booking.setPaymentDeadline(new Timestamp(new java.util.Date(deadlineMillis)));
+
+        // 3. Phẳng hóa dữ liệu chuyến bay
+        booking.setOutboundFlightId(outFlight.getFlightId());
+        booking.setOutboundFareClassId(outFare.getFareClassId());
+        booking.setDepartureCity(outFlight.getFrom());
+
+        // Cần truyền đúng định dạng Date vào Timestamp (Bạn tự map với hàm lấy Date của Flight nhé)
+        // booking.setDepartureTime(new Timestamp(outFlight.getDepartureDateObj()));
+
+        if (isRoundTrip && retFlight != null) {
+            booking.setReturnFlightId(retFlight.getFlightId());
+            booking.setReturnFareClassId(retFare.getFareClassId());
+            booking.setArrivalCity(retFlight.getFrom()); // Điểm đến của hành trình khứ hồi
+            booking.setArrivalTime(retFlight.getArrivalTime());
+        } else {
+            booking.setReturnFlightId(null);
+            booking.setReturnFareClassId(null);
+            booking.setArrivalCity(outFlight.getTo()); // Điểm đến của 1 chiều
+            booking.setArrivalTime(outFlight.getArrivalTime());
+        }
+
+        // 4. Lấy danh sách hành khách đã nhập vào
+        booking.setPassengers(getPassengerListLive().getValue());
+
+        // 5. Gọi Repository để lưu lên Firestore
+        bookingRepository.createBookingWithNotification(booking, currentUserId, new BookingRepository.BookingCallback() {
+            @Override
+            public void onSuccess(String bookingId) {
+                // Đẩy bookingId tự sinh lên cho Activity
+                uiState.postValue(UiState.success());
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                uiState.postValue(UiState.error(errorMessage));
+            }
+        });
+    }
 }

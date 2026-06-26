@@ -16,6 +16,7 @@ import com.example.flight_booking_app.R;
 import com.example.flight_booking_app.data.model.FareClass;
 import com.example.flight_booking_app.data.model.FareRule;
 import com.example.flight_booking_app.data.model.Flight;
+import com.example.flight_booking_app.utils.PriceFormatter;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 
@@ -219,10 +220,10 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
 
         // ── 4. HIỂN THỊ THÔNG TIN CHUYẾN BAY (TỪ OBJECT FLIGHT) ──
         tvDate.setText(travelDate);
-        tvDepartTime.setText(flight.getDepartureTime());
+        tvDepartTime.setText(PriceFormatter.formatTimeOnly(flight.getDepartureTime()));
         tvFromIata.setText(flight.getFromIata());
         tvDuration.setText(flight.getDuration());
-        tvArrivalTime.setText(flight.getArrivalTime());
+        tvArrivalTime.setText(PriceFormatter.formatTimeOnly(flight.getArrivalTime()));
         tvToIata.setText(flight.getToIata());
         tvFlightNumber.setText(flight.getFlightNumber());
         tvFareClass.setText(fareClass.getTitle()); // Tên hạng vé (Ví dụ: Eco Save)

@@ -1,8 +1,5 @@
 package com.example.flight_booking_app.data.model;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Chứa toàn bộ state của form tìm kiếm trên HomeFragment.
@@ -13,25 +10,25 @@ import java.util.Locale;
  * Immutable-style: mỗi thay đổi tạo bản sao mới qua các hàm withXxx().
  * Ưu điểm: DiffUtil, logging, undo dễ dàng vì object cũ vẫn còn nguyên.
  */
-public class Searchquerystate {
-
+public class SearchQueryState {
     public final City fromCity;
     public final City toCity;
-    public final String departDate;
-    public final String returnDate;
+    public final Long departDateMillis;
+    public final Long returnDateMillis;
+
     public final int adultCount;
+
     public final int childCount;
     public final int babyCount;
     public final boolean isRoundTrip;
 
-
-    public Searchquerystate(City fromCity, City toCity,
-                            String departDate, String returnDate,
+    public SearchQueryState(City fromCity, City toCity,
+                            Long departDateMillis, Long returnDateMillis,
                             int adultCount, int childCount, int babyCount, boolean isRoundTrip) {
         this.fromCity = fromCity;
         this.toCity = toCity;
-        this.departDate = departDate;
-        this.returnDate = returnDate;
+        this.departDateMillis = departDateMillis;
+        this.returnDateMillis = returnDateMillis;
         this.adultCount = adultCount;
         this.childCount = childCount;
         this.babyCount = babyCount;
@@ -39,56 +36,56 @@ public class Searchquerystate {
     }
 
     // set dữ liệu đầu vào
-    public static Searchquerystate defaultState() {
-        String today = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                .format(new Date());
-        return new Searchquerystate(
+    public static SearchQueryState defaultState() {
+        // Mặc định lấy thời gian hiện tại làm ngày đi
+        long todayMillis = System.currentTimeMillis();
+        return new SearchQueryState(
                 new City("HAN", "Hà Nội", "Sân bay quốc tế Nội Bài", "HAN"),
                 new City("SGN", "TP. Hồ Chí Minh", "Sân bay quốc tế Tân Sơn Nhất", "SGN"),
-                today, "",
+                todayMillis, null, // Mặc định một chiều nên ngày về là null
                 1, 0, 0,
                 false
         );
     }
 
+
+
     // ── withXxx() — tạo bản sao với 1 field thay đổi
     // Giữ nguyên tất cả field khác, chỉ đổi field được chỉ định.
 
-    public Searchquerystate withFromCity(City city) {
-        return new Searchquerystate(city, toCity, departDate, returnDate,
+    public SearchQueryState withFromCity(City city) {
+        return new SearchQueryState(city, toCity, departDateMillis, returnDateMillis,
+                adultCount, childCount, babyCount, isRoundTrip);
+
+    }
+    public SearchQueryState withToCity(City city) {
+        return new SearchQueryState(fromCity, city, departDateMillis, returnDateMillis,
                 adultCount, childCount, babyCount, isRoundTrip);
     }
 
-    public Searchquerystate withToCity(City city) {
-        return new Searchquerystate(fromCity, city, departDate, returnDate,
-                adultCount, childCount, babyCount, isRoundTrip);
+    public SearchQueryState withDepartDate(Long dateMillis) {
+        return new SearchQueryState(fromCity, toCity, dateMillis, returnDateMillis, adultCount, childCount, babyCount, isRoundTrip);
     }
 
-    public Searchquerystate withDepartDate(String date) {
-        return new Searchquerystate(fromCity, toCity, date, returnDate,
-                adultCount, childCount, babyCount, isRoundTrip);
+    public SearchQueryState withReturnDate(Long dateMillis) {
+        return new SearchQueryState(fromCity, toCity, departDateMillis, dateMillis, adultCount, childCount, babyCount, isRoundTrip);
     }
 
-    public Searchquerystate withReturnDate(String date) {
-        return new Searchquerystate(fromCity, toCity, departDate, date,
-                adultCount, childCount, babyCount, isRoundTrip);
-    }
-
-    public Searchquerystate withPassenger(int adult, int child, int baby){
-        return new Searchquerystate(fromCity, toCity, departDate, returnDate,
+    public SearchQueryState withPassenger(int adult, int child, int baby){
+        return new SearchQueryState(fromCity, toCity, departDateMillis, returnDateMillis,
                 adult,child,baby,isRoundTrip);
     }
 
-    public Searchquerystate withRoundTrip(boolean roundTrip) {
-        return new Searchquerystate(fromCity, toCity, departDate, returnDate,
+    public SearchQueryState withRoundTrip(boolean roundTrip) {
+        return new SearchQueryState(fromCity, toCity, departDateMillis, returnDateMillis,
                 adultCount, childCount, babyCount, roundTrip);
     }
 
     /**
      * Hoán đổi điểm đi và điểm đến
      */
-    public Searchquerystate withSwappedCities() {
-        return new Searchquerystate(toCity, fromCity, departDate, returnDate,
+    public SearchQueryState withSwappedCities() {
+        return new SearchQueryState(toCity, fromCity, departDateMillis, returnDateMillis,
                 adultCount, childCount, babyCount, isRoundTrip);
     }
 

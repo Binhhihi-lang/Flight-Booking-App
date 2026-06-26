@@ -49,7 +49,8 @@ public class FlightViewModel extends ViewModel {
     private Flight currentlyViewingFlight = null;
 
     // Lưu các tham số search để dùng lại khi phân trang (Load more)
-    private String currentFromCityId, currentToCityId, currentDepartureDate;
+    private String currentFromCityId, currentToCityId;
+    private Long currentDepartureDate;
     private int currentTotalPassengers, currentAdultCount, currentChildCount, currentBabyCount;
 
     //
@@ -151,7 +152,7 @@ public class FlightViewModel extends ViewModel {
     }
 
     // Tìm chuyến bay từ server
-    public void searchFlights(String fromCityId, String toCityId, String departureDate,
+    public void searchFlights(String fromCityId, String toCityId, Long departureDate,
                               int adultCount, int childCount, int babyCount) {
 
         resetPaginationState();
@@ -210,7 +211,7 @@ public class FlightViewModel extends ViewModel {
                 });
     }
 
-    public void searchReturnFlights(String fromCityId, String toCityId, String returnDate,
+    public void searchReturnFlights(String fromCityId, String toCityId, Long returnDate,
                                     int adultCount, int childCount, int babyCount) {
         searchFlights(toCityId, fromCityId, returnDate, adultCount, childCount, babyCount);
     }
@@ -293,11 +294,16 @@ public class FlightViewModel extends ViewModel {
             //  Lọc Khung giờ
             boolean hasTimeSelected = currentState.timeSlots.contains(true);
             if (hasTimeSelected) {
-                int hour = parseDepartureHour(f.getDepartureTime());
+                // Bốc số giờ trực tiếp từ đối tượng Timestamp của chuyến bay
+                int hour = getHourFromTimestamp(f.getDepartureTime());
+
+                if (hour == -1) continue; // Phòng hờ dữ liệu lỗi
+
                 boolean matchesTime = false;
                 if (currentState.timeSlots.get(0) && hour >= 0 && hour < 12) matchesTime = true;
                 if (currentState.timeSlots.get(1) && hour >= 12 && hour < 18) matchesTime = true;
                 if (currentState.timeSlots.get(2) && hour >= 18 && hour < 24) matchesTime = true;
+
                 if (!matchesTime) continue;
             }
 
@@ -340,13 +346,13 @@ public class FlightViewModel extends ViewModel {
     }
 
     // ─── Helpers ─────────────────────────────────────────────────────────
-    private int parseDepartureHour(String time) {
-        if (time == null || !time.contains(":")) return -1;
-        try {
-            return Integer.parseInt(time.split(":")[0]);
-        } catch (NumberFormatException e) {
-            return -1;
-        }
+    private int getHourFromTimestamp(com.google.firebase.Timestamp timestamp) {
+        if (timestamp == null) return -1;
+
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        calendar.setTime(timestamp.toDate()); // Chuyển Timestamp sang java.util.Date
+
+        return calendar.get(java.util.Calendar.HOUR_OF_DAY); // Trả về số giờ từ 0 đến 23
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.flight_booking_app.data.model;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Exclude;
 
 import java.io.Serializable;
@@ -14,10 +15,8 @@ public class Flight implements Serializable {
     private String fromCityId;
     private String toCityId;
 
-    private String departureDate;
-    private String departureTime;
-    private String arrivalDate;
-    private String arrivalTime;
+    private Timestamp departureTime;
+    private Timestamp arrivalTime;
     private String duration;
 
     private int availableSeats;
@@ -137,36 +136,20 @@ public class Flight implements Serializable {
         toCityId = v;
     }
 
-    public String getDepartureDate() {
-        return departureDate;
-    }
-
-    public void setDepartureDate(String v) {
-        departureDate = v;
-    }
-
-    public String getDepartureTime() {
+    public Timestamp getDepartureTime() {
         return departureTime;
     }
 
-    public void setDepartureTime(String v) {
-        departureTime = v;
+    public void setDepartureTime(Timestamp departureTime) {
+        this.departureTime = departureTime;
     }
 
-    public String getArrivalDate() {
-        return arrivalDate;
-    }
-
-    public void setArrivalDate(String v) {
-        arrivalDate = v;
-    }
-
-    public String getArrivalTime() {
+    public Timestamp getArrivalTime() {
         return arrivalTime;
     }
 
-    public void setArrivalTime(String v) {
-        arrivalTime = v;
+    public void setArrivalTime(Timestamp arrivalTime) {
+        this.arrivalTime = arrivalTime;
     }
 
     public String getDuration() {
