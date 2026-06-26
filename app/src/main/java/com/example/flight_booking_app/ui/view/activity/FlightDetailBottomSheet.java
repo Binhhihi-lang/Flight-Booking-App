@@ -1,6 +1,7 @@
 package com.example.flight_booking_app.ui.view.activity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -219,8 +220,9 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
                 + (basePrice + taxFee) * 0.10 * baby;
 
         // ── 4. HIỂN THỊ THÔNG TIN CHUYẾN BAY (TỪ OBJECT FLIGHT) ──
-        tvDate.setText(travelDate);
+        tvDate.setText(PriceFormatter.formatDateOnly(flight.getDepartureTime()));
         tvDepartTime.setText(PriceFormatter.formatTimeOnly(flight.getDepartureTime()));
+
         tvFromIata.setText(flight.getFromIata());
         tvDuration.setText(flight.getDuration());
         tvArrivalTime.setText(PriceFormatter.formatTimeOnly(flight.getArrivalTime()));
@@ -244,7 +246,7 @@ public class FlightDetailBottomSheet extends BottomSheetDialogFragment {
         tvFooterTotalPrice.setText(formatPrice(total));
 
         // Chuỗi: "Hà Nội -> TP.HCM  10:30  20/11/2026"
-        String routeSummary = flight.getFrom() + " -> " + flight.getTo() + "  " + flight.getDepartureTime() + "  " + travelDate;
+        String routeSummary = flight.getFrom() + " -> " + flight.getTo() + "  " + PriceFormatter.formatTimeOnly(flight.getDepartureTime()) + "  " + travelDate;
         tvFooterRouteSummary.setText(routeSummary);
 
         tvFooterSubPrice.setText(formatPrice(total));

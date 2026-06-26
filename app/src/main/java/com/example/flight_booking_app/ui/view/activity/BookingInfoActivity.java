@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.flight_booking_app.R;
+import com.example.flight_booking_app.data.model.BookingSessionManager;
 import com.example.flight_booking_app.data.model.FareClass;
 import com.example.flight_booking_app.data.model.FareRule;
 import com.example.flight_booking_app.data.model.Flight;
@@ -228,19 +229,20 @@ public class BookingInfoActivity extends AppCompatActivity {
 
 
     private void renderFlightInfo() {
-        Intent intent = getIntent();
+        BookingSessionManager session = BookingSessionManager.getInstance();
 
-        isRoundTrip = intent.getBooleanExtra("is_round_trip", false);
-        adultCount = intent.getIntExtra("adult_count", 1);
-        childCount = intent.getIntExtra("child_count", 0);
-        babyCount = intent.getIntExtra("baby_count", 0);
+        outboundFlight = session.getSelectedOutboundFlight();
+        outboundFare = session.getSelectedOutboundFare();
+        isRoundTrip = session.isRoundTrip();
 
-        outboundFlight = (Flight) intent.getSerializableExtra("selected_outbound_flight");
-        outboundFare = (FareClass) intent.getSerializableExtra("selected_outbound_fare");
+        adultCount = session.getAdultCount();
+        childCount = session.getChildCount();
+        babyCount = session.getBabyCount() ;
+
 
         if (isRoundTrip) {
-            returnFlight = (Flight) intent.getSerializableExtra("selected_return_flight");
-            returnFare = (FareClass) intent.getSerializableExtra("selected_return_fare");
+            returnFlight = session.getSelectedReturnFlight();
+            returnFare = session.getSelectedReturnFare();
         }
 
         // Kiểm tra an toàn dữ liệu trước khi render

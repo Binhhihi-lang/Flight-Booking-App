@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.flight_booking_app.R;
+import com.example.flight_booking_app.data.model.BookingSessionManager;
 import com.example.flight_booking_app.data.model.FareClass;
 import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.data.model.Flight;
@@ -385,31 +386,29 @@ public class SearchFlightActivity extends AppCompatActivity
         }
 
         // --- LẤY TẤT CẢ DỮ LIỆU ĐÃ CHỐT ĐỂ CHUYỂN MÀN HÌNH ---
-        Flight outbound = flightViewModel.getSelectedOutboundFlight();
+        Flight outboundFlight = flightViewModel.getSelectedOutboundFlight();
         FareClass outboundFare = flightViewModel.getSelectedOutboundFare();
 
         Flight returnFlight = flightViewModel.getSelectedReturnFlight();
         FareClass returnFare = flightViewModel.getSelectedReturnFare();
 
-        Intent intent = new Intent(this, BookingInfoActivity.class);
+        // --- CẤT HẾT VÀO KHO (SESSION) ---
+        BookingSessionManager session = BookingSessionManager.getInstance();
+        session.setRoundTrip(isRoundTrip);
+        session.setSelectedOutboundFlight(outboundFlight);
+        session.setSelectedOutboundFare(outboundFare);
 
-        // Truyền Object Lượt đi
-        intent.putExtra("selected_outbound_flight", outbound);
-        intent.putExtra("selected_outbound_fare", outboundFare);
-
-        intent.putExtra(BookingInfoActivity.EXTRA_IS_ROUND_TRIP, isRoundTrip);
-
-        // Truyền Object Lượt về (nếu có)
         if (isRoundTrip && returnFlight != null) {
-            intent.putExtra("selected_return_flight", returnFlight);
-            intent.putExtra("selected_return_fare", returnFare);
+            session.setSelectedReturnFlight(returnFlight);
+            session.setSelectedReturnFare(returnFare);
         }
+        session.setAdultCount(adultCount);
+        session.setChildCount(childCount);
+        session.setBabyCount(babyCount);
 
-        intent.putExtra("adult_count", adultCount);
-        intent.putExtra("child_count", childCount);
-        intent.putExtra("baby_count",  babyCount);
-
+        Intent intent = new Intent(this, BookingInfoActivity.class);
         startActivity(intent);
+
     }
 
 
