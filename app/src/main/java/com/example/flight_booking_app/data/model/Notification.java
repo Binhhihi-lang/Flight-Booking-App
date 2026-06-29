@@ -1,6 +1,8 @@
 package com.example.flight_booking_app.data.model;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 
 public class Notification implements Serializable {
@@ -8,24 +10,24 @@ public class Notification implements Serializable {
     private String title;          // Tiêu đề thông báo (Ví dụ: "Đã giữ chỗ thành công 👌 #570507")
     private String body;           // Nội dung chi tiết thông báo
 
-    // Đổi từ long sang Timestamp để tối ưu hóa và đồng bộ với cấu trúc Firestore
-    private Timestamp timestamp;
+    private Timestamp createdAt; // Ngày tạo thông báo
 
     private String bookingId;      // Mã ID của đơn hàng liên kết (Dùng để mở OrderDetailActivity)
-    private boolean isRead;        // Trạng thái đã đọc hay chưa (true/false)
+    private String userId;
+    private boolean read;        // Trạng thái đã đọc hay chưa (true/false)
     private String type;           // Loại thông báo (Ví dụ: "BOOKING_SUCCESS", "EXPIRED", "PROMOTION")
 
     public Notification() {
     }
 
-    public Notification(String notificationId, String title, String body, Timestamp timestamp,
-                        String bookingId, boolean isRead, String type) {
+    public Notification(String notificationId, String title, String body, Timestamp createdAt, String bookingId, String userId, boolean isRead, String type) {
         this.notificationId = notificationId;
         this.title = title;
         this.body = body;
-        this.timestamp = timestamp;
+        this.createdAt = createdAt;
         this.bookingId = bookingId;
-        this.isRead = isRead;
+        this.userId = userId;
+        this.read = isRead;
         this.type = type;
     }
 
@@ -53,12 +55,12 @@ public class Notification implements Serializable {
         this.body = body;
     }
 
-    public Timestamp getTimestamp() {
-        return timestamp;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getBookingId() {
@@ -69,12 +71,20 @@ public class Notification implements Serializable {
         this.bookingId = bookingId;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public boolean isRead() {
-        return isRead;
+        return read;
     }
 
     public void setRead(boolean read) {
-        isRead = read;
+        this.read = read;
     }
 
     public String getType() {

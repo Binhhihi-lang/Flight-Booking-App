@@ -68,7 +68,7 @@
             android:gravity="center"
             android:paddingVertical="8dp"
             android:text="Đặt chỗ không thành công ⏳"
-            android:textColor="#4A4A4A"
+            android:textColor="@color/white"
             android:textSize="13sp"
             android:textStyle="bold"
             tools:text="Đặt chỗ không thành công ⏳" />
@@ -107,7 +107,7 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/card_outbound_flight"
+                        android:id="@+id/card_outbound_flight_order"
                         android:layout_width="340dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="12dp"
@@ -138,7 +138,7 @@
                                     android:layout_marginEnd="6dp" />
 
                                 <TextView
-                                    android:id="@+id/tv_outbound_route"
+                                    android:id="@+id/tv_outbound_route_order"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -149,7 +149,7 @@
                                     tools:text="Hà Nội → TP.HCM" />
 
                                 <TextView
-                                    android:id="@+id/tv_outbound_date"
+                                    android:id="@+id/tv_outbound_date_order"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Thứ năm, 21/05"
@@ -184,7 +184,7 @@
                                     app:layout_constraintTop_toTopOf="parent">
 
                                     <TextView
-                                        android:id="@+id/tv_outbound_depart_time"
+                                        android:id="@+id/tv_outbound_depart_time_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="05:30"
@@ -193,7 +193,7 @@
                                         android:textStyle="bold" />
 
                                     <TextView
-                                        android:id="@+id/tv_outbound_from_iata"
+                                        android:id="@+id/tv_outbound_from_iata_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="4dp"
@@ -224,7 +224,7 @@
                                         app:tint="@color/primary_blue" />
 
                                     <TextView
-                                        android:id="@+id/tv_outbound_duration"
+                                        android:id="@+id/tv_outbound_duration_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
@@ -246,7 +246,7 @@
                                     app:layout_constraintTop_toTopOf="@id/col_left_time">
 
                                     <TextView
-                                        android:id="@+id/tv_outbound_arrival_time"
+                                        android:id="@+id/tv_outbound_arrival_time_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="07:40"
@@ -255,7 +255,7 @@
                                         android:textStyle="bold" />
 
                                     <TextView
-                                        android:id="@+id/tv_outbound_to_iata"
+                                        android:id="@+id/tv_outbound_to_iata_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="4dp"
@@ -288,7 +288,7 @@
                                     app:layout_constraintTop_toBottomOf="@+id/div_flight_info">
 
                                     <ImageView
-                                        android:id="@+id/img_outbound_airline_logo"
+                                        android:id="@+id/img_outbound_airline_logo_order"
                                         android:layout_width="50dp"
                                         android:layout_height="30dp"
                                         android:scaleType="centerInside"
@@ -315,7 +315,7 @@
                                         android:textSize="12sp" />
 
                                     <TextView
-                                        android:id="@+id/tv_outbound_flight_number"
+                                        android:id="@+id/tv_outbound_flight_number_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
@@ -345,7 +345,7 @@
                                         android:textSize="11sp" />
 
                                     <TextView
-                                        android:id="@+id/tv_outbound_fare_class"
+                                        android:id="@+id/tv_outbound_fare_class_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
@@ -385,7 +385,7 @@
                                         android:textStyle="bold"
                                         android:textSize="16sp" />
                                     <TextView
-                                        android:id="@+id/tv_outbound_total_price"
+                                        android:id="@+id/tv_outbound_total_price_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="9.554.8000đ"
@@ -396,7 +396,7 @@
 
                                 <!-- Giá người lớn -->
                                 <LinearLayout
-                                    android:id="@+id/row_outbound_adult_price"
+                                    android:id="@+id/row_outbound_adult_price_order"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
@@ -410,7 +410,7 @@
                                         android:textColor="#555555"
                                         android:textSize="13sp" />
                                     <TextView
-                                        android:id="@+id/tv_outbound_adult_price"
+                                        android:id="@+id/tv_outbound_adult_price_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="2 x 3.133.000đ"
@@ -421,7 +421,7 @@
 
                                 <!-- Giá trẻ em -->
                                 <LinearLayout
-                                    android:id="@+id/row_outbound_child_price"
+                                    android:id="@+id/row_outbound_child_price_order"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
@@ -434,7 +434,7 @@
                                         android:textColor="#555555"
                                         android:textSize="13sp" />
                                     <TextView
-                                        android:id="@+id/tv_outbound_child_price"
+                                        android:id="@+id/tv_outbound_child_price_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="1 x 2.828.500đ"
@@ -445,7 +445,7 @@
 
                                 <!-- Giá em bé -->
                                 <LinearLayout
-                                    android:id="@+id/row_outbound_baby_price"
+                                    android:id="@+id/row_outbound_baby_price_order"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
@@ -458,7 +458,7 @@
                                         android:textColor="#555555"
                                         android:textSize="13sp" />
                                     <TextView
-                                        android:id="@+id/tv_outbound_baby_price"
+                                        android:id="@+id/tv_outbound_baby_price_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="1 x 463.300đ"
@@ -474,7 +474,7 @@
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/card_return_flight"
+                        android:id="@+id/card_return_flight_order_order"
                         android:layout_width="340dp"
                         android:layout_height="wrap_content"
                         app:cardCornerRadius="14dp"
@@ -506,7 +506,7 @@
                                     android:layout_marginEnd="6dp" />
 
                                 <TextView
-                                    android:id="@+id/tv_return_route"
+                                    android:id="@+id/tv_return_route_order"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -516,7 +516,7 @@
                                     android:textStyle="bold" />
 
                                 <TextView
-                                    android:id="@+id/tv_return_date"
+                                    android:id="@+id/tv_return_date_order"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Thứ hai, 25/05"
@@ -538,18 +538,18 @@
                                 android:background="@color/white">
 
                                 <LinearLayout
-                                    android:id="@+id/col_left_time_return"
+                                    android:id="@+id/col_left_time_return_order"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    app:layout_constraintEnd_toStartOf="@id/col_center_time_return"
+                                    app:layout_constraintEnd_toStartOf="@id/col_center_time_return_order"
                                     app:layout_constraintHorizontal_weight="1"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent">
 
                                     <TextView
-                                        android:id="@+id/tv_return_depart_time"
+                                        android:id="@+id/tv_return_depart_time_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="22:10"
@@ -558,7 +558,7 @@
                                         android:textStyle="bold" />
 
                                     <TextView
-                                        android:id="@+id/tv_return_from_iata"
+                                        android:id="@+id/tv_return_from_iata_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="4dp"
@@ -571,16 +571,16 @@
                                 </LinearLayout>
 
                                 <LinearLayout
-                                    android:id="@+id/col_center_time_return"
+                                    android:id="@+id/col_center_time_return_order"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    app:layout_constraintBottom_toBottomOf="@id/col_left_time_return"
-                                    app:layout_constraintEnd_toStartOf="@id/col_right_time_return"
+                                    app:layout_constraintBottom_toBottomOf="@id/col_left_time_return_order"
+                                    app:layout_constraintEnd_toStartOf="@id/col_right_time_return_order"
                                     app:layout_constraintHorizontal_weight="1"
-                                    app:layout_constraintStart_toEndOf="@id/col_left_time_return"
-                                    app:layout_constraintTop_toTopOf="@id/col_left_time_return">
+                                    app:layout_constraintStart_toEndOf="@id/col_left_time_return_order"
+                                    app:layout_constraintTop_toTopOf="@id/col_left_time_return_order">
 
                                     <ImageView
                                         android:layout_width="22dp"
@@ -589,7 +589,7 @@
                                         app:tint="@color/primary_blue" />
 
                                     <TextView
-                                        android:id="@+id/tv_return_duration"
+                                        android:id="@+id/tv_return_duration_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
@@ -600,18 +600,18 @@
                                 </LinearLayout>
 
                                 <LinearLayout
-                                    android:id="@+id/col_right_time_return"
+                                    android:id="@+id/col_right_time_return_order"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
                                     android:orientation="vertical"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintHorizontal_weight="1"
-                                    app:layout_constraintStart_toEndOf="@id/col_center_time_return"
-                                    app:layout_constraintTop_toTopOf="@id/col_left_time_return">
+                                    app:layout_constraintStart_toEndOf="@id/col_center_time_return_order"
+                                    app:layout_constraintTop_toTopOf="@id/col_left_time_return_order">
 
                                     <TextView
-                                        android:id="@+id/tv_return_arrival_time"
+                                        android:id="@+id/tv_return_arrival_time_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="06:30"
@@ -620,7 +620,7 @@
                                         android:textStyle="bold" />
 
                                     <TextView
-                                        android:id="@+id/tv_return_to_iata"
+                                        android:id="@+id/tv_return_to_iata_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="4dp"
@@ -633,27 +633,27 @@
                                 </LinearLayout>
 
                                 <View
-                                    android:id="@+id/div_return_info"
+                                    android:id="@+id/div_return_info_order"
                                     android:layout_width="match_parent"
                                     android:layout_height="1dp"
                                     android:layout_marginTop="12dp"
                                     android:background="#EEEEEE"
-                                    app:layout_constraintTop_toBottomOf="@+id/col_left_time_return" />
+                                    app:layout_constraintTop_toBottomOf="@+id/col_left_time_return_order" />
 
                                 <LinearLayout
-                                    android:id="@+id/col_left_info_return"
+                                    android:id="@+id/col_left_info_return_order"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="12dp"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    app:layout_constraintEnd_toStartOf="@id/col_center_info_return"
+                                    app:layout_constraintEnd_toStartOf="@id/col_center_info_return_order"
                                     app:layout_constraintHorizontal_weight="1"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/div_return_info">
+                                    app:layout_constraintTop_toBottomOf="@+id/div_return_info_order">
 
                                     <ImageView
-                                        android:id="@+id/img_return_airline_logo"
+                                        android:id="@+id/img_return_airline_logo_order"
                                         android:layout_width="50dp"
                                         android:layout_height="30dp"
                                         android:scaleType="centerInside"
@@ -661,16 +661,16 @@
                                 </LinearLayout>
 
                                 <LinearLayout
-                                    android:id="@+id/col_center_info_return"
+                                    android:id="@+id/col_center_info_return_order"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    app:layout_constraintBottom_toBottomOf="@id/col_left_info_return"
-                                    app:layout_constraintEnd_toStartOf="@id/col_right_info_return"
+                                    app:layout_constraintBottom_toBottomOf="@id/col_left_info_return_order"
+                                    app:layout_constraintEnd_toStartOf="@id/col_right_info_return_order"
                                     app:layout_constraintHorizontal_weight="1"
-                                    app:layout_constraintStart_toEndOf="@id/col_left_info_return"
-                                    app:layout_constraintTop_toTopOf="@id/col_left_info_return">
+                                    app:layout_constraintStart_toEndOf="@id/col_left_info_return_order"
+                                    app:layout_constraintTop_toTopOf="@id/col_left_info_return_order">
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -680,7 +680,7 @@
                                         android:textSize="12sp" />
 
                                     <TextView
-                                        android:id="@+id/tv_return_flight_number"
+                                        android:id="@+id/tv_return_flight_number_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
@@ -691,16 +691,16 @@
                                 </LinearLayout>
 
                                 <LinearLayout
-                                    android:id="@+id/col_right_info_return"
+                                    android:id="@+id/col_right_info_return_order"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
                                     android:orientation="vertical"
-                                    app:layout_constraintBottom_toBottomOf="@id/col_left_info_return"
+                                    app:layout_constraintBottom_toBottomOf="@id/col_left_info_return_order"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintHorizontal_weight="1"
-                                    app:layout_constraintStart_toEndOf="@id/col_center_info_return"
-                                    app:layout_constraintTop_toTopOf="@id/col_left_info_return">
+                                    app:layout_constraintStart_toEndOf="@id/col_center_info_return_order"
+                                    app:layout_constraintTop_toTopOf="@id/col_left_info_return_order">
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -710,7 +710,7 @@
                                         android:textSize="11sp" />
 
                                     <TextView
-                                        android:id="@+id/tv_return_fare_class"
+                                        android:id="@+id/tv_return_fare_class_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="2dp"
@@ -750,7 +750,7 @@
                                         android:textStyle="bold"
                                         android:textSize="16sp" />
                                     <TextView
-                                        android:id="@+id/tv_return_total_price"
+                                        android:id="@+id/tv_return_total_price_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="9.554.8000đ"
@@ -759,15 +759,14 @@
                                         android:textStyle="bold" />
                                 </LinearLayout>
 
-                                <!-- Giá người lớn -->
                                 <LinearLayout
-                                    android:id="@+id/row_return_adult_price"
+                                    android:id="@+id/row_return_adult_price_order"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
                                     android:gravity="center_vertical">
                                     <TextView
-                                        android:id="@+id/tv_return_adult"
+                                        android:id="@+id/tv_return_adult_order"
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
@@ -775,7 +774,7 @@
                                         android:textColor="#555555"
                                         android:textSize="13sp" />
                                     <TextView
-                                        android:id="@+id/tv_return_adult_price"
+                                        android:id="@+id/tv_return_adult_price_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="2 x 3.133.000đ"
@@ -784,9 +783,8 @@
                                         />
                                 </LinearLayout>
 
-                                <!-- Giá trẻ em -->
                                 <LinearLayout
-                                    android:id="@+id/row_return_child_price"
+                                    android:id="@+id/row_return_child_price_order"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
@@ -799,7 +797,7 @@
                                         android:textColor="#555555"
                                         android:textSize="13sp" />
                                     <TextView
-                                        android:id="@+id/tv_return_child_price"
+                                        android:id="@+id/tv_return_child_price_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="1 x 2.828.500đ"
@@ -808,9 +806,8 @@
                                         />
                                 </LinearLayout>
 
-                                <!-- Giá em bé -->
                                 <LinearLayout
-                                    android:id="@+id/row_return_baby_price"
+                                    android:id="@+id/row_return_baby_price_order"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal"
@@ -823,7 +820,7 @@
                                         android:textColor="#555555"
                                         android:textSize="13sp" />
                                     <TextView
-                                        android:id="@+id/tv_return_baby_price"
+                                        android:id="@+id/tv_return_baby_price_order"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="1 x 463.300đ"
@@ -833,7 +830,6 @@
                                 </LinearLayout>
 
                             </LinearLayout>
-
 
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -1363,10 +1359,16 @@
                 android:textStyle="bold"
                 android:textAllCaps="true"
                 android:background="@drawable/bg_gradient_pay_button"
+                app:backgroundTint="@null"
                 android:elevation="4dp" />
 
         </LinearLayout>
 
     </LinearLayout>
+
+    <include
+        android:id="@+id/layout_loading"
+        layout="@layout/layout_loading_overlay"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

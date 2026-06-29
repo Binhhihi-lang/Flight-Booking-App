@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_dialog_rounded"
+    android:paddingHorizontal="20dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="16dp">
+
+    <!-- Nội dung tin nhắn -->
+    <TextView
+        android:id="@+id/tv_support_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#1A1A2E"
+        android:textSize="14sp"
+        android:lineSpacingExtra="4dp"
+        android:layout_marginBottom="20dp"
+        tools:text="Chào CHU GIA BACH 👋\nCảm ơn bạn đã lựa chọn dịch vụ của Huce Travel\n\nTrang thái đặt chỗ của bạn là: Hết hạn thanh toán\n\nVui lòng nhấn GỌI ĐIỆN THOẠI hoặc GỬI SMS để được chúng tôi hỗ trợ nhanh nhất\n\nXin cảm ơn !" />
+
+    <!-- Đường kẻ ngang -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EEEEEE"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 3 nút hành động -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <!-- Nhắn Zalo -->
+        <LinearLayout
+            android:id="@+id/btn_contact_zalo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@drawable/bg_contact_btn_zalo"
+            android:layout_marginEnd="6dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_zalo"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NHẮN ZALO"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02" />
+
+        </LinearLayout>
+
+        <!-- Gọi điện -->
+        <LinearLayout
+            android:id="@+id/btn_contact_call"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@drawable/bg_contact_btn_blue"
+            android:layout_marginHorizontal="3dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_call"
+                app:tint="@color/white"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GỌI ĐIỆN"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02" />
+
+        </LinearLayout>
+
+        <!-- Gửi SMS -->
+        <LinearLayout
+            android:id="@+id/btn_contact_sms"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp"
+            android:background="@drawable/bg_contact_btn_blue"
+            android:layout_marginStart="6dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_sms"
+                app:tint="@color/white"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GỬI SMS"
+                android:textColor="@color/white"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.02" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

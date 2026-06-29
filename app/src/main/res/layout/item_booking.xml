@@ -28,7 +28,7 @@
             android:gravity="center_vertical">
 
             <TextView
-                android:id="@+id/tv_order_code"
+                android:id="@+id/tv_order_item_code"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -50,7 +50,7 @@
                     app:tint="#888888" />
 
                 <TextView
-                    android:id="@+id/tv_adult_count"
+                    android:id="@+id/tv_adult_count_item"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
@@ -66,7 +66,7 @@
                     app:tint="#888888" />
 
                 <TextView
-                    android:id="@+id/tv_child_count"
+                    android:id="@+id/tv_child_count_item"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
@@ -82,7 +82,7 @@
                     app:tint="#888888" />
 
                 <TextView
-                    android:id="@+id/tv_infant_count"
+                    android:id="@+id/tv_baby_count_item"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
@@ -116,7 +116,7 @@
                 android:gravity="start">
 
                 <TextView
-                    android:id="@+id/tv_outbound_departure_city"
+                    android:id="@+id/tv_outbound_item_departure_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#1A1A2E"
@@ -125,7 +125,7 @@
                     tools:text="Hà Nội" />
 
                 <TextView
-                    android:id="@+id/tv_out_departure_time"
+                    android:id="@+id/tv_outbound_item_departure_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
@@ -136,7 +136,7 @@
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/img_outbound_route_direction"
+                android:id="@+id/img_outbound_item_route_direction"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginHorizontal="6dp"
@@ -152,7 +152,7 @@
                 android:gravity="end">
 
                 <TextView
-                    android:id="@+id/tv_outbound_arrival_city"
+                    android:id="@+id/tv_outbound_item_arrival_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#1A1A2E"
@@ -161,7 +161,7 @@
                     tools:text="TP.Hồ Chí Minh" />
 
                 <TextView
-                    android:id="@+id/tv_outbound_arrival_time"
+                    android:id="@+id/tv_outbound_item_arrival_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
@@ -191,7 +191,7 @@
                 android:gravity="start">
 
                 <TextView
-                    android:id="@+id/tv_return_departure_city"
+                    android:id="@+id/tv_return_item_departure_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#1A1A2E"
@@ -200,7 +200,7 @@
                     tools:text="Hà Nội" />
 
                 <TextView
-                    android:id="@+id/tv_return_departure_time"
+                    android:id="@+id/tv_return_item_departure_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
@@ -211,7 +211,7 @@
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/img_return_route_direction"
+                android:id="@+id/img_return_item_route_direction"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginHorizontal="6dp"
@@ -227,7 +227,7 @@
                 android:gravity="end">
 
                 <TextView
-                    android:id="@+id/tv_return_arrival_city"
+                    android:id="@+id/tv_return_item_arrival_city"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#1A1A2E"
@@ -236,7 +236,7 @@
                     tools:text="TP.Hồ Chí Minh" />
 
                 <TextView
-                    android:id="@+id/tv_return_arrival_time"
+                    android:id="@+id/tv_return_item_arrival_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
@@ -262,7 +262,7 @@
             android:gravity="center_vertical">
 
             <TextView
-                android:id="@+id/tv_order_status"
+                android:id="@+id/tv_order_item_status"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -274,7 +274,7 @@
                 tools:text="Giữ chỗ không th/công" />
 
             <TextView
-                android:id="@+id/tv_order_total_price"
+                android:id="@+id/tv_order_item_total_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/primary_red"

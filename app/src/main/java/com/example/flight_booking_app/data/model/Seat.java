@@ -1,5 +1,7 @@
 package com.example.flight_booking_app.data.model;
 
+import com.google.firebase.Timestamp;
+
 import java.util.Objects;
 
 public class Seat {
@@ -30,6 +32,7 @@ public class Seat {
     private String status;
     private String passengerId;
 
+    private Timestamp holdUntil;
 
 
     // ─── Transient fields – KHÔNG lưu Firebase ───────────────────────────
@@ -85,6 +88,14 @@ public class Seat {
 
     public String getStatus()                  { return status; }
     public void   setStatus(String status)     { this.status = status; }
+
+    public Timestamp getHoldUntil() {
+        return holdUntil;
+    }
+
+    public void setHoldUntil(Timestamp holdUntil) {
+        this.holdUntil = holdUntil;
+    }
 
     public String getPassengerId() { return passengerId; }
     public void setPassengerId(String passengerId) { this.passengerId = passengerId; }

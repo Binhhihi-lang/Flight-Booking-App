@@ -11,8 +11,20 @@ public class Passenger implements Serializable {
     private String fullName;
     private String dateOfBirth;
     private String idNumber;
-    private String seatNumber;
-    private double seatPrice;
+
+    private String outboundSeat;       // Lưu mã ghế lượt đi (VD: "12A")
+    private double outboundSeatPrice;  // Giá ghế lượt đi
+
+    private String returnSeat;         // Lưu mã ghế lượt về (VD: "14B")
+    private double returnSeatPrice;
+
+    private String outboundBaggageId;   // Lưu ID gói hành lý lượt đi được chọn
+    private double outboundBaggagePrice; // Lưu giá để tính tổng tiền cho nhanh
+    private int outboundBaggageWeight;   // Lưu số kg để hiển thị text ở màn hình ngoài
+
+    private String returnBaggageId;      // Lưu ID gói hành lý lượt về được chọn
+    private double returnBaggagePrice;
+    private int returnBaggageWeight;
 
     public Passenger() {}
 
@@ -28,17 +40,13 @@ public class Passenger implements Serializable {
                 && dateOfBirth != null && !dateOfBirth.trim().isEmpty();
     }
 
-    private String outboundBaggageId;   // Lưu ID gói hành lý lượt đi được chọn
-    private double outboundBaggagePrice; // Lưu giá để tính tổng tiền cho nhanh
-    private int outboundBaggageWeight;   // Lưu số kg để hiển thị text ở màn hình ngoài
 
-    private String returnBaggageId;      // Lưu ID gói hành lý lượt về được chọn
-    private double returnBaggagePrice;
-    private int returnBaggageWeight;
 
     // Tạo thêm hàm tính tổng chi phí của RIÊNG hành khách này
+
     public double getTotalPriceWithServices() {
-        return this.seatPrice + this.outboundBaggagePrice + this.returnBaggagePrice;
+        return this.outboundSeatPrice + this.returnSeatPrice
+                + this.outboundBaggagePrice + this.returnBaggagePrice;
     }
 
     public String getPassengerId() {
@@ -68,10 +76,38 @@ public class Passenger implements Serializable {
         this.title = title;
     }
     public void setDateOfBirth(String dateOfBirth) { this.dateOfBirth = dateOfBirth; }
-    public String getSeatNumber() { return seatNumber; }
-    public void setSeatNumber(String seatNumber) { this.seatNumber = seatNumber; }
-    public double getSeatPrice() { return seatPrice; }
-    public void setSeatPrice(double seatPrice) { this.seatPrice = seatPrice; }
+    public String getOutboundSeat() {
+        return outboundSeat;
+    }
+
+    public void setOutboundSeat(String outboundSeat) {
+        this.outboundSeat = outboundSeat;
+    }
+
+    public double getOutboundSeatPrice() {
+        return outboundSeatPrice;
+    }
+
+    public void setOutboundSeatPrice(double outboundSeatPrice) {
+        this.outboundSeatPrice = outboundSeatPrice;
+    }
+
+    public String getReturnSeat() {
+        return returnSeat;
+    }
+
+    public void setReturnSeat(String returnSeat) {
+        this.returnSeat = returnSeat;
+    }
+
+    public double getReturnSeatPrice() {
+        return returnSeatPrice;
+    }
+
+    public void setReturnSeatPrice(double returnSeatPrice) {
+        this.returnSeatPrice = returnSeatPrice;
+    }
+
     public String getIdNumber() { return idNumber; }
     public void setIdNumber(String idNumber) { this.idNumber = idNumber; }
 

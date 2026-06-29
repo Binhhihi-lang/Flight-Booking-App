@@ -1,9 +1,7 @@
 package com.example.flight_booking_app.data.model;
 
-import java.util.List;
-
 public class User {
-    private String uId ;
+    private String userId;
     private String fullName;
     private String email;
     private String phoneNumber;
@@ -16,7 +14,7 @@ public class User {
     }
 
     public User(String uId, String fullName, String email, String phoneNumber, int role, String dob, String gender, String avatar) {
-        this.uId = uId;
+        this.userId = uId;
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -27,18 +25,18 @@ public class User {
     }
 
     public User(String id, String fullName, String email, int role) {
-        this.uId = id;
+        this.userId = id;
         this.fullName = fullName;
         this.email = email;
         this.role = role;
     }
 
-    public String getuId() {
-        return uId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setuId(String uId) {
-        this.uId = uId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public int getRole() {

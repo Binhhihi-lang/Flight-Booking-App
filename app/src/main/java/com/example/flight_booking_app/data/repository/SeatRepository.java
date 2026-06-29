@@ -2,10 +2,16 @@ package com.example.flight_booking_app.data.repository;
 
 import com.example.flight_booking_app.data.model.Seat;
 import com.example.flight_booking_app.data.model.SeatMapMetadata;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,9 +168,87 @@ public class SeatRepository {
     }
 
     /**
+     * Khóa nhiều ghế cùng lúc. Nếu 1 ghế lỗi, hủy toàn bộ.
+     */
+    public void reserveMultipleSeatsWithTransaction(String flightId, List<String> seatNumbers, String currentUserId, OnUpdateCallback callback) {
+        db.runTransaction((Transaction.Function<Void>) transaction -> {
+                    List<DocumentReference> seatRefs = new ArrayList<>();
+                    List<DocumentSnapshot> snapshots = new ArrayList<>();
+
+                    // đọc dữ liệu của bảng flightSeat
+                    for (String seatNumber : seatNumbers) {
+                        DocumentReference ref = db.collection("flightSeats")
+                                .document(flightId)
+                                .collection("seats")
+                                .document(seatNumber);
+                        seatRefs.add(ref);
+                        snapshots.add(transaction.get(ref)); // Đọc dữ liệu từ Server
+                    }
+
+                    long currentTime = System.currentTimeMillis();
+
+                    // Kiểm tra điều kiện của từng ghế
+                    for (int i = 0; i < snapshots.size(); i++) {
+                        DocumentSnapshot snapshot = snapshots.get(i);
+                        String seatNumber = seatNumbers.get(i);
+
+                        if (snapshot.exists()) {
+                            String currentStatus = snapshot.getString("status");
+                            Timestamp holdUntil = snapshot.getTimestamp("holdUntil");
+
+                            if ("SOLD".equals(currentStatus) || "BOOKED".equals(currentStatus)) {
+                                throw new FirebaseFirestoreException("Ghế " + seatNumber + " đã được bán mất rồi!",
+                                        FirebaseFirestoreException.Code.ABORTED);
+                            }
+
+                            if ("HOLD".equals(currentStatus) && holdUntil != null && holdUntil.toDate().getTime() > currentTime) {
+                                String holdingUser = snapshot.getString("passengerId");
+                                if (!currentUserId.equals(holdingUser)) {
+                                    throw new FirebaseFirestoreException("Ghế " + seatNumber + " đang có người khác giữ chỗ.",
+                                            FirebaseFirestoreException.Code.ABORTED);
+                                }
+                            }
+                        }
+                    }
+
+                    // Nếu tất cả các ghế trống thì tiến hành giữ chỗ
+                    long holdDuration = 15 * 60 * 1000; // 15 phút
+                    Timestamp holdUntilTime = new Timestamp(new Date(currentTime + holdDuration));
+
+                    for (DocumentReference ref : seatRefs) {
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("status", "HOLD");
+                        data.put("passengerId", currentUserId); // Lưu ID người giữ để họ có thể thanh toán tiếp
+                        data.put("holdUntil", holdUntilTime);
+
+                        transaction.set(ref, data);
+                    }
+
+                    return null; // Thành công!
+
+                }).addOnSuccessListener(unused -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    //  xóa hẳn document, flightSeats chỉ còn ghế HOLD/BOOKED
+    public void releaseSeats(String flightId, List<String> seatNumbers, OnUpdateCallback callback) {
+        WriteBatch batch = db.batch();
+        for (String seatNumber : seatNumbers) {
+            DocumentReference ref = db.collection("flightSeats")
+                    .document(flightId)
+                    .collection("seats")
+                    .document(seatNumber);
+            batch.delete(ref);
+        }
+        batch.commit()
+                .addOnSuccessListener(unused -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+    /**
      * Cập nhật trạng thái một ghế khi hành khách đặt/huỷ.
      * Ghi vào flightSeats/{flightId}/seats/{seatNumber}
      */
+
     public void updateSeatStatus(String flightId, String seatNumber,
                                  String status, String passengerId,
                                  OnUpdateCallback callback) {

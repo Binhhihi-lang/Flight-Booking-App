@@ -60,13 +60,18 @@ public class UserRepository {
             return;
         }
 
+        String currentUserId = firebaseUser.getUid();
+
         db.collection("users")
                 .document(firebaseUser.getUid())
                 .get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
                         User user = doc.toObject(User.class);
-                        if (user != null) callback.onSuccess(user);
+                        if (user != null) {
+                            callback.onSuccess(user);
+                            user.setUserId(currentUserId);
+                        }
                         else callback.onError("Không parse được dữ liệu người dùng");
                     } else {
                         callback.onError("Không tìm thấy người dùng");
@@ -78,11 +83,17 @@ public class UserRepository {
 
     // Lắng nghe realtime — tự động cập nhật UI khi dữ liệu thay đổi
     public void observeCurrentUser(GetUserCallback callback) {
+        // không tạo lại trùng, quan sát chỉ 1 lần
+        if (userListenerReg != null) {
+            return;
+        }
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
+
         if (firebaseUser == null) {
             callback.onError("Chưa đăng nhập");
             return;
         }
+        String currentUserId = firebaseUser.getUid();
 
         DocumentReference userRef = db.collection("users")
                 .document(firebaseUser.getUid());
@@ -94,7 +105,10 @@ public class UserRepository {
             }
             if (doc != null && doc.exists()) {
                 User user = doc.toObject(User.class);
-                if (user != null) callback.onSuccess(user);
+                if (user != null) {
+                    user.setUserId(currentUserId);
+                    callback.onSuccess(user);
+                }
             }
         });
     }

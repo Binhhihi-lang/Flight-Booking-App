@@ -96,10 +96,9 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setupViewModel() {
-        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
 
         // Observe data user mỗi khi Firebase thay đổi, Fragment tự cập nhật
-        // getViewLifecycleOwner() giống this
         userViewModel.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
             if (user == null) return;
 
@@ -134,7 +133,7 @@ public class ProfileFragment extends Fragment {
         // Observe trạng thái logout
         userViewModel.getLogoutState().observe(getViewLifecycleOwner(), shouldLogout -> {
             if (Boolean.TRUE.equals(shouldLogout)) {
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                Intent intent = new Intent(requireActivity(), LoginActivity.class);
                 // Xóa sạch back stack không quay lại được màn hình trước
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

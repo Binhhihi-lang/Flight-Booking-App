@@ -7,6 +7,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,7 +32,7 @@ import com.example.flight_booking_app.data.model.FareClass;
 import com.example.flight_booking_app.data.model.FareRule;
 import com.example.flight_booking_app.data.model.Flight;
 import com.example.flight_booking_app.data.model.Passenger;
-import com.example.flight_booking_app.ui.viewmodel.BookingInfoViewModel;
+import com.example.flight_booking_app.ui.viewmodel.BookingViewModel;
 import com.example.flight_booking_app.ui.viewmodel.UserViewModel;
 import com.example.flight_booking_app.utils.PriceFormatter;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -39,6 +40,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class BookingInfoActivity extends AppCompatActivity {
@@ -48,11 +50,6 @@ public class BookingInfoActivity extends AppCompatActivity {
     private Flight returnFlight;
     private FareClass outboundFare;
     private FareClass returnFare;
-
-
-    // ── Flags ─────────────────────────────────────────────────────────────
-    public static final String EXTRA_IS_ROUND_TRIP = "is_round_trip";
-
 
     private MaterialToolbar toolbar;
 
@@ -75,7 +72,7 @@ public class BookingInfoActivity extends AppCompatActivity {
     private TextInputEditText edtContactName, edtContactEmail, edtContactPhone;
     private MaterialButton btnBookNow;
 
-    private BookingInfoViewModel bookingInfoViewModel;
+    private BookingViewModel bookingViewModel;
     private UserViewModel userViewModel;
     private ProgressDialog progressDialog;
 
@@ -121,7 +118,7 @@ public class BookingInfoActivity extends AppCompatActivity {
                     ArrayList<Double> retPrices = (ArrayList<Double>) data.getSerializableExtra("selected_prices_return");
 
                     // Cập nhật hàm updateSeats trong ViewModel để nhận thêm giá
-                    bookingInfoViewModel.updateSeats(depSeats, depPrices, retSeats, retPrices, isRoundTrip);
+                    bookingViewModel.updateSeats(depSeats, depPrices, retSeats, retPrices, isRoundTrip);
                 }
             }
     );
@@ -134,7 +131,7 @@ public class BookingInfoActivity extends AppCompatActivity {
                     // Nhận outboundFare và returnFare nếu có khứ hồi
                     if (updatedPassenger != null) {
                         // bookingInfoViewModel cập nhật
-                        bookingInfoViewModel.updatePassenger(updatedPassenger);
+                        bookingViewModel.updatePassenger(updatedPassenger);
                     }
                 }
             }
@@ -399,11 +396,11 @@ public class BookingInfoActivity extends AppCompatActivity {
     }
 
     private void setupViewModel() {
-        bookingInfoViewModel = new ViewModelProvider(this).get(BookingInfoViewModel.class);
+        bookingViewModel = new ViewModelProvider(this).get(BookingViewModel.class);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 
         // khởi tạo lần đầu danh sách hành khách động (trống thông tin)
-        bookingInfoViewModel.initPassengersIfNeeded(adultCount, childCount, babyCount);
+        bookingViewModel.initPassengersIfNeeded(adultCount, childCount, babyCount);
 
         // quan sát hiển thị thông tin liên hệ
         userViewModel.getCurrentUser().observe(this, user -> {
@@ -413,17 +410,19 @@ public class BookingInfoActivity extends AppCompatActivity {
             edtContactEmail.setText(user.getEmail());
             edtContactPhone.setText(user.getPhoneNumber());
         });
-        bookingInfoViewModel.getUiState().observe(this, result -> {
+
+        bookingViewModel.getLoadState().observe(this, result -> {
             if (result == null) return;
             switch (result.getStatus()) {
                 case LOADING:
                     btnBookNow.setEnabled(false);
+                    progressDialog.show();
                     break;
 
                 case SUCCESS:
                     progressDialog.dismiss();
                     Toast.makeText(this, "Đã giữ chỗ thành công!", Toast.LENGTH_SHORT).show();
-                    finish(); // Quay về ProfileFragment
+                    // Không chuyển màn hình ở đây nữa, để việc chuyển màn hình cho biến bookingIdLive lo!
                     break;
 
                 case ERROR:
@@ -434,11 +433,25 @@ public class BookingInfoActivity extends AppCompatActivity {
             }
         });
 
+        // quan sát bookingId
+        bookingViewModel.getBookingIdLive().observe(this, newBookingId -> {
+            if (newBookingId != null && !newBookingId.isEmpty()) {
+
+                // Tiến hành chuyển màn hình và đính kèm ID
+                Intent intent = new Intent(BookingInfoActivity.this, OrderDetailActivity.class);
+                intent.putExtra("booking_id", newBookingId);
+                startActivity(intent);
+
+                // Xóa dữ liệu ID trong LiveData đi để tránh việc xoay màn hình bị kích hoạt lại (Tùy chọn)
+                // bookingInfoViewModel.getBookingIdLive().setValue(null);
+
+                finish(); // Đóng màn hình nhập thông tin
+            }
+        });
 
         // quan sát thông tin hành khách
-        bookingInfoViewModel.getPassengerListLive().observe(this, list -> {
+        bookingViewModel.getPassengerListLive().observe(this, list -> {
             if (list != null) {
-                //
                 layoutPassengerList.removeAllViews();
                 LayoutInflater inflater = LayoutInflater.from(this);
 
@@ -520,22 +533,45 @@ public class BookingInfoActivity extends AppCompatActivity {
                         tvBaggageAdd.setVisibility(View.GONE);
                     }
 
-                    // Hiển thị Ghế
+                    // Hiển thị ghế ngồi
                     TextView tvSeat = container.findViewById(R.id.tv_passenger_seat);
-                    if (p.getSeatNumber() != null && !p.getSeatNumber().isEmpty()) {
-                        tvSeat.setText(p.getSeatNumber());
-                        tvSeat.setTextColor(p.getType().equals("BABY") ? Color.GRAY : Color.parseColor("#1565C0"));
+                    if ("BABY".equals(p.getType())) {
+                        tvSeat.setText("Ngồi cùng ng.lớn");
+                        tvSeat.setTextColor(Color.GRAY);
+                    } else {
+                        String outSeat = p.getOutboundSeat();
+                        String retSeat = p.getReturnSeat();
+                        boolean hasOutSeat = outSeat != null && !outSeat.trim().isEmpty();
+                        boolean hasRetSeat = retSeat != null && !retSeat.trim().isEmpty();
+
+                        if (hasOutSeat || hasRetSeat) {
+                            StringBuilder seatDisplay = new StringBuilder();
+                            // Nếu có 2 lượt
+                            if (hasOutSeat && hasRetSeat) {
+                                seatDisplay.append("Đi: ").append(outSeat).append(" | Về: ").append(retSeat);
+                            }
+                            // Nếu chỉ có lượt đi
+                            else if (hasOutSeat) {
+                                seatDisplay.append(outSeat);
+                            }
+
+                            tvSeat.setText(seatDisplay.toString());
+                            tvSeat.setTextColor(Color.parseColor("#1565C0"));
+                        } else {
+                            tvSeat.setText("");
+                        }
                     }
+
                     container.setOnClickListener(v -> openPassengerInput(p));
                     layoutPassengerList.addView(container);
                 }
             }
         });
 
-        bookingInfoViewModel.updateSubTotalPrice();
+        bookingViewModel.updateSubTotalPrice();
 
         // quan sát tiền cộng
-        bookingInfoViewModel.getSubTotalPriceLive().observe(this, price -> {
+        bookingViewModel.getSubTotalPriceLive().observe(this, price -> {
             if (price != null) {
                 tvFareTotalPrice.setText(PriceFormatter.formatPrice(currentTotalOutbound + currentTotalReturn));
 
@@ -545,7 +581,7 @@ public class BookingInfoActivity extends AppCompatActivity {
             }
         });
 
-        // Lấy data user lần đầu để điền vào form
+        // Lấy data user lần đầu để điền vào form, người dùng có thể chỉnh sửa thông tin
         userViewModel.loadUserOnce();
     }
 
@@ -575,32 +611,91 @@ public class BookingInfoActivity extends AppCompatActivity {
         btnSelectSeat.setOnClickListener(v -> openSeatSelection());
 
         btnBookNow.setOnClickListener(v -> {
-            String fullName = edtContactName.getText().toString().trim();
-            String email = edtContactEmail.getText().toString().trim();
-            String phone = edtContactPhone.getText().toString().trim();
+            try {
+                String fullName = edtContactName.getText().toString().trim();
+                String email = edtContactEmail.getText().toString().trim();
+                String phone = edtContactPhone.getText().toString().trim();
 
-            if (fullName.isEmpty()) {
-                edtContactName.setError("Vui lòng nhập họ và tên");
-                edtContactName.requestFocus();
-            } else if (email.isEmpty()) {
-                edtContactEmail.setError("Vui lòng nhập email liên hệ");
-                edtContactEmail.requestFocus();
-            } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                edtContactEmail.setError("Định dạng email không hợp lệ");
-                edtContactEmail.requestFocus();
-            } else if (phone.isEmpty()) {
-                edtContactPhone.setError("Vui lòng nhập số điện thoại");
-                edtContactPhone.requestFocus();
-            } else if (!phone.startsWith("0") || phone.length() != 10) {
-                edtContactPhone.setError("Số điện thoại phải bắt đầu bằng 0 và đủ 10 số");
-                edtContactPhone.requestFocus();
-            } else {
-                boolean isValid = bookingInfoViewModel.validateInfo(fullName, email, phone);
-                if (isValid) {
-                    // TODO: Gửi thông tin lên server
-                    Intent intent = new Intent(this,OrderDetailActivity.class);
-                    startActivity(intent);
+                if (fullName.isEmpty()) {
+                    edtContactName.setError("Vui lòng nhập họ và tên");
+                    edtContactName.requestFocus();
+                } else if (email.isEmpty()) {
+                    edtContactEmail.setError("Vui lòng nhập email liên hệ");
+                    edtContactEmail.requestFocus();
+                } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    edtContactEmail.setError("Định dạng email không hợp lệ");
+                    edtContactEmail.requestFocus();
+                } else if (phone.isEmpty()) {
+                    edtContactPhone.setError("Vui lòng nhập số điện thoại");
+                    edtContactPhone.requestFocus();
+                } else if (!phone.startsWith("0") || phone.length() != 10) {
+                    edtContactPhone.setError("Số điện thoại phải bắt đầu bằng 0 và đủ 10 số");
+                    edtContactPhone.requestFocus();
+                } else {
+                    boolean isValid = bookingViewModel.validateInfo(fullName, email, phone);
+                    if (isValid) {
+                        String currentUserId = "GUEST_USER";
+
+                        if (userViewModel.getCurrentUser() != null && userViewModel.getCurrentUser().getValue() != null) {
+                            currentUserId = userViewModel.getCurrentUser().getValue().getUserId();
+                        }
+
+                        // Lấy ds ghế
+                        List<String> outboundSeatNumbers = new ArrayList<>();
+                        List<String> returnSeatNumbers = new ArrayList<>();
+
+                        List<Passenger> passengerList = bookingViewModel.getPassengerListLive().getValue();
+
+
+                        // Kiểm tra đủ ghế (Chỉ tính Người lớn + Trẻ em, loại bỏ Em bé)
+                        int countNeedSeat = 0;
+                        if (passengerList != null && !passengerList.isEmpty()) {
+                            for (Passenger p : passengerList) {
+                                if (!"BABY".equals(p.getType())) countNeedSeat++;
+
+                                String outSeat = p.getOutboundSeat();
+                                if (outSeat != null && !outSeat.trim().isEmpty() && !outSeat.equals("Ngồi cùng ng.lớn")) {
+                                    outboundSeatNumbers.add(outSeat);
+                                }
+
+                                if (isRoundTrip) {
+                                    String retSeat = p.getReturnSeat();
+                                    if (retSeat != null && !retSeat.trim().isEmpty() && !retSeat.equals("Ngồi cùng ng.lớn")) {
+                                        returnSeatNumbers.add(retSeat);
+                                    }
+                                }
+                            }
+                        }
+
+
+                        if (outboundSeatNumbers.size() < countNeedSeat) {
+                            Toast.makeText(this, "Vui lòng chọn đủ ghế lượt đi cho người lớn và trẻ em", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (isRoundTrip && returnSeatNumbers.size() < countNeedSeat) {
+                            Toast.makeText(this, "Vui lòng chọn đủ ghế lượt về cho người lớn và trẻ em", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // 2. Hiển thị vòng xoay tải dữ liệu
+                        progressDialog.show();
+
+                        // 3. Tính toán tổng tiền
+                        double totalPayment = currentTotalOutbound + currentTotalReturn +
+                                (bookingViewModel.getSubTotalPriceLive().getValue() != null ? bookingViewModel.getSubTotalPriceLive().getValue() : 0);
+
+                        // 4. Gọi ViewModel xử lý chuỗi logic chốt ghế + tạo đơn hàng
+                        bookingViewModel.submitBooking(
+                                currentUserId,
+                                outboundFlight, outboundFare, outboundSeatNumbers,
+                                returnFlight, returnFare, returnSeatNumbers,
+                                isRoundTrip, totalPayment, fullName, email, phone
+                        );
+                    }
                 }
+            } catch (Exception e) {
+                Log.e("DEBUG_BOOKING", "Lỗi: " + e.getMessage());
+                e.printStackTrace();
             }
         });
     }

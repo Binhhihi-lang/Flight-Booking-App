@@ -40,6 +40,15 @@ public class PriceFormatter {
     }
 
     /**
+     * Chuyển Timestamp thành chuỗi hiển thị "HH:mm dd/MM/yyyy"
+     */
+    public static String formatDateTime(Timestamp timestamp) {
+        if (timestamp == null) return "--:-- --/--/----";
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault());
+        return formatter.format(timestamp.toDate());
+    }
+
+    /**
      * Chuyển Timestamp thành giờ hiển thị (Ví dụ: "08:35")
      */
     public static String formatTimeOnly(Timestamp timestamp) {

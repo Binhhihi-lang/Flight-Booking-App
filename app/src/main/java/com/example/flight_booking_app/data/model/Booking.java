@@ -16,19 +16,20 @@ public class Booking implements Serializable {
     private Timestamp createdAt;
     private Timestamp paymentDeadline;
 
-    private String outboundFlightId;
-    private String returnFlightId; // Sẽ là null nếu đi một chiều
-    private String outboundFareClassId; // Mã hạng vé lượt đi (Ví dụ: "ECO_STANDARD")
-    private String returnFareClassId;   // Mã hạng vé lượt về (Ví dụ: "BUS_BUSINESS", null nếu đi 1 chiều)
+    // lồng Object
+    private Flight outboundFlight;
+    private FareClass outboundFare;
+    private Flight returnFlight;
+    private FareClass returnFare;
 
-    // ── BỔ SUNG CÁC TRƯỜNG TÓM TẮT ĐỂ HIỂN THỊ NHANH (DENORMALIZATION)
-    private String departureCity;       // Tên thành phố đi (Ví dụ: "Hà Nội")
-    private String arrivalCity;         // Tên thành phố đến (Ví dụ: "Hồ Chí Minh")
-    private Timestamp departureTime; // Thời gian cất cánh lượt đi (Dùng kiểu Timestamp của Firebase)
-    private Timestamp arrivalTime; // Thời gian đến Timestamp sắp xếp danh sách đơn hàng mới/cũ cho chuẩn.
+    private boolean isRoundTrip;
 
     // Firestore sẽ tự động map mảng các Map thành List các Object Passenger
     private List<Passenger> passengers;
+
+    private String contactName;
+    private String contactEmail;
+    private String contactPhone;
 
     // Constructor bắt buộc phải có cho Firestore (.toObject(Booking.class))
     public Booking() {
@@ -67,61 +68,70 @@ public class Booking implements Serializable {
     public Timestamp getPaymentDeadline() { return paymentDeadline; }
     public void setPaymentDeadline(Timestamp paymentDeadline) { this.paymentDeadline = paymentDeadline; }
 
-    public String getOutboundFlightId() { return outboundFlightId; }
-    public void setOutboundFlightId(String outboundFlightId) { this.outboundFlightId = outboundFlightId; }
-
-    public String getReturnFlightId() { return returnFlightId; }
-    public void setReturnFlightId(String returnFlightId) { this.returnFlightId = returnFlightId; }
-
-
-    public String getOutboundFareClassId() {
-        return outboundFareClassId;
+    public boolean isRoundTrip() {
+        return isRoundTrip;
     }
 
-    public void setOutboundFareClassId(String outboundFareClassId) {
-        this.outboundFareClassId = outboundFareClassId;
+    public void setRoundTrip(boolean roundTrip) {
+        isRoundTrip = roundTrip;
     }
 
-    public String getReturnFareClassId() {
-        return returnFareClassId;
+    public Flight getOutboundFlight() {
+        return outboundFlight;
     }
 
-    public void setReturnFareClassId(String returnFareClassId) {
-        this.returnFareClassId = returnFareClassId;
+    public void setOutboundFlight(Flight outboundFlight) {
+        this.outboundFlight = outboundFlight;
     }
 
-    public String getDepartureCity() {
-        return departureCity;
+    public FareClass getOutboundFare() {
+        return outboundFare;
     }
 
-    public void setDepartureCity(String departureCity) {
-        this.departureCity = departureCity;
+    public void setOutboundFare(FareClass outboundFare) {
+        this.outboundFare = outboundFare;
     }
 
-    public String getArrivalCity() {
-        return arrivalCity;
+    public Flight getReturnFlight() {
+        return returnFlight;
     }
 
-    public void setArrivalCity(String arrivalCity) {
-        this.arrivalCity = arrivalCity;
+    public void setReturnFlight(Flight returnFlight) {
+        this.returnFlight = returnFlight;
     }
 
-    public Timestamp getDepartureTime() {
-        return departureTime;
+    public FareClass getReturnFare() {
+        return returnFare;
     }
 
-    public void setDepartureTime(Timestamp departureTime) {
-        this.departureTime = departureTime;
-    }
-
-    public Timestamp getArrivalTime() {
-        return arrivalTime;
-    }
-
-    public void setArrivalTime(Timestamp arrivalTime) {
-        this.arrivalTime = arrivalTime;
+    public void setReturnFare(FareClass returnFare) {
+        this.returnFare = returnFare;
     }
 
     public List<Passenger> getPassengers() { return passengers; }
     public void setPassengers(List<Passenger> passengers) { this.passengers = passengers; }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
+    }
 }

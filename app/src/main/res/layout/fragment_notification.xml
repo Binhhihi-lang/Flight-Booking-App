@@ -8,9 +8,6 @@
     android:background="#F0F4F8"
     tools:context=".ui.view.fragment.NotificationFragment">
 
-    <!-- ══════════════════════════════════════════
-         APPBAR — Toolbar "Thông báo"
-         ══════════════════════════════════════════ -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar_notification"
         android:layout_width="match_parent"
@@ -19,7 +16,7 @@
         app:elevation="4dp">
 
         <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar_notification"
+            android:id="@+id/toolbar_notification_list"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_marginTop="28dp"
@@ -31,28 +28,26 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-
-    <!-- app:layout_behavior để biết App bar -->
+    <!-- NestedScrollView — chuẩn pattern của project -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        >
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_notifications"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_notification"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white"
-                tools:itemCount="3"
-                tools:listitem="@layout/item_notification" />
-
-        </LinearLayout>
+            android:background="@color/white"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never"
+            android:visibility="gone"
+            tools:itemCount="3"
+            tools:listitem="@layout/item_notification"
+            tools:visibility="visible" />
 
     </androidx.core.widget.NestedScrollView>
 
@@ -75,6 +70,7 @@
             app:tint="#BBBBBB" />
 
         <TextView
+            android:id="@+id/tv_empty_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -83,5 +79,11 @@
             android:textSize="14sp" />
 
     </LinearLayout>
+
+    <!-- Loading overlay — phải là thẻ cuối để đè lên tất cả -->
+    <include
+        android:id="@+id/layout_loading"
+        layout="@layout/layout_loading_overlay"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

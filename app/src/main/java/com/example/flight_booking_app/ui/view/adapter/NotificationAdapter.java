@@ -1,35 +1,42 @@
 package com.example.flight_booking_app.ui.view.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.flight_booking_app.R;
 import com.example.flight_booking_app.data.model.Notification;
-import com.example.flight_booking_app.ui.view.activity.OrderDetailActivity;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.flight_booking_app.utils.PriceFormatter;
+
 import java.util.List;
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder> {
-    private List<Notification> notificationList;
-    private Context context;
-    private String currentUserId; // Cần dùng để update trạng thái đã đọc
 
-    public NotificationAdapter(List<Notification> notificationList, Context context, String currentUserId) {
+    public interface OnNotificationClickListener {
+        void onClick(Notification notification);
+    }
+
+    private final List<Notification> notificationList;
+    private final Context context;
+    private final OnNotificationClickListener clickListener;
+
+    public NotificationAdapter(List<Notification> notificationList, Context context,
+                               OnNotificationClickListener clickListener) {
         this.notificationList = notificationList;
-        this.context = context;
-        this.currentUserId = currentUserId;
+        this.context          = context;
+        this.clickListener    = clickListener;
     }
 
     @NonNull
     @Override
     public NotificationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).
-                inflate(R.layout.item_notification, parent, false);
+        View view = LayoutInflater.from(context)
+                .inflate(R.layout.item_notification, parent, false);
         return new NotificationViewHolder(view);
     }
 
@@ -39,28 +46,17 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         holder.tvTitle.setText(notification.getTitle());
         holder.tvBody.setText(notification.getBody());
+        holder.tvDate.setText(PriceFormatter.formatDateOnly(notification.getCreatedAt()));
 
         if (!notification.isRead()) {
-            holder.viewUnreadDot.setVisibility(View.VISIBLE); // CHƯA ĐỌC: Hiện chấm đỏ lên
+            holder.viewUnreadDot.setVisibility(View.VISIBLE);
         } else {
-            holder.viewUnreadDot.setVisibility(View.GONE);    // ĐÃ ĐỌC: Ẩn chấm đỏ đi
+            holder.viewUnreadDot.setVisibility(View.GONE);
         }
 
-        // sự kiện click
+        // Click → Fragment xử lý điều hướng + markAsRead
         holder.itemView.setOnClickListener(v -> {
-
-            // Cập nhật trạng thái đã đọc (isRead = true) lên Firestore cho đẹp bài
-            if (!notification.isRead()) {
-                FirebaseFirestore.getInstance()
-                        .collection("users").document(currentUserId)
-                        .collection("notifications").document(notification.getNotificationId())
-                        .update("isRead", true);
-            }
-
-            // Lấy bookingId đính kèm trong thông báo chuyển thẳng sang màn hình Chi tiết đơn hàng
-            Intent intent = new Intent(context, OrderDetailActivity.class);
-            intent.putExtra("booking_id", notification.getBookingId());
-            context.startActivity(intent);
+            if (clickListener != null) clickListener.onClick(notification);
         });
     }
 
@@ -73,11 +69,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         TextView tvTitle, tvBody, tvDate;
         View viewUnreadDot;
 
-        public NotificationViewHolder(@NonNull View itemView) {
+        NotificationViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tv_notification_title);
-            tvBody = itemView.findViewById(R.id.tv_notification_body);
-            tvDate = itemView.findViewById(R.id.tv_notification_date);
+            tvTitle       = itemView.findViewById(R.id.tv_notification_title);
+            tvBody        = itemView.findViewById(R.id.tv_notification_body);
+            tvDate        = itemView.findViewById(R.id.tv_notification_date);
             viewUnreadDot = itemView.findViewById(R.id.view_unread_dot);
         }
     }

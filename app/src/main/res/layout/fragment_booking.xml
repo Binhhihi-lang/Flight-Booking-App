@@ -8,9 +8,6 @@
     android:background="#F0F4F8"
     tools:context=".ui.view.fragment.BookingFragment">
 
-    <!-- ══════════════════════════════════════════
-         APPBAR — Toolbar "Đặt chỗ của tôi" + nút menu 3 chấm
-         ══════════════════════════════════════════ -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar_booking_list"
         android:layout_width="match_parent"
@@ -27,33 +24,31 @@
             app:navigationIconTint="@color/white"
             app:title="Đặt chỗ của tôi"
             app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            app:titleTextColor="@color/white">
-
-
-
-        </com.google.android.material.appbar.MaterialToolbar>
+            app:titleTextColor="@color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-
+    <!-- NestedScrollView bọc RecyclerView — chuẩn pattern của project -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_booking_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
         android:clipToPadding="false"
+        android:fillViewport="true"
         android:paddingBottom="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_order_list"
+            android:id="@+id/rv_bookings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             android:overScrollMode="never"
             android:paddingBottom="4dp"
+            android:visibility="gone"
             tools:itemCount="2"
-            tools:listitem="@layout/item_booking" />
+            tools:listitem="@layout/item_booking"
+            tools:visibility="visible" />
 
     </androidx.core.widget.NestedScrollView>
 
@@ -76,6 +71,7 @@
             app:tint="#BBBBBB" />
 
         <TextView
+            android:id="@+id/tv_empty_booking"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -84,5 +80,11 @@
             android:textSize="14sp" />
 
     </LinearLayout>
+
+    <!-- Loading overlay — phải là thẻ cuối để đè lên tất cả -->
+    <include
+        android:id="@+id/layout_loading"
+        layout="@layout/layout_loading_overlay"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
