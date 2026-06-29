@@ -10,6 +10,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.WriteBatch;
 
 import java.util.List;
+import java.util.Map;
 
 public class BookingRepository {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -141,4 +142,27 @@ public class BookingRepository {
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
+
+//    public void updateBookingCode(String bookingId, String bookingCode, OnStatusResultCallback callback) {
+//        db.collection("bookings")
+//                .document(bookingId)
+//                .update("bookingCode", bookingCode)
+//                .addOnSuccessListener(unused -> callback.onSuccess())
+//                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+//    }
+
+
+    // Dùng cho bất kỳ trường hợp nào cần update nhiều field cùng lúc
+    public void updateBookingFields(String bookingId, Map<String, Object> fields,
+                                    OnStatusResultCallback callback) {
+        if (bookingId == null || bookingId.isEmpty()) {
+            callback.onError("Booking ID không hợp lệ");
+            return;
+        }
+        db.collection("bookings")
+                .document(bookingId)
+                .update(fields)
+                .addOnSuccessListener(unused -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
 }

@@ -204,7 +204,7 @@ public class BookingViewModel extends ViewModel {
         booking.setTotalAmount(totalAmount);
 
         booking.setCreatedAt(Timestamp.now());
-        long deadlineMillis = System.currentTimeMillis() + (1 * 60 * 1000); // +15 phút
+        long deadlineMillis = System.currentTimeMillis() + (15 * 60 * 1000); // +15 phút
         booking.setPaymentDeadline(new Timestamp(new java.util.Date(deadlineMillis)));
 
         booking.setOutboundFlight(outFlight);

@@ -14,7 +14,9 @@ import com.example.flight_booking_app.data.repository.BookingRepository;
 import com.example.flight_booking_app.data.repository.SeatRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrderDetailViewModel extends ViewModel {
 
@@ -171,4 +173,69 @@ public class OrderDetailViewModel extends ViewModel {
         cancelCountdown();
         bookingRepository.removeObservers();
     }
+
+
+    public void confirmPaymentSuccess(Booking booking) {
+        cancelCountdown();
+
+        // Sinh mã đặt chỗ
+        String bookingCode = generateBookingCode();
+
+        // 1. Cập nhật status + bookingCode cùng lúc bằng Map
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", "PAYMENT_SUCCESS");
+        updates.put("bookingCode", bookingCode);
+
+        // Dùng update nhiều field thay vì gọi 2 lần riêng lẻ
+        bookingRepository.updateBookingFields(
+                booking.getBookingId(),
+                updates,
+                new BookingRepository.OnStatusResultCallback() {
+                    @Override public void onSuccess() { }
+                    @Override public void onError(String error) {
+                        uiState.postValue(UiState.error(error));
+                    }
+                });
+
+        String userId = booking.getUserId();
+
+        // 2. Confirm ghế lượt đi → BOOKED
+        List<String> outSeats = extractSeatNumbers(booking.getPassengers(), true);
+        if (!outSeats.isEmpty()) {
+            seatRepository.confirmSeats(
+                    booking.getOutboundFlight().getFlightId(),
+                    outSeats, userId,
+                    new SeatRepository.OnUpdateCallback() {
+                        @Override public void onSuccess() { }
+                        @Override public void onError(String e) { }
+                    });
+        }
+
+        // 3. Confirm ghế lượt về → BOOKED (nếu khứ hồi)
+        if (booking.isRoundTrip() && booking.getReturnFlight() != null) {
+            List<String> retSeats = extractSeatNumbers(booking.getPassengers(), false);
+            if (!retSeats.isEmpty()) {
+                seatRepository.confirmSeats(
+                        booking.getReturnFlight().getFlightId(),
+                        retSeats, userId,
+                        new SeatRepository.OnUpdateCallback() {
+                            @Override public void onSuccess() { }
+                            @Override public void onError(String e) { }
+                        });
+            }
+        }
+    }
+
+    // Sinh mã đặt chỗ 6 ký tự kiểu PNR hàng không: chữ hoa + số
+    // VD: "A3KF7X", "BZ291Q"
+    private String generateBookingCode() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder code = new StringBuilder();
+        java.util.Random random = new java.util.Random();
+        for (int i = 0; i < 6; i++) {
+            code.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return code.toString();
+    }
 }
+

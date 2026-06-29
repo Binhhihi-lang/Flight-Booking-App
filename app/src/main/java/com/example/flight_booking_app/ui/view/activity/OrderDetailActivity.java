@@ -1,9 +1,12 @@
 package com.example.flight_booking_app.ui.view.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.StrictMode;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.example.flight_booking_app.Api.CreateOrder;
 import com.example.flight_booking_app.R;
 import com.example.flight_booking_app.data.model.Booking;
 import com.example.flight_booking_app.data.model.Flight;
@@ -28,8 +32,15 @@ import com.example.flight_booking_app.utils.PriceFormatter;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Locale;
+
+import vn.zalopay.sdk.Environment;
+import vn.zalopay.sdk.ZaloPayError;
+import vn.zalopay.sdk.ZaloPaySDK;
+import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class OrderDetailActivity extends AppCompatActivity {
 
@@ -190,6 +201,16 @@ public class OrderDetailActivity extends AppCompatActivity {
         btnPayNow = findViewById(R.id.btn_pay_now);
 
         toolbar = findViewById(R.id.toolbar_order_detail);
+
+        // Thanh toán Zalopay
+        StrictMode.ThreadPolicy policy = new
+                StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        // ZaloPay SDK Init
+        ZaloPaySDK.init(2553, Environment.SANDBOX);
+
+
     }
 
     private void observeViewModel() {
@@ -238,6 +259,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                             String.format(Locale.getDefault(), "Còn lại %02d:%02d", minutes, seconds));
                     tvPaymentDeadline.setTextColor(Color.parseColor("#E65100"));
                 }
+
                 @Override
                 public void onFinish() {
                     // ViewModel.Handler tự gọi expireBooking() → snapshot bắn lại → UI tự đúng
@@ -274,10 +296,22 @@ public class OrderDetailActivity extends AppCompatActivity {
     private void populateStatusBanner(String status) {
         String text, bgColor;
         switch (status != null ? status : "") {
-            case "RESERVATION_SUCCESS": text = "Đã giữ chỗ — Chờ thanh toán ⏳"; bgColor = "#F59E0B"; break;
-            case "PAYMENT_SUCCESS":     text = "Thanh toán thành công ✅"; bgColor = "#16A34A"; break;
-            case "PAYMENT_EXPIRED":     text = "Đã hết hạn thanh toán ⌛"; bgColor = "#6B7280"; break;
-            default:                    text = "Đặt chỗ không thành công ❌"; bgColor = "#B1B1B1"; break;
+            case "RESERVATION_SUCCESS":
+                text = "Đã giữ chỗ — Chờ thanh toán ⏳";
+                bgColor = "#F59E0B";
+                break;
+            case "PAYMENT_SUCCESS":
+                text = "Thanh toán thành công ✅";
+                bgColor = "#16A34A";
+                break;
+            case "PAYMENT_EXPIRED":
+                text = "Đã hết hạn thanh toán ⌛";
+                bgColor = "#6B7280";
+                break;
+            default:
+                text = "Đặt chỗ không thành công ❌";
+                bgColor = "#B1B1B1";
+                break;
         }
         tvOrderStatusBanner.setBackgroundColor(Color.parseColor(bgColor));
         tvOrderStatusBanner.setText(text);
@@ -372,15 +406,15 @@ public class OrderDetailActivity extends AppCompatActivity {
     private void populateOrderInfo(Booking b) {
         String status = b.getStatus() != null ? b.getStatus() : "";
         boolean isPending = "RESERVATION_SUCCESS".equals(status);
-        boolean isExpired        = "PAYMENT_EXPIRED".equals(status);
-        boolean isSuccess        = "PAYMENT_SUCCESS".equals(status);
-        boolean isFailed         = "RESERVATION_FAILED".equals(status);
+        boolean isExpired = "PAYMENT_EXPIRED".equals(status);
+        boolean isSuccess = "PAYMENT_SUCCESS".equals(status);
+        boolean isFailed = "RESERVATION_FAILED".equals(status);
 
 
         // Nhóm liên hệ: compact khi chờ thanh toán / thành công, detailed khi thất bại / hết hạn
         boolean showCompact = isPending || isSuccess;
-        groupContactDetailed.setVisibility(showCompact ? View.GONE  : View.VISIBLE);
-        groupContactCompact .setVisibility(showCompact ? View.VISIBLE : View.GONE);
+        groupContactDetailed.setVisibility(showCompact ? View.GONE : View.VISIBLE);
+        groupContactCompact.setVisibility(showCompact ? View.VISIBLE : View.GONE);
 
         tvContactNameDetail.setText(b.getContactName());
         tvContactEmailDetail.setText(b.getContactEmail());
@@ -397,7 +431,7 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         // Tính toán phụ phí (ghế + hành lý)
         double totalAddons = 0;
-        double totalBaseTickets ;
+        double totalBaseTickets;
         if (b.getPassengers() != null) {
             for (Passenger p : b.getPassengers()) {
                 totalAddons += p.getTotalPriceWithServices();
@@ -444,8 +478,10 @@ public class OrderDetailActivity extends AppCompatActivity {
             TextView baggage = v.findViewById(R.id.tv_baggage_add);
             boolean hasOut = p.getOutboundBaggageId() != null && !p.getOutboundBaggageId().isEmpty();
             boolean hasRet = p.getReturnBaggageId() != null && !p.getReturnBaggageId().isEmpty();
-            if (hasOut && hasRet) baggage.setText("- Hành lý: " + p.getOutboundBaggageWeight() + "kg (Đi) & " + p.getReturnBaggageWeight() + "kg (Về)");
-            else if (hasOut) baggage.setText("- Hành lý đi: " + p.getOutboundBaggageWeight() + "kg");
+            if (hasOut && hasRet)
+                baggage.setText("- Hành lý: " + p.getOutboundBaggageWeight() + "kg (Đi) & " + p.getReturnBaggageWeight() + "kg (Về)");
+            else if (hasOut)
+                baggage.setText("- Hành lý đi: " + p.getOutboundBaggageWeight() + "kg");
             else if (hasRet) baggage.setText("- Hành lý về: " + p.getReturnBaggageWeight() + "kg");
             else baggage.setVisibility(View.GONE);
 
@@ -477,6 +513,7 @@ public class OrderDetailActivity extends AppCompatActivity {
             layoutPassengerList.addView(v);
         }
     }
+
     private void populateBottomBar(Booking b) {
         String s = b.getStatus() != null ? b.getStatus() : "";
         layoutBottomFailed.setVisibility("RESERVATION_FAILED".equals(s) ? View.VISIBLE : View.GONE);
@@ -486,19 +523,27 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private String statusLabel(String s) {
         switch (s != null ? s : "") {
-            case "RESERVATION_SUCCESS": return "Đợi thanh toán";
-            case "PAYMENT_SUCCESS":     return "Đã thanh toán";
-            case "PAYMENT_EXPIRED":     return "Hết hạn thanh toán";
-            default:                    return "Giữ chỗ không thành công";
+            case "RESERVATION_SUCCESS":
+                return "Đợi thanh toán";
+            case "PAYMENT_SUCCESS":
+                return "Đã thanh toán";
+            case "PAYMENT_EXPIRED":
+                return "Hết hạn thanh toán";
+            default:
+                return "Giữ chỗ không thành công";
         }
     }
 
     private String statusColor(String s) {
         switch (s != null ? s : "") {
-            case "RESERVATION_SUCCESS": return "#F59E0B";
-            case "PAYMENT_SUCCESS":     return "#16A34A";
-            case "PAYMENT_EXPIRED":     return "#6B7280";
-            default:                    return "#DC2626";
+            case "RESERVATION_SUCCESS":
+                return "#F59E0B";
+            case "PAYMENT_SUCCESS":
+                return "#16A34A";
+            case "PAYMENT_EXPIRED":
+                return "#6B7280";
+            default:
+                return "#DC2626";
         }
     }
 
@@ -515,7 +560,7 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         View.OnClickListener showSupportDialog = v -> {
             Booking current = viewModel.getBooking().getValue();
-            String name  = current != null ? current.getContactName()  : "";
+            String name = current != null ? current.getContactName() : "";
             String phone = current != null ? current.getContactPhone() : "";
             String status = current != null ? statusLabel(current.getStatus()) : "";
             String msg = "Chào " + name + " 👋\n"
@@ -531,7 +576,64 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         btnPayContactExpire.setOnClickListener(showSupportDialog);
 
-        btnPayNow.setOnClickListener(v -> {});
+        btnPayNow.setOnClickListener(v -> {
+            CreateOrder orderApi = new CreateOrder();
+            String rawTotal = tvGrandTotal.getText().toString();
 
+            // 2. Dùng Regex loại bỏ sạch sành sanh những gì KHÔNG PHẢI LÀ SỐ [^0-9]
+            // Kết quả thu được sẽ là chuỗi thuần số: "1000000"
+            String totalString = rawTotal.replaceAll("[^0-9]", "");
+
+            try {
+                // Lấy tổng tiền thanh toán
+                JSONObject data = orderApi.createOrder(totalString);
+                String code = data.getString("return_code");
+
+                if (code.equals("1")) {
+                    // khi ấn thanh toán sẽ tạo ra chuỗi token để thanh toán
+                    String token = data.getString("zp_trans_token");
+                    ZaloPaySDK.getInstance().payOrder(OrderDetailActivity.this, token, "demozpdk://app", new PayOrderListener() {
+                        @Override
+                        public void onPaymentSucceeded(String s, String s1, String s2) {
+                            Booking current = viewModel.getBooking().getValue();
+                            if (current != null) {
+                                viewModel.confirmPaymentSuccess(current);
+                            }
+                            // snapshot listener sẽ tự cập nhật UI
+                            // nên không cần truyền thêm data
+                            Intent intent = new Intent(OrderDetailActivity.this,
+                                    PaymentNotificationActivity.class);
+                            intent.putExtra("result", "success");
+                            intent.putExtra("booking_id", current != null
+                                    ? current.getBookingId() : "");
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onPaymentCanceled(String s, String s1) {
+                            Intent intent = new Intent(OrderDetailActivity.this, PaymentNotificationActivity.class);
+                            intent.putExtra("result", "Hủy Thanh toán");
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
+                            Intent intent = new Intent(OrderDetailActivity.this, PaymentNotificationActivity.class);
+                            intent.putExtra("result", "Thanh toán lỗi");
+                            startActivity(intent);
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+    }
+    // màn hình thanh toán zalopay
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        ZaloPaySDK.getInstance().onResult(intent);
     }
 }

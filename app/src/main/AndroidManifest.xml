@@ -19,8 +19,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FlightBookingApp">
         <activity
+            android:name=".ui.view.activity.PaymentNotificationActivity"
+            android:exported="true" />
+        <activity
             android:name=".ui.view.activity.OrderDetailActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:label="Merchant Demo"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="app"
+                    android:scheme="demozpdk" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.view.activity.SeatSelectionActivity"
             android:exported="false" />

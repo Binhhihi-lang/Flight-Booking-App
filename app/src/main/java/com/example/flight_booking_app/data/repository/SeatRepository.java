@@ -249,18 +249,28 @@ public class SeatRepository {
      * Ghi vào flightSeats/{flightId}/seats/{seatNumber}
      */
 
-    public void updateSeatStatus(String flightId, String seatNumber,
-                                 String status, String passengerId,
-                                 OnUpdateCallback callback) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("status", status);
-        data.put("passengerId", passengerId != null ? passengerId : "");
+    /**
+     * Xác nhận thanh toán thành công: đổi ghế từ HOLD → BOOKED
+     * Dùng WriteBatch để ghi tất cả cùng lúc
+     */
+    public void confirmSeats(String flightId, List<String> seatNumbers,
+                             String passengerId, OnUpdateCallback callback) {
+        WriteBatch batch = db.batch();
 
-        db.collection("flightSeats")
-                .document(flightId)
-                .collection("seats")
-                .document(seatNumber)
-                .set(data)
+        for (String seatNumber : seatNumbers) {
+            DocumentReference ref = db.collection("flightSeats")
+                    .document(flightId)
+                    .collection("seats")
+                    .document(seatNumber);
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("status", "BOOKED");
+            data.put("passengerId", passengerId);
+            data.put("holdUntil", null); // Xóa thời hạn giữ chỗ
+            batch.set(ref, data);
+        }
+
+        batch.commit()
                 .addOnSuccessListener(unused -> callback.onSuccess())
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }

@@ -100,7 +100,4 @@ public class ContactSupportDialog extends DialogFragment {
         return dialog;
     }
 
-    // ─── Cách gọi từ Activity / Fragment ─────────────────────────────────────
-    // ContactSupportDialog.newInstance(message, phoneNumber)
-    //         .show(getSupportFragmentManager(), "contact_support");
 }
