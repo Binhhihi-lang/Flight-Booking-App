@@ -27,11 +27,11 @@ public class ContactSupportDialog extends DialogFragment {
     private static final String HOTLINE_NUMBER = "0355935245";
 
     // ─── Factory
-    public static ContactSupportDialog newInstance(String supportMessage, String phone) {
+    public static ContactSupportDialog newInstance(String supportMessage) {
         ContactSupportDialog dialog = new ContactSupportDialog();
         Bundle args = new Bundle();
         args.putString(ARG_MESSAGE, supportMessage);
-        args.putString(ARG_PHONE, phone != null ? phone : HOTLINE_NUMBER);
+        args.putString(ARG_PHONE, HOTLINE_NUMBER);
         dialog.setArguments(args);
         return dialog;
     }

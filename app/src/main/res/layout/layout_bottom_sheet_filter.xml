@@ -25,7 +25,7 @@
             android:paddingStart="4dp"
             app:navigationIcon="@drawable/ic_close"
             app:navigationIconTint="@color/primary_blue"
-            app:title="Bộ lọc tìm kiếm"
+            app:title="@string/filter_title"
             app:titleCentered="true"
             app:titleTextColor="#212121">
 
@@ -36,7 +36,7 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="8dp"
                 android:padding="8dp"
-                android:text="Thiết lập lại"
+                android:text="@string/btn_reset_filter"
                 android:textColor="#0175F3" />
 
         </com.google.android.material.appbar.MaterialToolbar>
@@ -77,7 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:text="Hiển thị giá"
+                android:text="@string/filter_section_price_display"
                 android:textColor="#1A1A1A"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -112,7 +112,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Giá đầy đủ"
+                        android:text="@string/filter_price_full"
                         android:textColor="#0175F3"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -120,7 +120,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Bao gồm thuế phí"
+                        android:text="@string/filter_price_full_desc"
                         android:textColor="#757575"
                         android:textSize="11sp" />
 
@@ -155,7 +155,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Giá NET"
+                        android:text="@string/filter_price_net"
                         android:textColor="#757575"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -163,7 +163,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Chưa bao gồm thuế phí"
+                        android:text="@string/filter_price_net_desc"
                         android:textColor="#757575"
                         android:textSize="11sp" />
 
@@ -186,7 +186,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:text="Sắp xếp theo"
+                android:text="@string/filter_section_sort_by"
                 android:textColor="#1A1A1A"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -205,7 +205,7 @@
                     android:layout_height="48dp"
                     android:buttonTint="#0175F3"
                     android:checked="true"
-                    android:text="Giá thấp nhất"
+                    android:text="@string/sort_price_asc"
                     android:textColor="#1A1A1A"
                     android:textSize="14sp" />
 
@@ -219,7 +219,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:buttonTint="#0175F3"
-                    android:text="Giờ đi sớm nhất"
+                    android:text="@string/sort_depart_early"
                     android:textColor="#1A1A1A"
                     android:textSize="14sp" />
 
@@ -235,7 +235,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:buttonTint="#0175F3"
-                    android:text="Bay ngắn nhất"
+                    android:text="@string/sort_duration_shortest"
                     android:textColor="#1A1A1A"
                     android:textSize="14sp" />
 
@@ -252,7 +252,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:text="Hãng hàng không"
+                android:text="@string/filter_section_airline"
                 android:textColor="#1A1A1A"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -279,7 +279,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:text="Thời gian khởi hành"
+                android:text="@string/filter_section_departure_time"
                 android:textColor="#1A1A1A"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -312,7 +312,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sáng"
+                        android:text="@string/time_morning"
                         android:textColor="#1A1A1A"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -347,7 +347,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Chiều"
+                        android:text="@string/time_afternoon"
                         android:textColor="#1A1A1A"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -382,7 +382,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tối"
+                        android:text="@string/time_night"
                         android:textColor="#1A1A1A"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -407,7 +407,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:text="Hạng ghế"
+                android:text="@string/filter_section_seat_class"
                 android:textColor="#1A1A1A"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -430,7 +430,7 @@
                     android:layout_height="48dp"
                     android:buttonTint="#0175F3"
                     android:checked="true"
-                    android:text="Tất cả"
+                    android:text="@string/seat_class_all"
                     android:textColor="#1A1A1A"
                     android:textSize="14sp" />
 
@@ -444,7 +444,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:buttonTint="#0175F3"
-                    android:text="Phổ thông"
+                    android:text="@string/seat_class_economy"
                     android:textColor="#1A1A1A"
                     android:textSize="14sp" />
 
@@ -458,7 +458,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:buttonTint="#0175F3"
-                    android:text="Phổ thông đặc biệt"
+                    android:text="@string/seat_class_premium_economy"
                     android:textColor="#1A1A1A"
                     android:textSize="14sp" />
 
@@ -472,7 +472,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:buttonTint="#0175F3"
-                    android:text="Thương gia"
+                    android:text="@string/seat_class_business"
                     android:textColor="#1A1A1A"
                     android:textSize="14sp" />
 
@@ -507,7 +507,7 @@
             android:id="@+id/btn_apply_filter"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="Áp dụng"
+            android:text="@string/btn_apply_filter"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="16sp"

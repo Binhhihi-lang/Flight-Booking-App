@@ -10,12 +10,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Chọn hành khách"
+        android:text="@string/title_select_passenger"
         android:textColor="@color/text_sub_grey"
         android:textSize="16sp"
         android:layout_marginBottom="16dp"/>
 
-<!-- Người lớn -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -49,13 +48,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Người Lớn"
+                    android:text="@string/passenger_adult"
                     android:textColor="@color/text_main_dark"
                     android:textSize="16sp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="> 12 tuổi"
+                    android:text="@string/passenger_adult_age"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -100,7 +99,6 @@
         </LinearLayout>
 
     </LinearLayout>
-<!-- Trẻ em -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -133,13 +131,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Trẻ em"
+                    android:text="@string/passenger_child"
                     android:textColor="@color/text_main_dark"
                     android:textSize="16sp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2 - 12 tuổi"
+                    android:text="@string/passenger_child_age"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -185,7 +183,6 @@
 
     </LinearLayout>
 
-<!-- Em bé -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -206,7 +203,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-
             android:background="@color/bg_card_white"
             android:padding="8dp">
             <LinearLayout
@@ -218,20 +214,16 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Em bé"
+                    android:text="@string/passenger_infant"
                     android:textColor="@color/text_main_dark"
                     android:textSize="16sp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 - 2 tuổi"
+                    android:text="@string/passenger_infant_age"
                     android:textSize="12sp" />
             </LinearLayout>
 
-            <!--        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackgroundBorderless"-->
-            <!-- Hiệu ứng như button khi ấn  -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn_minus_baby"
                 android:layout_width="48dp"
@@ -273,14 +265,12 @@
         </LinearLayout>
     </LinearLayout>
 
-
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_confirm_passenger"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginTop="16dp"
-        android:text="CHỌN"
+        android:text="@string/btn_confirm"
         android:textSize="16sp"
         android:textColor="@color/white"
         app:cornerRadius="8dp"

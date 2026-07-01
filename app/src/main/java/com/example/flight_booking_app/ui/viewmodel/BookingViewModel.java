@@ -323,7 +323,7 @@ public class BookingViewModel extends ViewModel {
             bookingRepository.updateBookingStatus(
                     b.getBookingId(),
                     "PAYMENT_EXPIRED",
-                    new BookingRepository.OnStatusResultCallback() {
+                    new BookingRepository.OnResultCallback() {
                         @Override public void onSuccess() { }
                         @Override public void onError(String e) { }
                     });
@@ -361,7 +361,7 @@ public class BookingViewModel extends ViewModel {
         if (passengers == null) return seats;
         for (Passenger p : passengers) {
             String seat = isOutbound ? p.getOutboundSeat() : p.getReturnSeat();
-            if (seat != null && !seat.isEmpty() && !seat.equals("Ngồi cùng ng.lớn")) {
+            if (seat != null && !seat.isEmpty() && !seat.equals("Ngồi cùng ng.lớn") ) {
                 seats.add(seat);
             }
         }

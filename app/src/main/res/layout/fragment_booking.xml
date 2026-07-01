@@ -22,13 +22,12 @@
             android:layout_marginTop="28dp"
             app:navigationIcon="@drawable/ic_back"
             app:navigationIconTint="@color/white"
-            app:title="Đặt chỗ của tôi"
+            app:title="@string/title_my_bookings"
             app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             app:titleTextColor="@color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- NestedScrollView bọc RecyclerView — chuẩn pattern của project -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_booking_list"
         android:layout_width="match_parent"
@@ -52,7 +51,6 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Trạng thái rỗng: hiện khi chưa có đơn hàng nào -->
     <LinearLayout
         android:id="@+id/layout_empty_booking"
         android:layout_width="wrap_content"
@@ -75,13 +73,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Bạn chưa có đơn đặt chỗ nào"
+            android:text="@string/msg_empty_booking"
             android:textColor="#999999"
             android:textSize="14sp" />
 
     </LinearLayout>
 
-    <!-- Loading overlay — phải là thẻ cuối để đè lên tất cả -->
     <include
         android:id="@+id/layout_loading"
         layout="@layout/layout_loading_overlay"

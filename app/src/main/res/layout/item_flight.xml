@@ -16,18 +16,18 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imgAirlineLogo"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="#F5F5F5"
-                android:padding="4dp"
-                android:src="@drawable/ic_airline"
-                android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/RoundedCorners"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-        
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgAirlineLogo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="#F5F5F5"
+            android:padding="4dp"
+            android:src="@drawable/ic_airline"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/RoundedCorners"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
         <TextView
             android:id="@+id/tv_flight_number"
             android:layout_width="wrap_content"
@@ -63,7 +63,7 @@
             app:layout_constraintBottom_toTopOf="@id/tv_duration"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/imgAirlineLogo"
-             />
+            />
 
         <TextView
             android:id="@+id/tv_duration"

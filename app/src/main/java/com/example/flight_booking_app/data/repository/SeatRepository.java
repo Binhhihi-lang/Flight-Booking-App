@@ -55,7 +55,7 @@ public class SeatRepository {
         final String[] errorHolder = new String[]{null};
 
         Runnable tryMerge = () -> {
-            if (latch.decrementAndGet() != 0) return; // espera ao outro fetch
+            if (latch.decrementAndGet() != 0) return;
 
             if (errorHolder[0] != null) {
                 listener.onError(errorHolder[0]);
@@ -84,7 +84,7 @@ public class SeatRepository {
             listener.onLoaded(templateSeats, metadataHolder[0]);
         };
 
-        // ── FETCH 1: Template metadata + seats subcollection ─────────────────
+        // Lấy dữ liệu  Template metadata + seats subcollection ─────────────────
 
         // Lấy metadata từ document chính
         db.collection("seatMapTemplates")
@@ -196,7 +196,7 @@ public class SeatRepository {
                             String currentStatus = snapshot.getString("status");
                             Timestamp holdUntil = snapshot.getTimestamp("holdUntil");
 
-                            if ("SOLD".equals(currentStatus) || "BOOKED".equals(currentStatus)) {
+                            if ("BOOKED".equals(currentStatus)) {
                                 throw new FirebaseFirestoreException("Ghế " + seatNumber + " đã được bán mất rồi!",
                                         FirebaseFirestoreException.Code.ABORTED);
                             }
@@ -224,12 +224,13 @@ public class SeatRepository {
                         transaction.set(ref, data);
                     }
 
-                    return null; // Thành công!
+                    return null; // Thành công
 
-                }).addOnSuccessListener(unused -> callback.onSuccess())
+                }).addOnSuccessListener(v-> callback.onSuccess())
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
+    // Nhả ghế
     //  xóa hẳn document, flightSeats chỉ còn ghế HOLD/BOOKED
     public void releaseSeats(String flightId, List<String> seatNumbers, OnUpdateCallback callback) {
         WriteBatch batch = db.batch();
@@ -241,17 +242,14 @@ public class SeatRepository {
             batch.delete(ref);
         }
         batch.commit()
-                .addOnSuccessListener(unused -> callback.onSuccess())
+                .addOnSuccessListener(v -> callback.onSuccess())
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
-    /**
-     * Cập nhật trạng thái một ghế khi hành khách đặt/huỷ.
-     * Ghi vào flightSeats/{flightId}/seats/{seatNumber}
-     */
+
 
     /**
-     * Xác nhận thanh toán thành công: đổi ghế từ HOLD → BOOKED
-     * Dùng WriteBatch để ghi tất cả cùng lúc
+     * Xác nhận thanh toán thành công: đổi ghế từ HOLD  BOOKED
+     * Dùng WriteBatch để cập nhật tất cả cùng lúc
      */
     public void confirmSeats(String flightId, List<String> seatNumbers,
                              String passengerId, OnUpdateCallback callback) {
@@ -271,10 +269,11 @@ public class SeatRepository {
         }
 
         batch.commit()
-                .addOnSuccessListener(unused -> callback.onSuccess())
+                .addOnSuccessListener(v-> callback.onSuccess())
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
+    // Hàm Helper chuyển đổi document sang Model Seat
     private Seat parseSeat(DocumentSnapshot doc) {
         if (!doc.exists()) return null;
         Seat seat = new Seat();
@@ -290,6 +289,5 @@ public class SeatRepository {
         seat.setStatus(doc.getString("status") != null ? doc.getString("status") : "AVAILABLE");
         return seat;
     }
-
 
 }

@@ -36,9 +36,7 @@ import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.Timestamp;
 
-import java.util.Date;
 
 
 public class HomeFragment extends Fragment {
@@ -181,9 +179,15 @@ public class HomeFragment extends Fragment {
 
 
         // Hành khách
-        if (tvAdultCount != null) tvAdultCount.setText(s.adultCount + " Người lớn");
-        if (tvChildCount != null) tvChildCount.setText(s.childCount + " Trẻ em");
-        if (tvBabyCount != null) tvBabyCount.setText(s.babyCount + " Em bé");
+        // thay vì cộng chuỗi,truyền biến trực tiếp vào hàm getString()
+        if (tvAdultCount != null)
+            tvAdultCount.setText(getString(R.string.passenger_adult, s.adultCount));
+
+        if (tvChildCount != null)
+            tvChildCount.setText(getString(R.string.passenger_child, s.childCount));
+
+        if (tvBabyCount != null)
+            tvBabyCount.setText(getString(R.string.passenger_infant, s.babyCount));
 
     }
 

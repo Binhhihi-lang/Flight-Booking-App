@@ -220,7 +220,7 @@ public class BookingInfoActivity extends AppCompatActivity {
 
         btnBookNow = findViewById(R.id.btn_book_now);
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Đang giữ chỗ đặt vé... Vui lòng đợi trong giây lát!");
+        progressDialog.setMessage(getString(R.string.msg_holding_seat_progress));
         progressDialog.setCancelable(false);
     }
 
@@ -421,14 +421,14 @@ public class BookingInfoActivity extends AppCompatActivity {
 
                 case SUCCESS:
                     progressDialog.dismiss();
-                    Toast.makeText(this, "Đã giữ chỗ thành công!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.msg_hold_seat_success), Toast.LENGTH_SHORT).show();
                     // Không chuyển màn hình ở đây nữa, để việc chuyển màn hình cho biến bookingIdLive lo!
                     break;
 
                 case ERROR:
                     progressDialog.dismiss();
                     btnBookNow.setEnabled(true);
-                    Toast.makeText(this, "Lỗi: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.error_generic_format, result.getMessage()), Toast.LENGTH_SHORT).show();
                     break;
             }
         });
@@ -506,7 +506,7 @@ public class BookingInfoActivity extends AppCompatActivity {
                     // ngày sinh
                     if (hasDob) {
                         tvDobAdd.setVisibility(View.VISIBLE);
-                        tvDobAdd.setText("- Ngày sinh: " + p.getDateOfBirth());
+                        tvDobAdd.setText(getString(R.string.label_dob_format, p.getDateOfBirth()));
                     } else {
                         tvDobAdd.setVisibility(View.GONE);
                     }
@@ -514,7 +514,7 @@ public class BookingInfoActivity extends AppCompatActivity {
                     // số giấy tờ
                     if (hasId) {
                         tvIdNumberAdd.setVisibility(View.VISIBLE);
-                        tvIdNumberAdd.setText("- Số giấy tờ: " + p.getIdNumber());
+                        tvIdNumberAdd.setText(getString(R.string.label_id_number_format, p.getIdNumber()));
                     } else {
                         tvIdNumberAdd.setVisibility(View.GONE);
                     }
@@ -522,13 +522,13 @@ public class BookingInfoActivity extends AppCompatActivity {
                     // Hiển thị hành lý (Kiểm tra cả hai trước)
                     if (hasOutBaggage && hasRetBaggage) {
                         tvBaggageAdd.setVisibility(View.VISIBLE);
-                        tvBaggageAdd.setText("- Hành lý lượt đi " + p.getOutboundBaggageWeight() + "kg & lượt về " + p.getReturnBaggageWeight() + "kg");
+                        tvBaggageAdd.setText(getString(R.string.label_baggage_both_format, p.getOutboundBaggageWeight(), p.getReturnBaggageWeight()));
                     } else if (hasOutBaggage) {
                         tvBaggageAdd.setVisibility(View.VISIBLE);
-                        tvBaggageAdd.setText("- Hành lý lượt đi " + p.getOutboundBaggageWeight() + "kg");
+                        tvBaggageAdd.setText(getString(R.string.label_baggage_outbound_format, p.getOutboundBaggageWeight()));
                     } else if (hasRetBaggage) {
                         tvBaggageAdd.setVisibility(View.VISIBLE);
-                        tvBaggageAdd.setText("- Hành lý lượt về " + p.getReturnBaggageWeight() + "kg");
+                        tvBaggageAdd.setText(getString(R.string.label_baggage_return_format, p.getReturnBaggageWeight()));
                     } else {
                         tvBaggageAdd.setVisibility(View.GONE);
                     }
@@ -536,7 +536,7 @@ public class BookingInfoActivity extends AppCompatActivity {
                     // Hiển thị ghế ngồi
                     TextView tvSeat = container.findViewById(R.id.tv_passenger_seat);
                     if ("BABY".equals(p.getType())) {
-                        tvSeat.setText("Ngồi cùng ng.lớn");
+                        tvSeat.setText(getString(R.string.label_seat_with_adult));
                         tvSeat.setTextColor(Color.GRAY);
                     } else {
                         String outSeat = p.getOutboundSeat();
@@ -548,7 +548,7 @@ public class BookingInfoActivity extends AppCompatActivity {
                             StringBuilder seatDisplay = new StringBuilder();
                             // Nếu có 2 lượt
                             if (hasOutSeat && hasRetSeat) {
-                                seatDisplay.append("Đi: ").append(outSeat).append(" | Về: ").append(retSeat);
+                                seatDisplay.append(getString(R.string.label_seat_both_trips_format, outSeat, retSeat));
                             }
                             // Nếu chỉ có lượt đi
                             else if (hasOutSeat) {
@@ -617,19 +617,19 @@ public class BookingInfoActivity extends AppCompatActivity {
                 String phone = edtContactPhone.getText().toString().trim();
 
                 if (fullName.isEmpty()) {
-                    edtContactName.setError("Vui lòng nhập họ và tên");
+                    edtContactName.setError(getString(R.string.error_empty_full_name));
                     edtContactName.requestFocus();
                 } else if (email.isEmpty()) {
-                    edtContactEmail.setError("Vui lòng nhập email liên hệ");
+                    edtContactEmail.setError(getString(R.string.error_empty_email));
                     edtContactEmail.requestFocus();
                 } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    edtContactEmail.setError("Định dạng email không hợp lệ");
+                    edtContactEmail.setError(getString(R.string.error_invalid_email_format));
                     edtContactEmail.requestFocus();
                 } else if (phone.isEmpty()) {
-                    edtContactPhone.setError("Vui lòng nhập số điện thoại");
+                    edtContactPhone.setError(getString(R.string.error_empty_phone));
                     edtContactPhone.requestFocus();
                 } else if (!phone.startsWith("0") || phone.length() != 10) {
-                    edtContactPhone.setError("Số điện thoại phải bắt đầu bằng 0 và đủ 10 số");
+                    edtContactPhone.setError(getString(R.string.error_invalid_phone_format));
                     edtContactPhone.requestFocus();
                 } else {
                     boolean isValid = bookingViewModel.validateInfo(fullName, email, phone);
@@ -669,11 +669,11 @@ public class BookingInfoActivity extends AppCompatActivity {
 
 
                         if (outboundSeatNumbers.size() < countNeedSeat) {
-                            Toast.makeText(this, "Vui lòng chọn đủ ghế lượt đi cho người lớn và trẻ em", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.error_missing_outbound_seats), Toast.LENGTH_SHORT).show();
                             return;
                         }
                         if (isRoundTrip && returnSeatNumbers.size() < countNeedSeat) {
-                            Toast.makeText(this, "Vui lòng chọn đủ ghế lượt về cho người lớn và trẻ em", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.error_missing_return_seats), Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -754,7 +754,7 @@ public class BookingInfoActivity extends AppCompatActivity {
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override public void afterTextChanged(Editable s) {
                 String name = s.toString().trim();
-                if (name.isEmpty()) edtContactName.setError("Họ tên không được để trống");
+                if (name.isEmpty()) edtContactName.setError(getString(R.string.error_name_required));
                 else edtContactName.setError(null);
             }
         });
@@ -764,9 +764,9 @@ public class BookingInfoActivity extends AppCompatActivity {
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override public void afterTextChanged(Editable s) {
                 String phone = s.toString().trim();
-                if (phone.isEmpty()) edtContactPhone.setError("Số điện thoại không được để trống");
-                else if (!phone.startsWith("0")) edtContactPhone.setError("Số điện thoại phải bắt đầu bằng 0");
-                else if (phone.length() != 10) edtContactPhone.setError("Số điện thoại không hợp lệ");
+                if (phone.isEmpty()) edtContactPhone.setError(getString(R.string.error_phone_required));
+                else if (!phone.startsWith("0")) edtContactPhone.setError(getString(R.string.error_phone_start_zero));
+                else if (phone.length() != 10) edtContactPhone.setError(getString(R.string.error_phone_invalid));
                 else edtContactPhone.setError(null);
             }
         });
@@ -776,8 +776,8 @@ public class BookingInfoActivity extends AppCompatActivity {
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override public void afterTextChanged(Editable s) {
                 String email = s.toString().trim();
-                if (email.isEmpty()) edtContactEmail.setError("Email không được để trống");
-                else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) edtContactEmail.setError("Email không đúng định dạng hợp lệ");
+                if (email.isEmpty()) edtContactEmail.setError(getString(R.string.error_email_required));
+                else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) edtContactEmail.setError(getString(R.string.error_email_invalid));
                 else edtContactEmail.setError(null);
             }
         });

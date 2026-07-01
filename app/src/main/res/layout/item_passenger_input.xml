@@ -105,7 +105,7 @@
             android:id="@+id/tv_dob_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="- Ngày sinh: "
+            android:text="@string/label_dob_prefix"
             android:textColor="#6F7780"
             android:layout_marginStart="5dp"
             >
@@ -116,7 +116,7 @@
             android:id="@+id/tv_idNumber_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="- Số giấy tờ"
+            android:text="@string/label_id_number_prefix"
             android:textColor="#6F7780"
             android:layout_marginStart="5dp"
             >
@@ -125,4 +125,3 @@
     </LinearLayout>
 
 </LinearLayout>
-

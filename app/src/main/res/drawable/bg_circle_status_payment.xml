@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nền hình tròn cho icon trạng thái (thành công / hủy / lỗi).
+     Màu mặc định là xanh lá (thành công) — sẽ được đổi động trong code
+     bằng ViewCompat.setBackgroundTintList() tuỳ theo trạng thái thanh toán. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <solid android:color="#16A34A" />
+
+</shape>

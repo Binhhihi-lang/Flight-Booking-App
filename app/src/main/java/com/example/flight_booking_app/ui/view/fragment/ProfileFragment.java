@@ -22,6 +22,8 @@ import com.example.flight_booking_app.R;
 import com.example.flight_booking_app.data.model.UiState;
 import com.example.flight_booking_app.ui.view.activity.ForgotPasswordActivity;
 import com.example.flight_booking_app.ui.view.activity.LoginActivity;
+import com.example.flight_booking_app.ui.view.activity.PrivacyPolicyActivity;
+import com.example.flight_booking_app.ui.view.activity.TermsOfUseActivity;
 import com.example.flight_booking_app.ui.view.activity.UserEditProfileActivity;
 import com.example.flight_booking_app.ui.viewmodel.UserViewModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -34,7 +36,7 @@ import com.google.android.material.button.MaterialButton;
 public class ProfileFragment extends Fragment {
 
     private TextView tvFullName, tvEmail, tvPhone;
-    private TextView btnChangePassword, btnPolicy, btnSupport, btnLanguage;
+    private TextView btnChangePassword, btnPolicy, btnTermsOfUse, btnLanguage;
     private ImageView imgAvatar, imgSmallAvatar;
     private MaterialToolbar toolbar;
     private MaterialButton btnLogout;
@@ -81,7 +83,7 @@ public class ProfileFragment extends Fragment {
         imgUpdateView = view.findViewById(R.id.imgEditProfile);
         btnChangePassword = view.findViewById(R.id.btnChangePassword);
         btnPolicy = view.findViewById(R.id.btnPolicy);
-        btnSupport = view.findViewById(R.id.btnSupport);
+        btnTermsOfUse = view.findViewById(R.id.btnTermsOfUse);
         btnLanguage = view.findViewById(R.id.btnLanguage);
     }
 
@@ -126,7 +128,7 @@ public class ProfileFragment extends Fragment {
         // Observe lỗi cập nhật người dùng
         userViewModel.getUiState().observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == UiState.Status.ERROR) {
-                Toast.makeText(getActivity(), "Lỗi: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.label_error) + result.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -160,27 +162,50 @@ public class ProfileFragment extends Fragment {
         btnChangePassword.setOnClickListener(v -> startActivity(new Intent(getActivity(), ForgotPasswordActivity.class)));
 
         btnLanguage.setOnClickListener(v -> showLanguageDialog());
+
+        btnPolicy.setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), PrivacyPolicyActivity.class)));
+
+        btnTermsOfUse.setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), TermsOfUseActivity.class)));
     }
 
     // đăng xuất
     private void showLogoutDialog() {
         new AlertDialog.Builder(requireContext())
-                .setTitle("Xác nhận")
-                .setMessage("Bạn có chắc chắn muốn đăng xuất không?")
-                .setPositiveButton("Đăng xuất", (dialog, which) -> performLogout())
-                .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
+                .setTitle(getString(R.string.dialog_logout_title))
+                .setMessage(getString(R.string.dialog_logout_message))
+                .setPositiveButton(getString(R.string.dialog_logout_btn_confirm), (dialog, which) -> performLogout())
+                .setNegativeButton(getString(R.string.dialog_logout_btn_cancel), (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
-    // google và tk thường đăng xuất
     private void performLogout() {
+        // Nếu bạn có dùng Google Sign In
+        if (gClient != null) {
+            gClient.signOut().addOnCompleteListener(task -> {
+                finishLogout();
+            });
+        } else {
+            finishLogout();
+        }
+    }
 
-        gClient.signOut().addOnCompleteListener(task -> {
-            if (isAdded()) {
-                Toast.makeText(getActivity(), "Đã đăng xuất thành công!", Toast.LENGTH_SHORT).show();
-                userViewModel.logout(); // gọi viewModel đăng xuất
-            }
-        });
+    private void finishLogout() {
+        if (isAdded()) {
+            Toast.makeText(getActivity(), getString(R.string.toast_logout_success), Toast.LENGTH_SHORT).show();
+
+            // Gọi ViewModel để xóa dữ liệu user trong Session/Preference
+            userViewModel.logout();
+
+            // Chuyển hướng về Login Activity
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+
+            // Đóng activity hiện tại (nếu cần)
+            requireActivity().finish();
+        }
     }
     private void showLanguageDialog() {
         String[] languages = {"Tiếng Việt", "English"};

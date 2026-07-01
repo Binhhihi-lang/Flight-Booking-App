@@ -20,7 +20,6 @@
         android:paddingHorizontal="14dp"
         android:paddingVertical="12dp">
 
-        <!-- Mã đơn hàng + số lượng hành khách -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,9 +33,8 @@
                 android:layout_weight="1"
                 android:textColor="#555555"
                 android:textSize="13sp"
-                tools:text="Đơn hàng: #571070" />
+                tools:text="@string/placeholder_order_code" />
 
-            <!-- Số lượng hành khách: người lớn / trẻ em / em bé -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -100,7 +98,6 @@
             android:layout_marginVertical="10dp"
             android:background="#F0F0F0" />
 
-        <!-- Tuyến bay: điểm đi — icon hướng bay — điểm đến  lượt đi -->
         <LinearLayout
             android:id="@+id/layout_outbound_flight"
             android:layout_width="match_parent"
@@ -122,7 +119,7 @@
                     android:textColor="#1A1A2E"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    tools:text="Hà Nội" />
+                    tools:text="@string/default_from_city" />
 
                 <TextView
                     android:id="@+id/tv_outbound_item_departure_time"
@@ -142,7 +139,7 @@
                 android:layout_marginHorizontal="6dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_airline"
-                 />
+                />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -158,7 +155,7 @@
                     android:textColor="#1A1A2E"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    tools:text="TP.Hồ Chí Minh" />
+                    tools:text="@string/default_to_city" />
 
                 <TextView
                     android:id="@+id/tv_outbound_item_arrival_time"
@@ -173,7 +170,6 @@
 
         </LinearLayout>
 
-        <!-- Tuyến bay: điểm đi — icon hướng bay — điểm đến  lượt đi -->
         <LinearLayout
             android:id="@+id/layout_return_flight"
             android:layout_width="match_parent"
@@ -197,7 +193,7 @@
                     android:textColor="#1A1A2E"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    tools:text="Hà Nội" />
+                    tools:text="@string/default_from_city" />
 
                 <TextView
                     android:id="@+id/tv_return_item_departure_time"
@@ -233,7 +229,7 @@
                     android:textColor="#1A1A2E"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    tools:text="TP.Hồ Chí Minh" />
+                    tools:text="@string/default_to_city" />
 
                 <TextView
                     android:id="@+id/tv_return_item_arrival_time"
@@ -254,7 +250,6 @@
             android:layout_marginVertical="10dp"
             android:background="#F0F0F0" />
 
-        <!-- Trạng thái + tổng giá -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -271,7 +266,7 @@
                 android:textStyle="bold"
                 android:maxLines="1"
                 android:ellipsize="end"
-                tools:text="Giữ chỗ không th/công" />
+                tools:text="@string/placeholder_booking_status" />
 
             <TextView
                 android:id="@+id/tv_order_item_total_price"

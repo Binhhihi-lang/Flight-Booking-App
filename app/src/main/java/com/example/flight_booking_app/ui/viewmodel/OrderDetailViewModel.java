@@ -62,17 +62,6 @@ public class OrderDetailViewModel extends ViewModel {
                 });
     }
 
-    // Cập nhật trạng thái đơn hàng
-    public void updateBookingStatus(String bookingId, String newStatus) {
-        bookingRepository.updateBookingStatus(bookingId, newStatus,
-                new BookingRepository.OnStatusResultCallback() {
-                    @Override public void onSuccess() { }
-                    @Override public void onError(String error) {
-                        uiState.postValue(UiState.error(error));
-                    }
-                });
-    }
-
 
     // PRIVATE — logic đếm ngược / hết hạn
     private void handleDeadlineCheck(Booking booking) {
@@ -107,15 +96,23 @@ public class OrderDetailViewModel extends ViewModel {
 
     // Hết hạn thanh toán
     private void expireBooking(Booking booking) {
-        // 1. Đổi status → PAYMENT_EXPIRED trên Firestore
+        // 1. Đổi status PAYMENT_EXPIRED trên Firestore
         //    Sau khi ghi xong, snapshot listener trong observeBookingDetail tự bắn lại
-        //    → UI tự cập nhật mà không cần thêm code ở Activity
+        //    UI tự cập nhật mà không cần thêm code ở Activity
         bookingRepository.updateBookingStatus(
                 booking.getBookingId(),
                 "PAYMENT_EXPIRED",
-                new BookingRepository.OnStatusResultCallback() {
-                    @Override public void onSuccess() { }
-                    @Override public void onError(String error) { }
+                new BookingRepository.OnResultCallback(){
+
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError(String error) {
+
+                    }
                 });
 
         // 2. Nhả ghế lượt đi
@@ -153,7 +150,7 @@ public class OrderDetailViewModel extends ViewModel {
         }
     }
 
-    // Nó loại bỏ các ghế null, rỗng, và đặc biệt là lọc bỏ trường hợp em bé "Ngồi cùng ng.lớn"
+    // Nó loại bỏ các ghế null, rỗng
     private List<String> extractSeatNumbers(List<Passenger> passengers, boolean isOutbound) {
         List<String> seats = new ArrayList<>();
         if (passengers == null) return seats;
@@ -181,7 +178,7 @@ public class OrderDetailViewModel extends ViewModel {
         // Sinh mã đặt chỗ
         String bookingCode = generateBookingCode();
 
-        // 1. Cập nhật status + bookingCode cùng lúc bằng Map
+        // Cập nhật status + bookingCode cùng lúc bằng Map
         Map<String, Object> updates = new HashMap<>();
         updates.put("status", "PAYMENT_SUCCESS");
         updates.put("bookingCode", bookingCode);
@@ -190,7 +187,7 @@ public class OrderDetailViewModel extends ViewModel {
         bookingRepository.updateBookingFields(
                 booking.getBookingId(),
                 updates,
-                new BookingRepository.OnStatusResultCallback() {
+                new BookingRepository.OnResultCallback() {
                     @Override public void onSuccess() { }
                     @Override public void onError(String error) {
                         uiState.postValue(UiState.error(error));
@@ -211,7 +208,7 @@ public class OrderDetailViewModel extends ViewModel {
                     });
         }
 
-        // 3. Confirm ghế lượt về → BOOKED (nếu khứ hồi)
+        // Confirm ghế lượt về  BOOKED (nếu khứ hồi)
         if (booking.isRoundTrip() && booking.getReturnFlight() != null) {
             List<String> retSeats = extractSeatNumbers(booking.getPassengers(), false);
             if (!retSeats.isEmpty()) {

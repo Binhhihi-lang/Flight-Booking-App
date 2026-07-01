@@ -34,8 +34,8 @@ public class BookingRepository {
         void onFailure(String errorMessage);
     }
 
-    // interface để trả về cập nhật trạng thái đơn hàng
-    public interface OnStatusResultCallback {
+    // interface để trả về kết quả
+    public interface OnResultCallback {
         void onSuccess();
         void onError(String error);
     }
@@ -129,7 +129,7 @@ public class BookingRepository {
     }
 
     // Update status
-    public void updateBookingStatus(String bookingId, String newStatus, OnStatusResultCallback callback) {
+    public void updateBookingStatus(String bookingId, String newStatus, OnResultCallback callback) {
         if (bookingId == null || bookingId.isEmpty()) {
             callback.onError("Booking ID không hợp lệ");
             return;
@@ -154,7 +154,7 @@ public class BookingRepository {
 
     // Dùng cho bất kỳ trường hợp nào cần update nhiều field cùng lúc
     public void updateBookingFields(String bookingId, Map<String, Object> fields,
-                                    OnStatusResultCallback callback) {
+                                    OnResultCallback callback) {
         if (bookingId == null || bookingId.isEmpty()) {
             callback.onError("Booking ID không hợp lệ");
             return;

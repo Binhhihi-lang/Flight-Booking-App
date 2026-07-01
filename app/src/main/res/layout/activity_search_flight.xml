@@ -29,21 +29,19 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:navigationIcon="@drawable/ic_back"
                 app:navigationIconTint="@color/white"
-                app:title="Danh sách chuyến bay"
+                app:title="@string/title_flight_list"
                 app:titleTextColor="@color/white">
-                <!-- Custom title layout inside toolbar -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:paddingEnd="16dp">
 
-                    <!-- Route: HÀ NỘI → TP.HCM -->
                     <TextView
                         android:id="@+id/tv_route"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hà Nội  -> TP.HCM"
+                        android:text="@string/placeholder_search_route"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -54,12 +52,11 @@
                         android:layout_marginTop="2dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
-                        <!-- Info: 15/05, 1 Người lớn, Phổ thông -->
                         <TextView
                             android:id="@+id/tv_info_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="15/05/2026"
+                            android:text="@string/placeholder_search_date"
                             android:textColor="#E0E0E0"
                             android:textSize="16sp" />
 
@@ -68,7 +65,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15dp"
-                            android:text="1 "
+                            android:text="@string/placeholder_count_default"
                             android:textColor="#E0E0E0"
                             android:textSize="16sp" />
 
@@ -82,7 +79,7 @@
                             android:id="@+id/tv_search_child_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text=" 1"
+                            android:text="@string/placeholder_count_default"
                             android:textColor="#E0E0E0"
                             android:textSize="16sp" />
 
@@ -96,7 +93,7 @@
                             android:id="@+id/tv_search_baby_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="1"
+                            android:text="@string/placeholder_count_default"
                             android:textColor="#E0E0E0"
                             android:textSize="16sp" />
 
@@ -114,7 +111,6 @@
 
             </com.google.android.material.appbar.MaterialToolbar>
 
-            <!-- Tab Row: LƯỢT ĐI | LƯỢT VỀ (chỉ hiện khi khứ hồi) -->
             <LinearLayout
                 android:id="@+id/layout_trip_tabs"
                 android:layout_width="match_parent"
@@ -127,7 +123,6 @@
                 app:layout_constraintTop_toBottomOf="@id/toolbarFlights"
                 tools:visibility="visible">
 
-                <!-- Tab Lượt đi -->
                 <TextView
                     android:id="@+id/tab_depart"
                     android:layout_width="0dp"
@@ -137,11 +132,10 @@
                     android:background="@drawable/bg_seat_tab_selected"
                     android:gravity="center"
                     android:paddingVertical="10dp"
-                    android:text="LƯỢT ĐI"
+                    android:text="@string/tab_outbound"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
-                <!-- Tab Lượt về -->
                 <TextView
                     android:id="@+id/tab_return"
                     android:layout_width="0dp"
@@ -150,7 +144,7 @@
                     android:background="@drawable/bg_seat_tab_unselected"
                     android:gravity="center"
                     android:paddingVertical="10dp"
-                    android:text="LƯỢT VỀ"
+                    android:text="@string/tab_return"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -178,14 +172,13 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- FAB Filter  -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_filter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|end"
         android:layout_margin="24dp"
-        android:contentDescription="Lọc chuyến bay"
+        android:contentDescription="@string/desc_filter_flights"
         android:src="@drawable/ic_filter"
         app:backgroundTint="#F44039"
         app:tint="@color/white" />
@@ -202,7 +195,6 @@
         app:layout_anchorGravity="start|bottom"
         tools:visibility="gone">
 
-        <!-- Illustration -->
         <ImageView
             android:layout_width="240dp"
             android:layout_height="240dp"
@@ -210,36 +202,33 @@
             android:scaleType="fitCenter"
             android:src="@drawable/empty_flight" />
 
-        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:gravity="center"
-            android:text="Không tìm thấy chuyến bay phù hợp!"
+            android:text="@string/error_no_flights_title"
             android:textColor="#1A1A1A"
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Description -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
             android:gravity="center"
             android:lineSpacingExtra="4dp"
-            android:text="Vui lòng chọn ngày khác !"
+            android:text="@string/error_no_flights_desc"
             android:textColor="#757575"
             android:textSize="14sp" />
 
-        <!-- Button Tìm ngày khác -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_search_other_date"
             android:layout_width="wrap_content"
             android:layout_height="56dp"
             android:backgroundTint="#F44039"
             android:paddingHorizontal="32dp"
-            android:text="Tìm ngày khác"
+            android:text="@string/btn_search_other_date"
             android:textAllCaps="false"
             android:textSize="16sp"
             app:cornerRadius="28dp"

@@ -96,7 +96,7 @@ public class BookingFragment extends Fragment {
             if (bookings == null || bookings.isEmpty()) {
                 recyclerView.setVisibility(View.GONE);
                 layoutEmpty.setVisibility(View.VISIBLE);
-                tvEmpty.setText("Bạn chưa có đơn hàng nào");
+                tvEmpty.setText(R.string.label_no_orders);
                 stopCountdownTick(); // ← thêm
             } else {
                 layoutEmpty.setVisibility(View.GONE);

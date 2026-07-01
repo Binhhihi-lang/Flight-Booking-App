@@ -207,14 +207,14 @@ public class SeatSelectionActivity extends AppCompatActivity {
             if (state == null) return;
             progressBar.setVisibility(state.getStatus() == UiState.Status.LOADING ? View.VISIBLE : View.GONE);
             if (state.getStatus() == UiState.Status.ERROR) {
-                Toast.makeText(this, "Lỗi tải sơ đồ ghế: " + state.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.error_load_seatmap_format, state.getMessage()), Toast.LENGTH_SHORT).show();
             }
         });
 
         // quan sát ghế được click
         seatViewModel.getCurrentlyViewingSeatLive().observe(this, seat -> {
             if (seat == null) {
-                tvSelectedSeatLabel.setText("Vui lòng chọn");
+                tvSelectedSeatLabel.setText(getString(R.string.label_please_select));
                 tvSelectedSeatPrice.setText("");
                 tvSeatName.setText("");
             } else {
@@ -237,7 +237,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
         tabReturn.setOnClickListener(v -> {
             int selectedCount = seatViewModel.getSelectedSeats().size();
             if (selectedCount < maxPassengers) {
-                Toast.makeText(this, "Vui lòng chọn đủ " + maxPassengers + " ghế!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.error_select_enough_seats_format, maxPassengers), Toast.LENGTH_SHORT).show();
                 return;
             }
             if (!seatViewModel.isSelectingReturn()) switchToReturnTab();
@@ -254,12 +254,12 @@ public class SeatSelectionActivity extends AppCompatActivity {
         btnSeatContinue.setOnClickListener(v -> {
             int selectedCount = seatViewModel.getSelectedSeats().size();
             if (selectedCount < maxPassengers) {
-                Toast.makeText(this, "Vui lòng chọn đủ " + maxPassengers + " ghế!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.error_select_enough_seats_format, maxPassengers), Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (isRoundTrip && !seatViewModel.isSelectingReturn()) {
-                Snackbar.make(findViewById(android.R.id.content), "Đã lưu ghế lượt đi. Vui lòng chọn ghế lượt về.", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), getString(R.string.msg_outbound_seat_saved), Snackbar.LENGTH_SHORT).show();
                 switchToReturnTab();
             } else {
                 saveSeatsAndFinish();
@@ -325,7 +325,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
                 }
             } else {
                 if (selectedSeats.size() >= maxPassengers) {
-                    Toast.makeText(this, "Bạn chỉ được chọn tối đa " + maxPassengers + " ghế!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.error_max_seats_format, maxPassengers), Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -338,7 +338,7 @@ public class SeatSelectionActivity extends AppCompatActivity {
     private void updateBottomBar() {
         List<Seat> seats = seatViewModel.getSelectedSeats();
         if (seats.isEmpty()) {
-            tvSelectedSeatLabel.setText("Vui lòng chọn");
+            tvSelectedSeatLabel.setText(getString(R.string.label_please_select));
             tvSelectedSeatPrice.setText("");
             return;
         }
@@ -361,9 +361,11 @@ public class SeatSelectionActivity extends AppCompatActivity {
 
         tvSelectedSeatLabel.setText(sb.toString());
         if (!hasSurcharge) {
-            tvSelectedSeatPrice.setText("Miễn phí (Bao gồm trong gói vé)");
+            tvSelectedSeatPrice.setText(getString(R.string.label_seat_free_included));
         } else {
-            tvSelectedSeatPrice.setText(totalSeatSurcharge == 0 ? "Đã bao gồm VAT" : String.format("+%,.0fđ (Phụ thu nâng cấp ghế)", totalSeatSurcharge));
+            tvSelectedSeatPrice.setText(totalSeatSurcharge == 0
+                    ? getString(R.string.label_vat_included)
+                    : getString(R.string.label_seat_surcharge_format, totalSeatSurcharge));
         }
     }
 

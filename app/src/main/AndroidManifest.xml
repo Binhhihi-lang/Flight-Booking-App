@@ -54,6 +54,10 @@
         <activity
             android:name=".ui.view.activity.MainActivity"
             android:exported="false" />
+
+        <activity android:name=".ui.view.activity.PrivacyPolicyActivity" />
+        <activity android:name=".ui.view.activity.TermsOfUseActivity" />
+
         <activity
             android:name=".ui.view.activity.ForgotPasswordActivity"
             android:exported="false" />

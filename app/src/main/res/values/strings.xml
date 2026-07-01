@@ -3,6 +3,7 @@
     <string name="app_brand_name">Huce Travel</string>
     <string name="client_id">471903679923-fhdod172h93pcsteqo70h2gsf8doc7lo.apps.googleusercontent.com</string>
 
+    <!--  Login  -->
     <string name="login_title_ready">Sẵn sàng khám phá?</string>
     <string name="login_subtitle_explore">Đăng nhập để đặt chuyến bay tiếp theo của bạn.</string>
     <string name="label_email_address">Địa chỉ Email</string>
@@ -17,6 +18,7 @@
     <string name="text_dont_have_account">Bạn chưa có tài khoản? </string>
     <string name="link_sign_up">Đăng ký</string>
 
+    <!--  Register -->
     <string name="signup_title_join_us">Đăng ký ngay hôm nay</string>
     <string name="signup_subtitle_deals">Tạo tài khoản để nhận các ưu đãi vé máy bay độc quyền.</string>
     <string name="hint_full_name">Họ và tên</string>
@@ -26,12 +28,14 @@
     <string name="text_already_have_account">Bạn đã có tài khoản? </string>
     <string name="link_sign_in_here">Đăng nhập</string>
 
+    <!--  Reset Password  -->
     <string name="forgot_pw_title">Quên mật khẩu?</string>
     <string name="forgot_pw_subtitle">Nhập địa chỉ email của bạn để nhận liên kết đặt lại mật khẩu.</string>
     <string name="hint_email_address_only">Nhập Email</string>
     <string name="btn_reset_password">Đặt lại mật khẩu</string>
     <string name="link_create_account">Tạo tài khoản</string>
 
+    <!-- Fragment Home   -->
     <string name="home_header_title">Đặt Vé Máy Bay</string>
     <string name="home_header_subtitle">Hãy khám phá các chuyến bay cùng chúng tôi !!!</string>
     <string name="tab_one_way">MỘT CHIỀU</string>
@@ -54,5 +58,259 @@
     <string name="default_child_count">0 Trẻ em</string>
     <string name="default_infant_count">0 Em bé</string>
 
+    <string name="profile_toolbar_title">Thông tin tài khoản</string>
+    <string name="profile_role_user">Người dùng</string>
+    <string name="profile_section_personal_info">THÔNG TIN CÁ NHÂN</string>
+    <string name="profile_label_full_name">Họ và tên</string>
+    <string name="profile_hint_default_name">Nguyễn Văn A</string>
+    <string name="profile_label_email">Email</string>
+    <string name="profile_hint_default_email">nguyenxuanly@gmail.com</string>
+    <string name="profile_label_phone">Số điện thoại</string>
+    <string name="profile_hint_default_phone">0987 654 321</string>
+    <string name="profile_section_system_config">CẤU HÌNH HỆ THỐNG</string>
+    <string name="profile_btn_change_password">Đổi mật khẩu</string>
+    <string name="profile_btn_privacy_policy">Chính sách bảo mật</string>
+    <string name="profile_btn_terms_of_use">Điều khoản sử dụng</string>
+    <string name="profile_btn_language">Ngôn ngữ</string>
+    <string name="profile_btn_logout">Đăng xuất</string>
 
+    <string name="notification_title">Thông báo</string>
+    <string name="notification_empty_message">Bạn chưa có thông báo nào</string>
+
+    <string name="placeholder_order_code">Đơn hàng: #571070</string>
+    <string name="placeholder_booking_status">Giữ chỗ không th/công</string>
+
+
+<!--    Chính sách bảo mật-->
+    <string name="terms_title">Điều khoản sử dụng</string>
+    <string name="btn_contact_zalo">NHẮN ZALO</string>
+    <string name="btn_contact_call">GỌI ĐIỆN</string>
+    <string name="btn_contact_sms">GỬI SMS</string>
+    <string name="privacy_title">Chính sách bảo mật</string>
+
+<!--    Chỉnh sửa người dùng -->
+
+    <string name="title_edit_profile">Chỉnh sửa thông tin</string>
+    <string name="label_full_name">Họ và tên</string>
+    <string name="label_email">Email</string>
+    <string name="label_phone_number">Số điện thoại</string>
+    <string name="label_gender">Giới tính</string>
+    <string name="label_dob">Ngày sinh</string>
+    <string name="hint_gender_male">Nam</string>
+    <string name="btn_save_changes">Lưu thay đổi</string>
+
+    <string name="placeholder_name">Nguyễn Văn A</string>
+    <string name="placeholder_email">nguyenxuanly@gmail.com</string>
+    <string name="placeholder_phone">0987654321</string>
+    <string name="placeholder_dob">01/01/2000</string>
+
+<!--    tìm kiếm thành phố -->
+    <string name="app_name_brand">Huce Travel</string>
+    <string name="hint_search_city_airport">Tìm kiếm thành phố hoặc sân bay</string>
+
+<!--    Bottom-->
+    <string name="passenger_adult">%1$d Người lớn</string>
+    <string name="passenger_child">%1$d Trẻ em</string>
+    <string name="passenger_infant">%1$d Em bé</string>
+    <string name="title_select_passenger">Chọn hành khách</string>
+    <string name="passenger_adult_age">> 12 tuổi</string>
+    <string name="passenger_child_age">2 - 12 tuổi</string>
+    <string name="passenger_infant_age">0 - 2 tuổi</string>
+    <string name="btn_confirm">CHỌN</string>
+
+    <!-- layout_bottom_flight_detail -->
+    <string name="flight_info_title">Thông tin chuyến bay</string>
+    <string name="flight_type_direct">Bay Thẳng</string>
+    <string name="label_seat_class">Loại vé</string>
+    <string name="label_base_price">Giá vé</string>
+    <string name="label_tax_fee">Thuế phí</string>
+    <string name="label_total_price">Tổng cộng</string>
+    <string name="policy_refund_allowed">Được phép đổi vé</string>
+    <string name="policy_meal_included">Bao gồm suất ăn trên máy bay</string>
+    <string name="policy_lounge_included">Bao gồm suất ăn trên máy bay</string> <!-- TODO: sửa nội dung đúng -->
+    <string name="policy_priority_included">Bao gồm suất ăn trên máy bay</string> <!-- TODO: sửa nội dung đúng -->
+    <string name="label_total_price_per_person">Tổng số tiền 1 người</string>
+    <string name="label_tax_included">Giá vé đã bao gồm thuế phí</string>
+    <string name="btn_back">TRỞ VỀ</string>
+    <string name="btn_select">CHỌN</string>
+
+    <!-- layout_bottom_sheet_filter -->
+    <string name="filter_title">Bộ lọc tìm kiếm</string>
+    <string name="btn_reset_filter">Thiết lập lại</string>
+    <string name="filter_section_price_display">Hiển thị giá</string>
+    <string name="filter_price_full">Giá đầy đủ</string>
+    <string name="filter_price_full_desc">Bao gồm thuế phí</string>
+    <string name="filter_price_net">Giá NET</string>
+    <string name="filter_price_net_desc">Chưa bao gồm thuế phí</string>
+    <string name="filter_section_sort_by">Sắp xếp theo</string>
+    <string name="sort_price_asc">Giá thấp nhất</string>
+    <string name="sort_depart_early">Giờ đi sớm nhất</string>
+    <string name="sort_duration_shortest">Bay ngắn nhất</string>
+    <string name="filter_section_airline">Hãng hàng không</string>
+    <string name="filter_section_departure_time">Thời gian khởi hành</string>
+    <string name="time_morning">Sáng</string>
+    <string name="time_afternoon">Chiều</string>
+    <string name="time_night">Tối</string>
+    <string name="filter_section_seat_class">Hạng ghế</string>
+    <string name="seat_class_all">Tất cả</string>
+    <string name="seat_class_economy">Phổ thông</string>
+    <string name="seat_class_premium_economy">Phổ thông đặc biệt</string>
+    <string name="seat_class_business">Thương gia</string>
+    <string name="btn_apply_filter">Áp dụng</string>
+
+    <!-- item_passenger_input -->
+    <string name="label_dob_prefix">- Ngày sinh: </string>
+    <string name="label_id_number_prefix">- Số giấy tờ</string>
+
+    <!-- activity_seat_selection -->
+    <string name="seat_selection_title">Chọn ghế ngồi</string>
+    <string name="tab_seat_depart">LƯỢT ĐI</string>
+    <string name="tab_seat_return">LƯỢT VỀ</string>
+    <string name="legend_seat_premium">Ghế cao cấp</string>
+    <string name="legend_seat_front">Ghế hàng trước</string>
+    <string name="legend_seat_standard">Ghế tiêu chuẩn</string>
+    <string name="legend_seat_exit_row">Ghế để chân rộng</string>
+    <string name="legend_seat_selecting">Ghế đang chọn</string>
+    <string name="legend_seat_booked">Đã có người</string>
+    <string name="text_please_select_seat">Vui lòng chọn</string>
+    <string name="text_vat_included">Đã bao gồm VAT</string>
+    <string name="btn_continue">TIẾP TỤC</string>
+    <!-- btn_back đã có ở phần trước, dùng lại -->
+
+<!--    Search Flight -->
+    <string name="title_my_bookings">Đặt chỗ của tôi</string>
+    <string name="msg_empty_booking">Bạn chưa có đơn đặt chỗ nào</string>
+
+    <string name="title_flight_list">Danh sách chuyến bay</string>
+    <string name="tab_outbound">LƯỢT ĐI</string>
+    <string name="tab_return">LƯỢT VỀ</string>
+    <string name="desc_filter_flights">Lọc chuyến bay</string>
+    <string name="error_no_flights_title">Không tìm thấy chuyến bay phù hợp!</string>
+    <string name="error_no_flights_desc">Vui lòng chọn ngày khác !</string>
+    <string name="btn_search_other_date">Tìm ngày khác</string>
+
+    <string name="placeholder_search_route">Hà Nội  -&gt; TP.HCM</string>
+    <string name="placeholder_search_date">15/05/2026</string>
+    <string name="placeholder_count_default">1</string>
+
+<!--    Passenger Input-->
+    <string name="label_detailed_info">Thông tin chi tiết</string>
+    <string name="hint_title_salutation">Danh xưng</string>
+    <string name="hint_passenger_name">Họ và tên (Ví dụ: NGUYEN VAN A)</string>
+    <string name="hint_passenger_dob">Ngày sinh (Ngày/Tháng/Năm)</string>
+    <string name="hint_passenger_identity">Số CCCD / Hộ chiếu (Không bắt buộc)</string>
+    <string name="label_baggage_outbound">Hành lý ký gửi lượt đi</string>
+    <string name="label_baggage_return">Hành lý ký gửi lượt về</string>
+    <string name="msg_passenger_note">* Vui lòng nhập thông tin chính xác trùng khớp với giấy tờ tùy thân để làm thủ tục bay.</string>
+    <string name="btn_save">LƯU</string>
+
+
+    <!-- Order Detail -->
+    <string name="title_order_info">Thông tin đơn hàng</string>
+    <string name="label_direct_flight">Bay Thẳng</string>
+    <string name="label_fare_class">Loại vé</string>
+    <string name="label_outbound_total_price">Tổng giá vé lượt đi</string>
+    <string name="label_adult_price">Giá vé người lớn</string>
+    <string name="label_child_price">Giá vé trẻ con</string>
+    <string name="label_baby_price">Giá vé em bé</string>
+    <string name="label_return_total_price">Tổng giá vé lượt về</string>
+    <string name="title_passenger_info">Thông tin hành khách</string>
+    <string name="label_email_colon">Email:</string>
+    <string name="label_contact">Liên hệ:</string>
+    <string name="label_order_code">Mã đơn hàng:</string>
+    <string name="label_booking_code_outbound">Mã đặt chỗ lượt đi:</string>
+    <string name="label_booking_code_return">Mã đặt chỗ lượt về:</string>
+    <string name="label_status">Trạng thái:</string>
+    <string name="label_payment_deadline">Hạn thanh toán:</string>
+    <string name="label_fare_price">Giá vé:</string>
+    <string name="label_seat_baggage">Chọn ghế, hành lý ký gửi:</string>
+    <string name="label_grand_total">Tổng cộng:</string>
+    <string name="btn_contact_support">Liên lạc hỗ trợ</string>
+    <string name="btn_rebook_order">Đặt lại đơn hàng</string>
+    <string name="btn_pay_now">THANH TOÁN NGAY</string>
+    <string name="btn_pay_contact_support">LIÊN LẠC HỖ TRỢ</string>
+
+    <!-- Booking Info -->
+    <string name="title_fill_info">Điền thông tin</string>
+    <string name="title_enter_passenger_info">Nhập thông tin hành khách</string>
+    <string name="title_select_seat">Chọn ghế ngồi</string>
+    <string name="desc_select_seat">Bạn có thể chọn vị trí chỗ ngồi trên máy</string>
+    <string name="title_enter_contact_info">Nhập thông tin liên hệ</string>
+    <string name="btn_book_now">ĐẶT VÉ</string>
+
+    <!--  Các tên biến trong các file Java  -->
+
+    <!--  File OrderDetail   -->
+    <string name="status_booking_pending">Đang xác nhận</string>
+    <string name="label_passenger_dob">Ngày sinh: %s</string>
+    <string name="label_passenger_id">Số giấy tờ: %s</string>
+    <string name="label_baggage_both">Hành lý: %1$dkg (Đi) &amp; %2$dkg (Về)</string>
+    <string name="label_baggage_outbound_orderDetail">Hành lý đi: %dkg</string>
+    <string name="label_baggage_return_orderDetail">Hành lý về: %dkg</string>
+    <string name="label_baby_seat">Ngồi cùng người lớn</string>
+    <string name="label_seat_depart_return">Đi: %1$s | Về: %2$s</string>
+    <!-- Thêm vào phần OrderDetail -->
+    <string name="status_payment_expired">Đã hết hạn thanh toán</string>
+    <string name="label_order_code_format">Mã đơn hàng #%1$s</string>
+
+    <!-- Booking Info - Java -->
+    <string name="msg_holding_seat_progress">Đang giữ chỗ đặt vé... Vui lòng đợi trong giây lát!</string>
+    <string name="error_empty_full_name">Vui lòng nhập họ và tên</string>
+    <string name="error_empty_email">Vui lòng nhập email liên hệ</string>
+    <string name="error_invalid_email_format">Định dạng email không hợp lệ</string>
+    <string name="error_empty_phone">Vui lòng nhập số điện thoại</string>
+    <string name="error_invalid_phone_format">Số điện thoại phải bắt đầu bằng 0 và đủ 10 số</string>
+    <string name="error_missing_outbound_seats">Vui lòng chọn đủ ghế lượt đi cho người lớn và trẻ em</string>
+    <string name="error_missing_return_seats">Vui lòng chọn đủ ghế lượt về cho người lớn và trẻ em</string>
+    <string name="error_name_required">Họ tên không được để trống</string>
+    <string name="error_phone_required">Số điện thoại không được để trống</string>
+    <string name="error_phone_start_zero">Số điện thoại phải bắt đầu bằng 0</string>
+    <string name="error_phone_invalid">Số điện thoại không hợp lệ</string>
+    <string name="error_email_required">Email không được để trống</string>
+    <string name="error_email_invalid">Email không đúng định dạng hợp lệ</string>
+    <string name="msg_hold_seat_success">Đã giữ chỗ thành công!</string>
+    <string name="error_generic_format">Lỗi: %s</string>
+    <string name="label_seat_with_adult">Ngồi cùng ng.lớn</string>
+    <string name="label_dob_format">- Ngày sinh: %s</string>
+    <string name="label_id_number_format">- Số giấy tờ: %s</string>
+    <string name="label_baggage_both_format">- Hành lý lượt đi %dkg &amp; lượt về %dkg</string>
+    <string name="label_baggage_outbound_format">- Hành lý lượt đi %dkg</string>
+    <string name="label_baggage_return_format">- Hành lý lượt về %dkg</string>
+    <string name="label_seat_both_trips_format">Đi: %1$s | Về: %2$s</string>
+
+    <!-- Seat Selection - Java -->
+    <string name="error_select_enough_seats_format">Vui lòng chọn đủ %d ghế!</string>
+    <string name="msg_outbound_seat_saved">Đã lưu ghế lượt đi. Vui lòng chọn ghế lượt về.</string>
+    <string name="error_max_seats_format">Bạn chỉ được chọn tối đa %d ghế!</string>
+    <string name="label_please_select">Vui lòng chọn</string>
+    <string name="label_seat_free_included">Miễn phí (Bao gồm trong gói vé)</string>
+    <string name="label_vat_included">Đã bao gồm VAT</string>
+    <string name="label_seat_surcharge_format">+%,.0fđ (Phụ thu nâng cấp ghế)</string>
+    <string name="error_load_seatmap_format">Lỗi tải sơ đồ ghế: %s</string>
+
+
+    <string name="label_error">"Lỗi: "</string>
+    <string name="dialog_logout_title">Xác nhận</string>
+    <string name="dialog_logout_message">Bạn có chắc chắn muốn đăng xuất không?</string>
+    <string name="dialog_logout_btn_confirm">Đăng xuất</string>
+    <string name="dialog_logout_btn_cancel">Hủy</string>
+    <string name="toast_logout_success">Đã đăng xuất thành công!</string>
+    <string name="label_no_orders">Bạn chưa có đơn hàng nào</string>
+
+
+    <!-- Payment Result -->
+    <string name="title_payment_success">Thanh toán thành công!</string>
+    <string name="msg_payment_success">Đơn hàng của bạn đã được xác nhận và thanh toán thành công.</string>
+    <string name="btn_view_order_detail">XEM CHI TIẾT ĐƠN HÀNG</string>
+
+    <string name="title_payment_cancelled">Đã hủy thanh toán</string>
+    <string name="msg_payment_cancelled">Bạn đã hủy giao dịch. Đơn hàng vẫn được giữ chỗ, vui lòng thanh toán lại trước khi hết hạn.</string>
+
+    <string name="title_payment_failed">Thanh toán không thành công</string>
+    <string name="msg_payment_failed">Đã có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại hoặc liên hệ hỗ trợ.</string>
+
+    <string name="btn_retry_payment">THỬ THANH TOÁN LẠI</string>
+
+    <string name="label_payment_method_zalopay">ZaloPay</string>
+    <string name="label_order_code_format_payment">#%s</string>
 </resources>

@@ -22,7 +22,7 @@
             app:layout_anchorGravity="center"
             app:navigationIcon="@drawable/ic_back"
             app:navigationIconTint="@color/textTitle"
-            app:title="Thông tin tài khoản"
+            app:title="@string/profile_toolbar_title"
             app:titleCentered="true"
             app:titleTextColor="@color/textTitle">
 
@@ -82,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Người dùng"
+                android:text="@string/profile_role_user"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -117,7 +117,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:text="THÔNG TIN CÁ NHÂN"
+                            android:text="@string/profile_section_personal_info"
                             android:textColor="#0175F3"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -136,7 +136,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="6dp"
-                        android:text="Họ và tên"
+                        android:text="@string/profile_label_full_name"
                         android:textColor="@color/text_label"
                         android:textSize="13sp" />
 
@@ -147,7 +147,7 @@
                         android:drawableStart="@drawable/ic_profile_card"
                         android:drawablePadding="12dp"
                         android:gravity="center_vertical"
-                        android:hint="Nguyễn Văn A"
+                        android:hint="@string/profile_hint_default_name"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
                         android:textColor="#212121"
@@ -159,7 +159,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
                         android:layout_marginBottom="6dp"
-                        android:text="Email"
+                        android:text="@string/profile_label_email"
                         android:textColor="@color/text_label" />
 
                     <TextView
@@ -169,7 +169,7 @@
                         android:drawableStart="@drawable/ic_profile_email"
                         android:drawablePadding="12dp"
                         android:gravity="center_vertical"
-                        android:hint="nguyenxuanly@gmail.com"
+                        android:hint="@string/profile_hint_default_email"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
                         android:textColor="#212121"
@@ -181,7 +181,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
                         android:layout_marginBottom="6dp"
-                        android:text="Số điện thoại"
+                        android:text="@string/profile_label_phone"
                         android:textColor="@color/text_label" />
 
                     <TextView
@@ -191,7 +191,7 @@
                         android:drawableStart="@drawable/ic_profile_phone"
                         android:drawablePadding="12dp"
                         android:gravity="center_vertical"
-                        android:hint="0987 654 321"
+                        android:hint="@string/profile_hint_default_phone"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
                         android:textColor="#212121"
@@ -227,7 +227,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginBottom="8dp"
-                        android:text="CẤU HÌNH HỆ THỐNG"
+                        android:text="@string/profile_section_system_config"
                         android:textColor="#0175F3"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -241,7 +241,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
-                        android:text="Đổi mật khẩu"
+                        android:text="@string/profile_btn_change_password"
                         android:textColor="#212121"
                         android:textSize="15sp"
                         app:drawableEndCompat="@drawable/ic_chevron_right"
@@ -264,7 +264,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
-                        android:text="Chính sách &amp; Điều khoản"
+                        android:text="@string/profile_btn_privacy_policy"
                         android:textColor="#212121"
                         android:textSize="15sp"
                         app:drawableEndCompat="@drawable/ic_chevron_right"
@@ -279,7 +279,7 @@
                         android:background="#F0F0F0" />
 
                     <TextView
-                        android:id="@+id/btnSupport"
+                        android:id="@+id/btnTermsOfUse"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:background="?attr/selectableItemBackground"
@@ -287,7 +287,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
-                        android:text="Trung tâm trợ giúp"
+                        android:text="@string/profile_btn_terms_of_use"
                         android:textColor="#212121"
                         android:textSize="15sp"
                         app:drawableEndCompat="@drawable/ic_chevron_right"
@@ -310,7 +310,7 @@
                         android:gravity="center_vertical"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
-                        android:text="Ngôn ngữ"
+                        android:text="@string/profile_btn_language"
                         android:textColor="#212121"
                         android:textSize="15sp"
                         app:drawableEndCompat="@drawable/ic_chevron_right"
@@ -320,13 +320,16 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+
+
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogout"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_margin="16dp"
-                android:text="Đăng xuất"
+                android:text="@string/profile_btn_logout"
                 android:textColor="#D32F2F"
                 android:textSize="16sp"
                 app:icon="@drawable/ic_menu_logout"
@@ -340,6 +343,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

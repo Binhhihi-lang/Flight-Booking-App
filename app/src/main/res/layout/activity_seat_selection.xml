@@ -28,7 +28,7 @@
             android:layout_marginTop="28dp"
             app:navigationIcon="@drawable/ic_back"
             app:navigationIconTint="@color/white"
-            app:title="Chọn ghế ngồi"
+            app:title="@string/seat_selection_title"
             app:titleTextColor="@color/white" />
 
         <!-- Tab Row: LƯỢT ĐI | LƯỢT VỀ -->
@@ -49,12 +49,12 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:paddingVertical="12dp"
-                android:text="LƯỢT ĐI"
+                android:text="@string/tab_seat_depart"
                 android:textColor="#333333"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:background="@drawable/bg_seat_tab_selected"
-                 />
+                />
 
             <!-- Tab LƯỢT VỀ -->
             <TextView
@@ -64,12 +64,12 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:paddingVertical="12dp"
-                android:text="LƯỢT VỀ"
+                android:text="@string/tab_seat_return"
                 android:textColor="#333333"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 android:background="@drawable/bg_seat_tab_unselected"
-                 />
+                />
 
         </LinearLayout>
 
@@ -139,7 +139,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Ghế cao cấp"
+                                android:text="@string/legend_seat_premium"
                                 android:textColor="#333333"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -161,7 +161,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Ghế hàng trước"
+                                android:text="@string/legend_seat_front"
                                 android:textColor="#333333"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -183,7 +183,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Ghế tiêu chuẩn"
+                                android:text="@string/legend_seat_standard"
                                 android:textColor="#333333"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -205,7 +205,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Ghế để chân rộng"
+                                android:text="@string/legend_seat_exit_row"
                                 android:textColor="#333333"
                                 android:textSize="13sp"
                                 android:maxWidth="120dp"
@@ -230,7 +230,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Ghế đang chọn"
+                                android:text="@string/legend_seat_selecting"
                                 android:textColor="#333333"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -251,7 +251,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Đã có người"
+                                android:text="@string/legend_seat_booked"
                                 android:textColor="#333333"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -272,14 +272,7 @@
                         android:textStyle="bold"
                         tools:text="Vietjet Air" />
 
-                    <!-- ── SEAT MAP (RecyclerView) ────────────── -->
-                    <!--
-                        RecyclerView với GridLayoutManager hoặc custom adapter.
-                        Mỗi item = 1 ô ghế (SeatItem).
-                        Adapter phân biệt: số hàng (row number) vs ghế (A/B/C/D/E/F).
-                        SpanCount = 7 (cột A B C | số | D E F).
-                        Layout manager: GridLayoutManager(ctx, 7).
-                    -->
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rv_seat_map"
                         android:layout_width="match_parent"
@@ -458,7 +451,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ghế đang chọn"
+                    android:text="@string/legend_seat_selecting"
                     android:textColor="#888888"
                     android:textSize="12sp" />
 
@@ -466,7 +459,7 @@
                     android:id="@+id/tv_selected_seat_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Vui lòng chọn"
+                    android:text="@string/text_please_select_seat"
                     android:textColor="#1A1A2E"
                     android:textSize="15sp"
                     android:textStyle="bold"
@@ -496,7 +489,7 @@
                     android:id="@+id/tv_vat_note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Đã bao gồm VAT"
+                    android:text="@string/text_vat_included"
                     android:textColor="@color/primary_blue"
                     android:textSize="11sp" />
 
@@ -525,7 +518,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:text="TRỞ VỀ"
+                android:text="@string/btn_back"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textAllCaps="true"
@@ -538,7 +531,7 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="2"
-                android:text="TIẾP TỤC"
+                android:text="@string/btn_continue"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textAllCaps="true"

@@ -52,7 +52,7 @@
                         android:id="@+id/tv_title_flight_info"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Thông tin chuyến bay"
+                        android:text="@string/flight_info_title"
                         android:textColor="#000000"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
@@ -231,7 +231,7 @@
                             android:id="@+id/tv_detail_flight_type"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Bay Thẳng"
+                            android:text="@string/flight_type_direct"
                             android:textColor="#555555"
                             android:textSize="12sp" />
 
@@ -263,7 +263,7 @@
                             android:id="@+id/tv_detail_seat_class_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Loại vé"
+                            android:text="@string/label_seat_class"
                             android:textColor="#888888"
                             android:textSize="11sp" />
 
@@ -296,7 +296,7 @@
                             android:id="@+id/tv_lbl_base_price"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Giá vé"
+                            android:text="@string/label_base_price"
                             android:textColor="#888888"
                             android:textSize="11sp" />
 
@@ -327,7 +327,7 @@
                             android:id="@+id/tv_lbl_tax_fee"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Thuế phí"
+                            android:text="@string/label_tax_fee"
                             android:textColor="#555555"
                             android:textSize="11sp" />
 
@@ -357,7 +357,7 @@
                             android:id="@+id/tv_lbl_total_price"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tổng cộng"
+                            android:text="@string/label_total_price"
                             android:textColor="#888888"
                             android:textSize="11sp" />
 
@@ -482,7 +482,7 @@
                             android:id="@+id/tv_detail_refund_policy"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Được phép đổi vé"
+                            android:text="@string/policy_refund_allowed"
                             android:textColor="#333333"/>
 
                     </LinearLayout>
@@ -510,7 +510,7 @@
                             android:id="@+id/tv_detail_meal_policy"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Bao gồm suất ăn trên máy bay"
+                            android:text="@string/policy_meal_included"
                             android:textColor="#333333"/>
 
                     </LinearLayout>
@@ -538,7 +538,7 @@
                             android:id="@+id/tv_detail_lounge_policy"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Bao gồm suất ăn trên máy bay"
+                            android:text="@string/policy_lounge_included"
                             android:textColor="#333333"/>
 
                     </LinearLayout>
@@ -566,7 +566,7 @@
                             android:id="@+id/tv_detail_priority_policy"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Bao gồm suất ăn trên máy bay"
+                            android:text="@string/policy_priority_included"
                             android:textColor="#333333"/>
 
                     </LinearLayout>
@@ -603,7 +603,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Tổng số tiền 1 người"
+            android:text="@string/label_total_price_per_person"
             android:textColor="#666666"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_footer" />
@@ -624,7 +624,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Giá vé đã bao gồm thuế phí"
+            android:text="@string/label_tax_included"
             android:textColor="#999999"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -666,7 +666,7 @@
                 android:layout_height="50dp"
                 android:layout_marginRight="8dp"
                 android:layout_weight="1"
-                android:text="TRỞ VỀ"
+                android:text="@string/btn_back"
                 android:textColor="#666666"
                 app:strokeColor="#CCCCCC" />
 
@@ -677,7 +677,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_weight="2"
                 android:backgroundTint="#0091EA"
-                android:text="CHỌN"
+                android:text="@string/btn_select"
                 android:textColor="#FFFFFF" />
         </LinearLayout>
 

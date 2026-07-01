@@ -91,7 +91,7 @@ public class NotificationFragment extends Fragment {
             if (notifications == null || notifications.isEmpty()) {
                 recyclerView.setVisibility(View.GONE);
                 layoutEmpty.setVisibility(View.VISIBLE);
-                if (tvEmpty != null) tvEmpty.setText("Bạn chưa có thông báo nào");
+                if (tvEmpty != null) tvEmpty.setText(getString(R.string.notification_empty_message));
             } else {
                 layoutEmpty.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
@@ -134,7 +134,7 @@ public class NotificationFragment extends Fragment {
                 case ERROR:
                     layoutLoading.setVisibility(View.GONE);
                     Toast.makeText(requireContext(),
-                            "Lỗi: " + state.getMessage(), Toast.LENGTH_SHORT).show();
+                            getString(R.string.label_error)  + state.getMessage(), Toast.LENGTH_SHORT).show();
                     break;
             }
         });

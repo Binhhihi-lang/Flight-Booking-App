@@ -24,7 +24,7 @@
             android:layout_marginTop="28dp"
             app:navigationIcon="@drawable/ic_back"
             app:navigationIconTint="@color/white"
-            app:title="Điền thông tin"
+            app:title="@string/title_fill_info"
             app:titleTextColor="@color/white"
             app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
@@ -266,7 +266,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Bay Thẳng"
+                                    android:text="@string/label_direct_flight"
                                     android:textColor="#555555"
                                     android:textSize="12sp" />
 
@@ -296,7 +296,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Loại vé"
+                                    android:text="@string/label_fare_class"
                                     android:textColor="#888888"
                                     android:textSize="11sp" />
 
@@ -336,7 +336,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Tổng giá vé lượt đi"
+                                    android:text="@string/label_outbound_total_price"
                                     android:textColor="#1A1A2E"
                                     android:textStyle="bold"
                                     android:textSize="16sp" />
@@ -362,7 +362,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Giá vé người lớn "
+                                    android:text="@string/label_adult_price"
                                     android:textColor="#555555"
                                     android:textSize="13sp" />
                                 <TextView
@@ -386,7 +386,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Giá vé trẻ con"
+                                    android:text="@string/label_child_price"
                                     android:textColor="#555555"
                                     android:textSize="13sp" />
                                 <TextView
@@ -410,7 +410,7 @@
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:text="Giá vé em bé"
+                                    android:text="@string/label_baby_price"
                                     android:textColor="#555555"
                                     android:textSize="13sp" />
                                 <TextView
@@ -631,7 +631,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Bay Thẳng"
+                                        android:text="@string/label_direct_flight"
                                         android:textColor="#555555"
                                         android:textSize="12sp" />
 
@@ -661,7 +661,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Loại vé"
+                                        android:text="@string/label_fare_class"
                                         android:textColor="#888888"
                                         android:textSize="11sp" />
 
@@ -701,7 +701,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="Tổng giá vé lượt về"
+                                        android:text="@string/label_return_total_price"
                                         android:textColor="#1A1A2E"
                                         android:textStyle="bold"
                                         android:textSize="16sp" />
@@ -727,7 +727,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="Giá vé người lớn "
+                                        android:text="@string/label_adult_price"
                                         android:textColor="#555555"
                                         android:textSize="13sp" />
                                     <TextView
@@ -751,7 +751,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="Giá vé trẻ con"
+                                        android:text="@string/label_child_price"
                                         android:textColor="#555555"
                                         android:textSize="13sp" />
                                     <TextView
@@ -775,7 +775,7 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
-                                        android:text="Giá vé em bé"
+                                        android:text="@string/label_baby_price"
                                         android:textColor="#555555"
                                         android:textSize="13sp" />
                                     <TextView
@@ -820,7 +820,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nhập thông tin hành khách"
+                        android:text="@string/title_enter_passenger_info"
                         android:textColor="@color/primary_blue"
                         android:textSize="15sp"
                         android:textStyle="bold"
@@ -881,7 +881,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Chọn ghế ngồi"
+                                android:text="@string/title_select_seat"
                                 android:textColor="@color/primary_blue"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
@@ -890,8 +890,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="Bạn có thể chọn vị trí chỗ ngồi trên máy"
-                                android:textColor="#888888"
+                                android:text="@string/desc_select_seat"                                android:textColor="#888888"
                                 android:textSize="11sp"
                                 android:maxLines="3"
                                 android:ellipsize="end" />
@@ -928,8 +927,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nhập thông tin liên hệ"
-                        android:textColor="@color/primary_blue"
+                        android:text="@string/title_enter_contact_info"                        android:textColor="@color/primary_blue"
                         android:textSize="15sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="12dp" />
@@ -945,7 +943,7 @@
                         <TextView
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
-                            android:text="Họ và tên:"
+                            android:text="@string/label_full_name"
                             android:textColor="#555555"
                             android:textSize="13sp" />
 
@@ -966,7 +964,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_contact_name"
                                 android:layout_width="match_parent"
-                                android:layout_height="40dp"
+                                android:layout_height="48dp"
                                 android:hint="VD: NGUYEN VAN AN"
                                 android:inputType="textCapCharacters"
                                 android:textSize="13sp"
@@ -985,7 +983,7 @@
                         <TextView
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
-                            android:text="Số điện thoại:"
+                            android:text="@string/label_phone_number"
                             android:textColor="#555555"
                             android:textSize="13sp" />
 
@@ -1004,7 +1002,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_contact_phone"
                                 android:layout_width="match_parent"
-                                android:layout_height="40dp"
+                                android:layout_height="48dp"
                                 android:textSize="13sp"
                                 android:inputType="phone"
                                 android:maxLength="10"
@@ -1025,7 +1023,7 @@
                         <TextView
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
-                            android:text="Email:"
+                            android:text="@string/label_email_colon"
                             android:textColor="#555555"
                             android:textSize="13sp" />
 
@@ -1043,7 +1041,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_contact_email"
                                 android:layout_width="match_parent"
-                                android:layout_height="40dp"
+                                android:layout_height="48dp"
                                 android:inputType="textEmailAddress"
                                 android:textSize="13sp"
                                 android:paddingVertical="0dp" />
@@ -1086,7 +1084,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Giá vé:"
+                            android:text="@string/label_fare_price"
                             android:textColor="#555555"
                             android:textSize="14sp" />
 
@@ -1111,7 +1109,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Chọn ghế, hành lý ký gửi:"
+                            android:text="@string/label_seat_baggage"
                             android:textColor="#555555"
                             android:textSize="14sp" />
 
@@ -1144,7 +1142,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Tổng cộng:"
+                            android:text="@string/label_grand_total"
                             android:textColor="#1A1A2E"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -1186,7 +1184,7 @@
             android:id="@+id/btn_book_now"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="ĐẶT VÉ"
+            android:text="@string/btn_book_now"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textAllCaps="true"

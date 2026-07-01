@@ -1,12 +1,12 @@
 package com.example.flight_booking_app.ui.view.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -44,7 +44,6 @@ import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class OrderDetailActivity extends AppCompatActivity {
 
-    // ── Views: AppBar ──────────────────────────────────────────────────────
     private TextView tvToolbarOrderCode;
     private TextView tvOrderStatusBanner;
 
@@ -263,7 +262,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                 @Override
                 public void onFinish() {
                     // ViewModel.Handler tự gọi expireBooking() → snapshot bắn lại → UI tự đúng
-                    tvPaymentDeadline.setText("Đã hết hạn thanh toán");
+                    tvPaymentDeadline.setText(getString(R.string.status_payment_expired));
                     tvPaymentDeadline.setTextColor(Color.RED);
                 }
             }.start();
@@ -284,7 +283,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
 
     private void populateAll(Booking b) {
-        tvToolbarOrderCode.setText("Mã đơn hàng #" + b.getOrderCode());
+        tvToolbarOrderCode.setText(getString(R.string.label_order_code_format, b.getOrderCode()));
         populateStatusBanner(b.getStatus());
         populateOutboundCard(b);
         populateReturnCard(b);
@@ -423,8 +422,13 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvContactEmailCompact.setText(b.getContactPhone() + " - " + b.getContactEmail());
 
         tvOrderCode.setText("#" + b.getOrderCode());
-        tvBookingCodeOutbound.setText(b.getBookingCode() != null ? b.getBookingCode() : "Đang xác nhận");
-        tvBookingCodeReturn.setText(b.getBookingCode() != null ? b.getBookingCode() : "Đang xác nhận");
+        // Dùng getString(R.string...) để chuyển ID thành nội dung văn bản
+        tvBookingCodeOutbound.setText(b.getBookingCode() != null
+                ? b.getBookingCode()
+                : getResources().getString(R.string.status_booking_pending));
+        tvBookingCodeReturn.setText(b.getBookingCode() != null
+                ? b.getBookingCode()
+                : getResources().getString(R.string.status_booking_pending));
 
         tvOrderStatus.setText(statusLabel(status));
         tvOrderStatus.setTextColor(Color.parseColor(statusColor(status)));
@@ -451,9 +455,12 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         for (Passenger p : passengers) {
             View v = inflater.inflate(R.layout.item_passenger_input, layoutPassengerList, false);
+
+            // Icon
             ((ImageView) v.findViewById(R.id.img_passenger_icon)).setImageResource(
                     "ADULT".equals(p.getType()) ? ICON_ADULT : "CHILD".equals(p.getType()) ? ICON_CHILD : ICON_BABY);
 
+            // Trạng thái hoàn thành
             if (p.isComplete()) {
                 ImageView check = v.findViewById(R.id.img_passenger_check);
                 check.setImageResource(ICON_CHECKED);
@@ -462,33 +469,42 @@ public class OrderDetailActivity extends AppCompatActivity {
                 v.findViewById(R.id.tv_passenger_mandatory).setVisibility(View.GONE);
             }
 
+            // Tên hành khách
             ((TextView) v.findViewById(R.id.tv_passenger_label)).setText(
                     (p.getFullName() != null && !p.getFullName().isEmpty()) ? p.getTitle() + ": " + p.getFullName().toUpperCase() : p.getLabel());
 
             // Thông tin bổ sung
             v.findViewById(R.id.row_InfoAdd_container).setVisibility(View.VISIBLE);
+
             TextView dob = v.findViewById(R.id.tv_dob_add);
             dob.setVisibility(p.getDateOfBirth() != null ? View.VISIBLE : View.GONE);
-            dob.setText("- Ngày sinh: " + p.getDateOfBirth());
+            if (p.getDateOfBirth() != null) dob.setText(getString(R.string.label_passenger_dob, p.getDateOfBirth()));
 
             TextView id = v.findViewById(R.id.tv_idNumber_add);
             id.setVisibility(p.getIdNumber() != null ? View.VISIBLE : View.GONE);
-            id.setText("- Số giấy tờ: " + p.getIdNumber());
+            if (p.getIdNumber() != null) id.setText(getString(R.string.label_passenger_id, p.getIdNumber()));
 
             TextView baggage = v.findViewById(R.id.tv_baggage_add);
             boolean hasOut = p.getOutboundBaggageId() != null && !p.getOutboundBaggageId().isEmpty();
             boolean hasRet = p.getReturnBaggageId() != null && !p.getReturnBaggageId().isEmpty();
-            if (hasOut && hasRet)
-                baggage.setText("- Hành lý: " + p.getOutboundBaggageWeight() + "kg (Đi) & " + p.getReturnBaggageWeight() + "kg (Về)");
-            else if (hasOut)
-                baggage.setText("- Hành lý đi: " + p.getOutboundBaggageWeight() + "kg");
-            else if (hasRet) baggage.setText("- Hành lý về: " + p.getReturnBaggageWeight() + "kg");
-            else baggage.setVisibility(View.GONE);
+
+            // Lấy context từ chính textview baggage hoặc itemView của ViewHolder
+            Context context = baggage.getContext();
+
+            if (hasOut && hasRet) {
+                baggage.setText(context.getString(R.string.label_baggage_both, p.getOutboundBaggageWeight(), p.getReturnBaggageWeight()));
+            } else if (hasOut) {
+                baggage.setText(context.getString(R.string.label_baggage_outbound_orderDetail, p.getOutboundBaggageWeight()));
+            } else if (hasRet) {
+                baggage.setText(context.getString(R.string.label_baggage_return_orderDetail, p.getReturnBaggageWeight()));
+            } else {
+                baggage.setVisibility(View.GONE);
+            }
 
             // Hiển thị ghế
             TextView seat = v.findViewById(R.id.tv_passenger_seat);
             if ("BABY".equals(p.getType())) {
-                seat.setText("Ngồi cùng ng.lớn");
+                seat.setText(R.string.label_baby_seat);
                 seat.setTextColor(Color.GRAY);
             } else {
                 String outSeat = p.getOutboundSeat();
@@ -497,19 +513,16 @@ public class OrderDetailActivity extends AppCompatActivity {
                 boolean hasRetSeat = retSeat != null && !retSeat.trim().isEmpty();
 
                 if (hasOutSeat || hasRetSeat) {
-                    StringBuilder seatDisplay = new StringBuilder();
                     if (hasOutSeat && hasRetSeat) {
-                        seatDisplay.append("Đi: ").append(outSeat).append(" | Về: ").append(retSeat);
-                    } else if (hasOutSeat) {
-                        seatDisplay.append(outSeat); // Đi 1 chiều
+                        seat.setText(getString(R.string.label_seat_depart_return, outSeat, retSeat));
+                    } else {
+                        seat.setText(hasOutSeat ? outSeat : retSeat);
                     }
-                    seat.setText(seatDisplay.toString());
                     seat.setTextColor(Color.parseColor("#1565C0"));
                 } else {
-                    seat.setText(""); // Chưa chọn ghế
+                    seat.setText("");
                 }
             }
-
             layoutPassengerList.addView(v);
         }
     }
@@ -561,14 +574,13 @@ public class OrderDetailActivity extends AppCompatActivity {
         View.OnClickListener showSupportDialog = v -> {
             Booking current = viewModel.getBooking().getValue();
             String name = current != null ? current.getContactName() : "";
-            String phone = current != null ? current.getContactPhone() : "";
             String status = current != null ? statusLabel(current.getStatus()) : "";
             String msg = "Chào " + name + " 👋\n"
                     + "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.\n\n"
                     + "Trạng thái đặt chỗ của bạn là: " + status + "\n\n"
                     + "Vui lòng nhấn GỌI ĐIỆN THOẠI hoặc GỬI SMS để được hỗ trợ nhanh nhất.\n\n"
                     + "Xin cảm ơn !";
-            ContactSupportDialog.newInstance(msg, phone)
+            ContactSupportDialog.newInstance(msg)
                     .show(getSupportFragmentManager(), "contact_support");
         };
 
@@ -603,7 +615,7 @@ public class OrderDetailActivity extends AppCompatActivity {
                             // nên không cần truyền thêm data
                             Intent intent = new Intent(OrderDetailActivity.this,
                                     PaymentNotificationActivity.class);
-                            intent.putExtra("result", "success");
+                            intent.putExtra("result", "Success Payment");
                             intent.putExtra("booking_id", current != null
                                     ? current.getBookingId() : "");
                             startActivity(intent);
@@ -612,14 +624,14 @@ public class OrderDetailActivity extends AppCompatActivity {
                         @Override
                         public void onPaymentCanceled(String s, String s1) {
                             Intent intent = new Intent(OrderDetailActivity.this, PaymentNotificationActivity.class);
-                            intent.putExtra("result", "Hủy Thanh toán");
+                            intent.putExtra("result", "Cancel Payment");
                             startActivity(intent);
                         }
 
                         @Override
                         public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
                             Intent intent = new Intent(OrderDetailActivity.this, PaymentNotificationActivity.class);
-                            intent.putExtra("result", "Thanh toán lỗi");
+                            intent.putExtra("result", "Error Payment");
                             startActivity(intent);
                         }
                     });

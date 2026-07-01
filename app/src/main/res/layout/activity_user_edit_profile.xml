@@ -20,7 +20,7 @@
             app:navigationIcon="@drawable/ic_back"
             android:paddingStart="4dp"
 
-            app:title="Chỉnh sửa thông tin"
+            app:title="@string/title_edit_profile"
             app:titleCentered="true"
             app:titleTextColor="#212121">
             <com.google.android.material.imageview.ShapeableImageView
@@ -75,7 +75,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
-                <!--  android:scaleType="center" cho icon vào trung tâm -->
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/imgChangeAvatar"
                     android:layout_width="40dp"
@@ -115,7 +114,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Full Name"
+                        android:text="@string/label_full_name"
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
                         android:layout_marginBottom="6dp" />
@@ -134,7 +133,7 @@
                             android:id="@+id/edtFullName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Nguyen Van A"
+                            android:hint="@string/placeholder_name"
                             android:paddingStart="50dp"
                             android:inputType="textPersonName"
                             android:textColor="#212121"
@@ -144,7 +143,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Email"
+                        android:text="@string/label_email"
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
                         android:layout_marginBottom="6dp" />
@@ -165,15 +164,14 @@
                             android:id="@+id/edtEmail"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="nguyenxuanly@gmail.com"
-
+                            android:hint="@string/placeholder_email"
                             android:textSize="15sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Phone Number"
+                        android:text="@string/label_phone_number"
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
                         android:layout_marginBottom="6dp" />
@@ -192,7 +190,7 @@
                             android:id="@+id/edtPhone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="0987654321"
+                            android:hint="@string/placeholder_phone"
                             android:paddingStart="50dp"
                             android:inputType="phone"
                             android:maxLength="10"
@@ -203,7 +201,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Gender"
+                        android:text="@string/label_gender"
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
                         android:layout_marginBottom="6dp" />
@@ -227,7 +225,7 @@
                             android:id="@+id/edtGender"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Male"
+                            android:hint="@string/hint_gender_male"
                             android:paddingStart="50dp"
                             android:focusable="false"
                             android:clickable="true"
@@ -239,7 +237,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Date of Birth"
+                        android:text="@string/label_dob"
                         android:textColor="@color/text_title"
                         android:textSize="@dimen/text_size_body"
                         android:layout_marginBottom="6dp" />
@@ -259,7 +257,7 @@
                             android:id="@+id/edtDob"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="01/01/2000"
+                            android:hint="@string/placeholder_dob"
                             android:paddingStart="50dp"
                             android:focusable="false"
                             android:clickable="true"
@@ -279,7 +277,7 @@
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_margin="20dp"
-                android:text="Save Changes"
+                android:text="@string/btn_save_changes"
                 android:textSize="16sp"
                 app:cornerRadius="12dp"
                 android:backgroundTint="#0175F3"
