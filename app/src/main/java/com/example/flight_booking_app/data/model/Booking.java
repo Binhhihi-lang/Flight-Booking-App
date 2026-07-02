@@ -1,6 +1,7 @@
 package com.example.flight_booking_app.data.model;
 
 import com.google.firebase.Timestamp;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -39,11 +40,21 @@ public class Booking implements Serializable {
 
 
     // ── GETTERS VÀ SETTERS ──
-    public String getBookingId() { return bookingId; }
-    public void setBookingId(String bookingId) { this.bookingId = bookingId; }
+    public String getBookingId() {
+        return bookingId;
+    }
 
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getOrderCode() {
         return orderCode;
@@ -53,20 +64,45 @@ public class Booking implements Serializable {
         this.orderCode = orderCode;
     }
 
-    public String getBookingCode() { return bookingCode; }
-    public void setBookingCode(String bookingCode) { this.bookingCode = bookingCode; }
+    public String getBookingCode() {
+        return bookingCode;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setBookingCode(String bookingCode) {
+        this.bookingCode = bookingCode;
+    }
 
-    public double getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+    public String getStatus() {
+        return status;
+    }
 
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-    public Timestamp getPaymentDeadline() { return paymentDeadline; }
-    public void setPaymentDeadline(Timestamp paymentDeadline) { this.paymentDeadline = paymentDeadline; }
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Timestamp getPaymentDeadline() {
+        return paymentDeadline;
+    }
+
+    public void setPaymentDeadline(Timestamp paymentDeadline) {
+        this.paymentDeadline = paymentDeadline;
+    }
 
     public boolean isRoundTrip() {
         return isRoundTrip;
@@ -108,8 +144,13 @@ public class Booking implements Serializable {
         this.returnFare = returnFare;
     }
 
-    public List<Passenger> getPassengers() { return passengers; }
-    public void setPassengers(List<Passenger> passengers) { this.passengers = passengers; }
+    public List<Passenger> getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(List<Passenger> passengers) {
+        this.passengers = passengers;
+    }
 
     public String getContactName() {
         return contactName;

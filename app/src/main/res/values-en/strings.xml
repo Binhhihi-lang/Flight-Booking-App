@@ -112,11 +112,12 @@
     <string name="passenger_child">%1$d Child</string>
     <string name="passenger_infant">%1$d Infant</string>
     <string name="title_select_passenger">Select Passengers</string>
-<!--    <string name="passenger_adult">Adults</string>-->
+    <string name="passenger_adult_home">Adults</string>
+
     <string name="passenger_adult_age">> 12 years old</string>
-<!--    <string name="passenger_child">Children</string>-->
+    <string name="passenger_child_home">Children</string>
     <string name="passenger_child_age">2 - 12 years old</string>
-<!--    <string name="passenger_infant">Infants</string>-->
+    <string name="passenger_infant_home">Infants</string>
     <string name="passenger_infant_age">0 - 2 years old</string>
     <string name="btn_confirm">SELECT</string>
 

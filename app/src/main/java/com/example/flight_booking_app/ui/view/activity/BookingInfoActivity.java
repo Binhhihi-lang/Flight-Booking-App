@@ -703,47 +703,17 @@ public class BookingInfoActivity extends AppCompatActivity {
 
     // Seat selection
     private void openSeatSelection() {
-        int seatsNeeded = adultCount + childCount;
-
         Intent intent = new Intent(this, SeatSelectionActivity.class);
-        intent.putExtra(SeatSelectionActivity.EXTRA_MAX_PASSENGERS, seatsNeeded);
-        intent.putExtra(SeatSelectionActivity.EXTRA_IS_ROUND_TRIP, isRoundTrip);
 
-        FareRule outRule = outboundFare.getFareRule();
-        if (outRule != null) {
-            intent.putExtra(SeatSelectionActivity.EXTRA_OUT_FARE_CLASS, outRule.getFareClassName());
-            if (outRule.getFreeIncludedSeatTypes() != null) {
-                intent.putStringArrayListExtra(SeatSelectionActivity.EXTRA_OUT_FREE_SEATS, new ArrayList<>(outRule.getFreeIncludedSeatTypes()));
-            }
-        }
-
-        if (isRoundTrip) {
-            FareRule retRule = returnFare.getFareRule();
-            if (retRule != null) {
-                intent.putExtra(SeatSelectionActivity.EXTRA_RET_FARE_CLASS, retRule.getFareClassName());
-                if (retRule.getFreeIncludedSeatTypes() != null) {
-                    intent.putStringArrayListExtra(SeatSelectionActivity.EXTRA_RET_FREE_SEATS, new ArrayList<>(retRule.getFreeIncludedSeatTypes()));
-                }
-            }
-        }
-
+        // Chỉ truyền danh sách các mã ghế ĐÃ CHỌN TRƯỚC ĐÓ sang để UI bôi màu
         intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEATS_SELECTED, depSeats);
-        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_FLIGHT_ID, outboundFlightId);
-        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEAT_MAP_ID, outSeatMapId);
-        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_AIRCRAFT_NAME, outAircraftName);
-        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_AIRLINE_NAME, outAirlineName);
-        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEAT_FROM_IATA, outFromIata);
-        intent.putExtra(SeatSelectionActivity.EXTRA_OUT_SEAT_TO_IATA, outToIata);
 
         if (isRoundTrip) {
             intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEATS_SELECTED, retSeats);
-            intent.putExtra(SeatSelectionActivity.EXTRA_RET_FLIGHT_ID, returnFlightId);
-            intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEAT_MAP_ID, retSeatMapId);
-            intent.putExtra(SeatSelectionActivity.EXTRA_RET_AIRCRAFT_NAME, retAircraftName);
-            intent.putExtra(SeatSelectionActivity.EXTRA_RET_AIRLINE_NAME, retAirlineName);
-            intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEAT_FROM_IATA, retFromIata);
-            intent.putExtra(SeatSelectionActivity.EXTRA_RET_SEAT_TO_IATA, retToIata);
         }
+
+        // Các thông tin khác (Flight, FareClass, maxPassengers...)
+        // SeatSelectionActivity sẽ tự động lấy từ BookingSessionManager.getInstance()
 
         seatSelectionLauncher.launch(intent);
     }

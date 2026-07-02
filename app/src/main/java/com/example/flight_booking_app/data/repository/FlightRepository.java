@@ -265,7 +265,7 @@ public class FlightRepository {
         f.setDuration(doc.getString("duration"));
         f.setStatus(doc.getString("status"));
         f.setSeatMapId(doc.getString("seatMapId"));
-        f.setAirCraftName(doc.getString("aircraftModel"));
+        f.setAirCraftName(doc.getString("airCraftName"));
 
         Long seats = doc.getLong("availableSeats");
         if (seats != null) f.setAvailableSeats(seats.intValue());

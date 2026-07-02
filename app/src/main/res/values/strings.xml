@@ -112,6 +112,10 @@
     <string name="passenger_adult">%1$d Người lớn</string>
     <string name="passenger_child">%1$d Trẻ em</string>
     <string name="passenger_infant">%1$d Em bé</string>
+    <string name="passenger_adult_home">Người lớn</string>
+    <string name="passenger_child_home">Trẻ em</string>
+    <string name="passenger_infant_home">Em bé</string>
+
     <string name="title_select_passenger">Chọn hành khách</string>
     <string name="passenger_adult_age">> 12 tuổi</string>
     <string name="passenger_child_age">2 - 12 tuổi</string>

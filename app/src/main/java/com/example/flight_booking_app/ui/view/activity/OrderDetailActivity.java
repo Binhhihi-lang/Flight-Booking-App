@@ -611,27 +611,40 @@ public class OrderDetailActivity extends AppCompatActivity {
                             if (current != null) {
                                 viewModel.confirmPaymentSuccess(current);
                             }
-                            // snapshot listener sẽ tự cập nhật UI
-                            // nên không cần truyền thêm data
                             Intent intent = new Intent(OrderDetailActivity.this,
                                     PaymentNotificationActivity.class);
                             intent.putExtra("result", "Success Payment");
-                            intent.putExtra("booking_id", current != null
-                                    ? current.getBookingId() : "");
+                            intent.putExtra("booking_id", current != null ? current.getBookingId() : "");
+                            if (current != null) {
+                                intent.putExtra("amount", PriceFormatter.formatPrice(current.getTotalAmount()));
+                                intent.putExtra("order_code", current.getOrderCode());
+                            }
                             startActivity(intent);
                         }
 
                         @Override
                         public void onPaymentCanceled(String s, String s1) {
+                            Booking current = viewModel.getBooking().getValue();
                             Intent intent = new Intent(OrderDetailActivity.this, PaymentNotificationActivity.class);
                             intent.putExtra("result", "Cancel Payment");
+                            intent.putExtra("booking_id", current != null ? current.getBookingId() : "");
+                            if (current != null) {
+                                intent.putExtra("amount", PriceFormatter.formatPrice(current.getTotalAmount()));
+                                intent.putExtra("order_code", current.getOrderCode());
+                            }
                             startActivity(intent);
                         }
 
                         @Override
                         public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
+                            Booking current = viewModel.getBooking().getValue();
                             Intent intent = new Intent(OrderDetailActivity.this, PaymentNotificationActivity.class);
                             intent.putExtra("result", "Error Payment");
+                            intent.putExtra("booking_id", current != null ? current.getBookingId() : "");
+                            if (current != null) {
+                                intent.putExtra("amount", PriceFormatter.formatPrice(current.getTotalAmount()));
+                                intent.putExtra("order_code", current.getOrderCode());
+                            }
                             startActivity(intent);
                         }
                     });
@@ -648,4 +661,7 @@ public class OrderDetailActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         ZaloPaySDK.getInstance().onResult(intent);
     }
+
+
+
 }

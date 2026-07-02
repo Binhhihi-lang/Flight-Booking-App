@@ -103,15 +103,14 @@ public class OrderDetailViewModel extends ViewModel {
                 booking.getBookingId(),
                 "PAYMENT_EXPIRED",
                 new BookingRepository.OnResultCallback(){
-
                     @Override
                     public void onSuccess() {
-
+                        uiState.postValue(UiState.success());
                     }
 
                     @Override
                     public void onError(String error) {
-
+                        uiState.postValue(UiState.error(error));
                     }
                 });
 

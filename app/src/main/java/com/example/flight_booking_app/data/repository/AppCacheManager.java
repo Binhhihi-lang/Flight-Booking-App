@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * Singleton Cache Manager
- * Quản lý bộ nhớ đệm toàn cục cho ứng dụng, giải quyết vấn đề vòng đời và dữ liệu ươn.
+ * Quản lý bộ nhớ đệm toàn cục cho ứng dụng, giải quyết vấn đề vòng đời
  */
 public class AppCacheManager {
 

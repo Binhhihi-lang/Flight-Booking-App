@@ -138,7 +138,7 @@ public class SeatRepository {
                     tryMerge.run();
                 });
 
-        // ── FETCH 2: FlightSeats override (song song với fetch 1) ────────────
+        // FlightSeats override (song song với fetch 1)
 
         db.collection("flightSeats")
                 .document(flightId)

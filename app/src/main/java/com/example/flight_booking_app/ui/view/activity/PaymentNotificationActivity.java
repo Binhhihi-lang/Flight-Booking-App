@@ -51,6 +51,9 @@ public class PaymentNotificationActivity extends AppCompatActivity {
     private static final String RESULT_SUCCESS = "Success Payment";
     private static final String RESULT_CANCELLED = "Cancel Payment";
 
+    // ── Repository ───────────────────────────────────────────────────────
+    private com.example.flight_booking_app.data.repository.BookingRepository bookingRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,13 +145,8 @@ public class PaymentNotificationActivity extends AppCompatActivity {
     }
 
     private void populateOrderInfo() {
-        // Mã đơn hàng
-        boolean hasBookingId = bookingId != null && !bookingId.trim().isEmpty();
-        rowOrderCode.setVisibility(hasBookingId ? View.VISIBLE : View.GONE);
-        dividerAfterOrderCode.setVisibility(hasBookingId ? View.VISIBLE : View.GONE);
-        if (hasBookingId) {
-            tvOrderCodeValue.setText(getString(R.string.label_order_code_format, bookingId));
-        }
+        String amount = getIntent().getStringExtra("amount");
+        String orderCode = getIntent().getStringExtra("order_code");
 
         tvPaymentMethodValue.setText(getString(R.string.label_payment_method_zalopay));
 
@@ -156,13 +154,82 @@ public class PaymentNotificationActivity extends AppCompatActivity {
         String now = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
         tvTimeValue.setText(now);
 
-        // Số tiền
-        String amount = getIntent().getStringExtra("amount");
+        boolean hasOrderCode = orderCode != null && !orderCode.trim().isEmpty();
         boolean hasAmount = amount != null && !amount.trim().isEmpty();
-        rowAmount.setVisibility(hasAmount ? View.VISIBLE : View.GONE);
-        dividerBeforeAmount.setVisibility(hasAmount ? View.VISIBLE : View.GONE);
+
+        if (hasOrderCode) {
+            rowOrderCode.setVisibility(View.VISIBLE);
+            dividerAfterOrderCode.setVisibility(View.VISIBLE);
+            tvOrderCodeValue.setText(getString(R.string.label_order_code_format, orderCode));
+        } else {
+            boolean hasBookingId = bookingId != null && !bookingId.trim().isEmpty();
+            rowOrderCode.setVisibility(hasBookingId ? View.VISIBLE : View.GONE);
+            dividerAfterOrderCode.setVisibility(hasBookingId ? View.VISIBLE : View.GONE);
+            if (hasBookingId) {
+                tvOrderCodeValue.setText(getString(R.string.label_order_code_format, bookingId));
+            }
+        }
+
         if (hasAmount) {
+            rowAmount.setVisibility(View.VISIBLE);
+            dividerBeforeAmount.setVisibility(View.VISIBLE);
             tvAmountValue.setText(amount);
+        } else {
+            rowAmount.setVisibility(View.GONE);
+            dividerBeforeAmount.setVisibility(View.GONE);
+        }
+
+        // Nếu thiếu thông tin nhưng có bookingId, fetch từ database để cập nhật chính xác
+        if ((!hasOrderCode || !hasAmount) && bookingId != null && !bookingId.trim().isEmpty()) {
+            fetchBookingDetailsFromDb();
+        }
+    }
+
+    private void fetchBookingDetailsFromDb() {
+        if (layoutLoading != null) {
+            layoutLoading.setVisibility(View.VISIBLE);
+        }
+        if (bookingRepository == null) {
+            bookingRepository = new com.example.flight_booking_app.data.repository.BookingRepository();
+        }
+        bookingRepository.observeBookingDetail(bookingId, new com.example.flight_booking_app.data.repository.BookingRepository.OnBookingDetailLoadedCallback() {
+            @Override
+            public void onSuccess(com.example.flight_booking_app.data.model.Booking booking) {
+                if (layoutLoading != null) {
+                    layoutLoading.setVisibility(View.GONE);
+                }
+                if (booking != null) {
+                    // Cập nhật mã đơn hàng dạng ngắn
+                    String orderCode = booking.getOrderCode();
+                    if (orderCode != null && !orderCode.trim().isEmpty()) {
+                        rowOrderCode.setVisibility(View.VISIBLE);
+                        dividerAfterOrderCode.setVisibility(View.VISIBLE);
+                        tvOrderCodeValue.setText(getString(R.string.label_order_code_format, orderCode));
+                    }
+                    
+                    // Cập nhật số tiền định dạng chuẩn
+                    double totalAmount = booking.getTotalAmount();
+                    String formattedAmount = com.example.flight_booking_app.utils.PriceFormatter.formatPrice(totalAmount);
+                    rowAmount.setVisibility(View.VISIBLE);
+                    dividerBeforeAmount.setVisibility(View.VISIBLE);
+                    tvAmountValue.setText(formattedAmount);
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                if (layoutLoading != null) {
+                    layoutLoading.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (bookingRepository != null) {
+            bookingRepository.removeObservers();
         }
     }
 
